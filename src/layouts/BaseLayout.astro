@@ -1,16 +1,44 @@
 ---
 import BaseHead from "@/components/BaseHead.astro";
 import Navigation from "@/components/global/Navigation.astro";
+import Sidetab from "@/components/global/Sidetab.astro";
 import Footer from "@/components/global/Footer.astro";
+
 ---
 
-<html lang="en" class="selection:bg-orange  selection:text-white">
+<html lang="en" class="selection:bg-retro-primary selection:text-retro-dark">
   <head>
     <BaseHead />
+    <style is:global>
+      @import url('https://fonts.cdnfonts.com/css/zx-spectrum-7');
+    </style>
   </head>
-  <body class="mx-auto bg-black 2xl:max-w-7xl">
-    <Navigation />
-    <slot />
+  <BaseHead />
+</head>
+<script>
+  document.addEventListener('alpine:init', () => {
+    Alpine.store('sidebar', {
+      isOpen: false,
+      toggle() {
+        this.isOpen = !this.isOpen;
+        document.body.classList.toggle('overflow-hidden', this.isOpen);
+      },
+      close() {
+        this.isOpen = false;
+        document.body.classList.remove('overflow-hidden');
+      }
+    });
+  });
+</script>
+<body class="text-white bg-black">
+  <div class="retro-grid-bg"></div>
+  <Navigation />
+  <Sidetab />
+  <div class="lg:pl-48">
+    <main class="mx-auto max-w-7xl px-4 pt-32 md:pt-24 sm:pt-20">
+      <slot />
+    </main>
     <Footer />
-  </body>
+  </div>
+</body>
 </html>

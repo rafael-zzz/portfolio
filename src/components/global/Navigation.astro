@@ -1,25 +1,53 @@
-<section
-  class="mx-auto border-white/20  border-t 2xl:max-w-7xl bg-black border-b justify-center lg:fixed lg:z-50 w-full">
-  <div class="mx-auto bg-black justify-center w-full">
-    <div
-      class="mx-auto border-white/20  border-x max-w-7xl flex flex-col lg:flex-row lg:items-center lg:justify-between w-full">
-      <div
-        class="text-white text-center items-center w-full flex flex-col justify-between md:px-0 sm:flex-row sm:px-8">
-        <a
-          href="https://www.lexingtonthemes.com"
-          class="text-white text-xs font-display inline-flex items-center md:px-8 md:text-center py-4 uppercase"
-          ><span>ASTROMAX ⏤ By Lexington Themes &nbsp; &rarr;</span>
-        </a>
-        <a
-          href="https://github.com/michael-andreuzza/astromax"
-          class="w-full bg-white duration-200 font-display hover:bg-black hover:text-white lg:ml-auto lg:w-auto px-6 py-4 sm:rounded-full text-black text-center text-xs uppercase"
-          >Github</a
-        ><a
-          href="mailto:your@name.com"
-          class="w-full bg-orange  duration-200 font-display hover:bg-blacktext-white lg:w-auto px-6 py-4 sm:rounded-full text-black hover:text-white text-center text-xs uppercase"
-          >Get a quote</a
+<section class="fixed top-0 right-0 left-0 border-b border-retro-primary/20 bg-black/90 backdrop-blur-sm lg:left-48 z-40">
+  <div class="bg-transparent">
+    <div class="text-white w-full flex items-center justify-between px-4 py-2">
+      <div class="flex items-center">
+        <button 
+          type="button"
+          x-data
+          @click="$store.sidebar.toggle()"
+          class="p-2 text-retro-primary hover:bg-retro-primary/20 rounded-lg transition-colors focus:outline-none lg:hidden"
+          aria-label="Toggle navigation"
         >
+          <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M2 6.00087C2 5.44811 2.45531 5 2.9918 5H8.6082C8.85391 5 9.09086 5.09085 9.27504 5.25532L11.1666 6.99468C11.3508 7.15915 11.5878 7.25 11.8334 7.25H21.0082C21.5447 7.25 22 7.69811 22 8.25087V18.9991C22 19.5519 21.5447 20 21.0082 20H2.9918C2.45531 20 2 19.5519 2 18.9991V6.00087Z" fill="currentColor"/>
+          </svg>
+        </button>
+        <img src="/logos/logo.png" alt="logo" class="hidden lg:block w-8 h-8 ml-4 border-retro-primary/20">
+      </div>
+      <div class="flex-grow text-center">
+        <span class="text-white text-2xl font-['ZX_Spectrum-7'] inline-flex items-center px-0 text-center py-2 uppercase">
+          <span class="terminal-text text-retro-primary">&nbsp; &rarr; ./raf's portfolio</span>
+        </span>
+      </div>
+      <div class="flex-shrink-0 flex space-x-2 p-2">
+        <a
+          href="https://github.com/rafael-zzz"
+          class="bg-transparent duration-200 font-['ZX_Spectrum-7'] hover:bg-retro-primary 
+          text-retro-primary hover:text-purple/500 border-2 border-retro-primary px-4 py-2 text-center"
+        >
+          Github 
+        </a>
       </div>
     </div>
   </div>
 </section>
+
+<style>
+  .shadow-retro {
+    box-shadow: 4px 4px 0 rgba(255, 255, 255, 0.7);
+  }
+  
+  .shadow-retro-hover {
+    box-shadow: -4px -4px 0 rgba(255, 255, 255, 0.7);
+  }
+  
+  .retro-grid {
+    position: relative;
+    background-color: #0a0a0a;
+    background-image: 
+      linear-gradient(rgba(255, 255, 255, 1) 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 1) 1px);
+    background-size: 32px 32px;
+  }
+</style>

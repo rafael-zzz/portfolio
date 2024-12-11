@@ -1,20 +1,80 @@
-<section class="border-white/20  border-b ">
-  <div class="mx-auto border-white/20  border-x max-w-7xl gradient-grid">
-    <div class="mx-auto max-w-7xl p-8">
-      <p class="text-white font-display uppercase lg:text-6xl text-xl">
-        AstroMax is a comprehensive design, redesign, and development service
-        that specializes in crafting exceptional one-page websites to captivate
-        users and leave a lasting impression.
-      </p>
-    </div>
-    <div class="mx-auto max-w-7xl p-8">
-      <p class="text-white font-display uppercase lg:text-3xl">
-        I specialize in developing static websites using Astro and Tailwind CSS.
-        By leveraging these frameworks, I create tailored and optimized websites
-        that effectively share startup stories, connect with audiences, and
-        create memorable experiences. Let me help you achieve your goals with a
-        remarkable online presence.
-      </p>
+---
+---
+<section class="projects-list mt-0 m:mt-20 sm:mt-8">
+  <div class="projects-header">
+    <h1 class="font-['ZX_Spectrum-7'] header-text">About Me</h1>
+  </div>
+  <div class="content-container">
+    <div class="mx-auto max-w-7xl px-2">
+      <div class="min-h-[300px] relative flex flex-col md:flex-row">
+        <!-- Left side: Text content -->
+        <div class="flex-1 md:max-w-[50%] p-1">
+          <h1 class="font-['ZX_Spectrum-7'] text-6xl terminal-text mb-2">
+            <span class="inline-block">I'm Rafael</span>
+          </h1>
+          <p class="font-['ZX_Spectrum-7'] text-retro-primary text-3xl">
+            A Brazilian Security enthusiast with a passion for pentesting and cryptography, currently studying Computer Science.
+          </p>
+        </div>
+
+        <!-- Right side: Image -->
+        <div class="flex-1 flex items-center justify-center p-4">
+          <picture>
+            <source src="images/rafael.jpg" type="">
+            <img
+              src="/images/rafael.jpg" 
+              alt="Rafael"
+              width="1200"
+              height="1200"
+              class="w-full h-auto object-cover border-4 border-retro-primary/20"
+            />
+          </picture>
+        </div>
+      </div>
     </div>
   </div>
 </section>
+
+<style>
+  .projects-list {
+    background-color: #000;
+    border: 2px solid #ffffff;
+    position: relative;
+    z-index: 1;
+  }
+
+  .projects-header {
+    background-color: rgba(34, 34, 34, 0.8);
+    text-align: center;
+    border-bottom: 2px solid #ffffff;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+  }
+
+  .header-text {
+    background-color: #000;
+    padding: 1rem;
+    border: 2px solid #ffffff;
+    position: relative;
+    z-index: 1;
+    font-size: 2rem;
+    text-shadow: 1px 1px 0 #000000;
+  }
+
+  .content-container {
+    padding: 2rem 0;
+  }
+
+  @media (max-width: 768px) {
+    .border-retro-primary/20 {
+      border-width: 2px;
+    }
+  }
+  @media (max-width: 640px) {
+    .mt-16 {
+      margin-top: 1rem;
+    }
+    .sm\:mt-24 {
+      margin-top: 1.5rem;
+    }
+  }
+</style>
