@@ -2,12 +2,13 @@
 import { defineConfig } from 'astro/config';
 import tailwindcss from '@tailwindcss/vite';
 import sitemap from "@astrojs/sitemap";
+
 export default defineConfig({
-   vite: {
+  vite: {
+    // @ts-expect-error - Vite plugin typing issue
     plugins: [tailwindcss()],
   },
-  // add yur domain name here
+  integrations: [sitemap()],
   site: 'https://lexingtonthemes.com',
-  compressHTML: true,
-  integrations: [sitemap()]
+  compressHTML: true
 });

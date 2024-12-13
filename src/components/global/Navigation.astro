@@ -1,11 +1,10 @@
-<section class="fixed top-0 right-0 left-0 border-b border-retro-primary/20 bg-black/90 backdrop-blur-sm lg:left-48 z-40">
+<section class="fixed top-0 right-0 left-0 border-b border-retro-primary/20 bg-black/80 backdrop-blur-sm lg:left-48 z-40">
   <div class="bg-transparent">
     <div class="text-white w-full flex items-center justify-between px-4 py-2">
       <div class="flex items-center">
         <button 
           type="button"
-          x-data
-          @click="$store.sidebar.toggle()"
+          id="nav-toggle-btn"
           class="p-2 text-retro-primary hover:bg-retro-primary/20 rounded-lg transition-colors focus:outline-none lg:hidden"
           aria-label="Toggle navigation"
         >
@@ -16,7 +15,7 @@
         <img src="/logos/logo.png" alt="logo" class="hidden lg:block w-8 h-8 ml-4 border-retro-primary/20">
       </div>
       <div class="flex-grow text-center">
-        <span class="text-white text-2xl font-['ZX_Spectrum-7'] inline-flex items-center px-0 text-center py-2 uppercase">
+        <span class="text-white text-xl sm:text-2xl lg:text-2xl font-['ZX_Spectrum-7'] inline-flex items-center px-0 text-center py-2 uppercase">
           <span class="terminal-text text-retro-primary">&nbsp; &rarr; ./raf's portfolio</span>
         </span>
       </div>
@@ -32,6 +31,7 @@
     </div>
   </div>
 </section>
+
 
 <style>
   .shadow-retro {

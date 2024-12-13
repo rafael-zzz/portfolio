@@ -15,21 +15,6 @@ import Footer from "@/components/global/Footer.astro";
   </head>
   <BaseHead />
 </head>
-<script>
-  document.addEventListener('alpine:init', () => {
-    Alpine.store('sidebar', {
-      isOpen: false,
-      toggle() {
-        this.isOpen = !this.isOpen;
-        document.body.classList.toggle('overflow-hidden', this.isOpen);
-      },
-      close() {
-        this.isOpen = false;
-        document.body.classList.remove('overflow-hidden');
-      }
-    });
-  });
-</script>
 <body class="text-white bg-black">
   <div class="retro-grid-bg"></div>
   <Navigation />

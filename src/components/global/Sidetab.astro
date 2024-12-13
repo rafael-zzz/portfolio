@@ -1,4 +1,12 @@
 ---
+interface MenuItem {
+  label: string;
+  icon: string;
+  path?: string;
+  isFile: boolean;
+  children?: MenuItem[];
+}
+
 const fileIcon = `<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
   <path d="M3 19V5C3 3.89543 3.89543 3 5 3H16.1716C16.702 3 17.2107 3.21071 17.5858 3.58579L20.4142 6.41421C20.7893 6.78929 21 7.29799 21 7.82843V19C21 20.1046 20.1046 21 19 21H5C3.89543 21 3 20.1046 3 19Z" fill="currentColor"/>
   <path d="M15 3.5V7C15 7.55228 15.4477 8 16 8H19.5" stroke="white" stroke-width="2"/>
@@ -8,7 +16,12 @@ const folderIcon = `<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" xmlns="
   <path d="M2 6.00087C2 5.44811 2.45531 5 2.9918 5H8.6082C8.85391 5 9.09086 5.09085 9.27504 5.25532L11.1666 6.99468C11.3508 7.15915 11.5878 7.25 11.8334 7.25H21.0082C21.5447 7.25 22 7.69811 22 8.25087V18.9991C22 19.5519 21.5447 20 21.0082 20H2.9918C2.45531 20 2 19.5519 2 18.9991V6.00087Z" fill="currentColor"/>
 </svg>`;
 
-const menuItems = [
+// Add helper function to check if URL is external
+function isExternalURL(url: string | undefined): boolean {
+  return url?.startsWith('http') || url?.startsWith('https') || false;
+}
+
+const menuItems: MenuItem[] = [
   { 
     label: "home.exe",
     icon: fileIcon,
@@ -54,28 +67,56 @@ const menuItems = [
     ]
   }
 ];
+
+// Create components for menu items using Astro template syntax
+const renderFileItem = (item: MenuItem, isExternal: boolean) => `
+  <a 
+    href="${item.path || '#'}"
+    target="${isExternal ? '_blank' : '_self'}"
+    rel="${isExternal ? 'noopener noreferrer' : ''}"
+    class="retro-item flex items-center px-2 py-1 text-white hover:bg-white/40 font-['ZX_Spectrum-7'] text-2xl group whitespace-nowrap"
+  >
+    ${item.icon}
+    <span class="ml-2 truncate">${item.label}</span>
+  </a>
+`;
+
+const renderFolderItem = (item: MenuItem) => `
+  <div class="folder-container" data-folder>
+    <button 
+      class="retro-folder w-full flex items-center px-2 py-1 text-white hover:bg-white/40 font-['ZX_Spectrum-7'] text-2xl group"
+    >
+      <div class="flex items-center w-full">
+        <span class="transform transition-transform duration-200" data-folder-icon>
+          ${item.icon}
+        </span>
+        <span class="ml-2 truncate">${item.label}</span>
+      </div>
+    </button>
+    
+    <div class="ml-4 border-l border-white/50 hidden overflow-hidden" data-folder-content>
+      ${item.children?.map(child => renderFileItem(child, isExternalURL(child.path))).join('')}
+    </div>
+  </div>
+`;
 ---
-<div x-data>
+
+<div>
   <div
-    x-cloak
-    x-show="$store.sidebar.isOpen"
-    @click="$store.sidebar.close()"
-    class="fixed inset-0 bg-black/50 backdrop-blur-sm lg:hidden z-40"
-  ></div>
+    class="fixed inset-0 bg-black/50 backdrop-blur-sm lg:hidden z-40 hidden"
+    id="overlay"
+  />
 
   <aside
-    x-cloak
-    class="fixed left-0 top-0 h-screen w-64 lg:w-48 border-r border-retro-primary/20 
-           bg-black/90 backdrop-blur-sm z-50 transform transition-transform duration-300
-           -translate-x-full lg:translate-x-0"
-    :class="$store.sidebar.isOpen ? 'translate-x-0' : '-translate-x-full'"
+    class="fixed left-0 top-0 h-screen w-64 lg:w-48 border-r border-retro-primary/20 bg-black/80 backdrop-blur-sm z-50 -translate-x-full lg:translate-x-0 transition-transform duration-200"
+    id="sidebar"
   >
     <div class="p-2 h-full">
       <div class="border-2 border-retro-primary mb-2 px-2 py-1 flex justify-between items-center">
         <span class="text-retro-primary font-bold text-2xl font-['ZX_Spectrum-7']">File Explorer</span>
         <button 
-          @click="$store.sidebar.close()"
           class="lg:hidden text-retro-primary hover:bg-retro-primary/20 p-1 rounded"
+          id="close-sidebar"
         >
           <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
@@ -83,58 +124,31 @@ const menuItems = [
         </button>
       </div>
 
-    <nav class="space-y-1">
-      {menuItems.map((item) => (
-        item.isFile ? (
-          <a 
-            href={item.path}
-            class="retro-item flex items-center px-2 py-1 text-white hover:bg-white/40 
-            font-['ZX_Spectrum-7'] text-2xl group"
-          >
-            <Fragment set:html={item.icon} />
-            <span class="ml-2">{item.label}</span>
-          </a>
-        ) : (
-          <div class="folder-container" x-data="{ open: false }">
-            <button 
-              @click="open = !open"
-              class="retro-folder w-full flex items-center justify-between px-2 py-1 
-              text-white hover:bg-white/40 font-['ZX_Spectrum-7'] text-2xl group"
-            >
-              <div class="flex items-center">
-                <span class="transform transition-transform duration-200" 
-                  :class="open ? : ''">
-                  <Fragment set:html={item.icon} />
-                </span>
-                <span class="ml-2">{item.label}</span>
-              </div>
-            </button>
-            
-            <div x-show="open" x-cloak class="ml-4 border-l border-white/50">
-              {item.children.map(child => (
-                <a 
-                  href={child.path}
-                  class="retro-item flex items-center px-2 py-1 text-white 
-                  hover:bg-white/40 font-['ZX_Spectrum-7'] text-2xl group"
-                >
-                  <Fragment set:html={child.icon} />
-                  <span class="ml-2">{child.label}</span>
-                </a>
-              ))}
-            </div>
-          </div>
-        )
-      ))}
-    </nav>
-  </div>
-</aside>
+      <nav class="space-y-1">
+        {menuItems.map(item => (
+          <Fragment set:html={
+            item.isFile 
+              ? renderFileItem(item, isExternalURL(item.path))
+              : renderFolderItem(item)
+          } />
+        ))}
+      </nav>
+    </div>
+  </aside>
+</div>
+
+
 
 <style>
-  [x-cloak] { display: none !important; }
+  .folder-container {
+    max-width: 100%;
+    overflow-x: hidden;
+  }
   
   @media (min-width: 1024px) {
-    aside {
+    #sidebar {
       transform: translateX(0) !important;
+      visibility: visible !important;
     }
   }
 </style>
