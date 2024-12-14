@@ -87,7 +87,7 @@ const renderFolderItem = (item: MenuItem) => `
       class="retro-folder w-full flex items-center px-2 py-1 text-white hover:bg-white/40 font-['ZX_Spectrum-7'] text-2xl group"
     >
       <div class="flex items-center w-full">
-        <span class="transform transition-transform duration-200" data-folder-icon>
+        <span class="transform transition-transform" data-folder-icon>
           ${item.icon}
         </span>
         <span class="ml-2 truncate">${item.label}</span>
@@ -137,7 +137,36 @@ const renderFolderItem = (item: MenuItem) => `
   </aside>
 </div>
 
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const folders = document.querySelectorAll('[data-folder]');
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('overlay');
+    const toggleBtn = document.getElementById('nav-toggle-btn');
+    const closeBtn = document.getElementById('close-sidebar');
+    
+    // Folder toggle functionality
+    folders.forEach(folder => {
+      const button = folder.querySelector('button');
+      const content = folder.querySelector('[data-folder-content]');
+      
+      button?.addEventListener('click', () => {
+        content?.classList.toggle('hidden');
+      });
+    });
 
+    // Mobile sidebar toggle functionality
+    function toggleSidebar() {
+      sidebar?.classList.toggle('-translate-x-full');
+      overlay?.classList.toggle('hidden');
+      document.body.classList.toggle('overflow-hidden');
+    }
+
+    toggleBtn?.addEventListener('click', toggleSidebar);
+    closeBtn?.addEventListener('click', toggleSidebar);
+    overlay?.addEventListener('click', toggleSidebar);
+  });
+</script>
 
 <style>
   .folder-container {

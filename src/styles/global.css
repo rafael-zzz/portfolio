@@ -1,10 +1,11 @@
 @import "tailwindcss";
 
-
-.font-display {
-  font-family: ZX_Spectrum-7, sans-serif;
-  font-weight: 700;
+@font-face {
+  font-family: 'Departure Mono';
+  src: url('/fonts/DepartureMono-Regular.woff') format('woff');
+  font-size: 11px;
 }
+
 
 @keyframes marquee {
   100% {transform: translateX(0%);}

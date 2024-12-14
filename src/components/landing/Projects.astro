@@ -24,7 +24,7 @@ const projects = [
 
 <section class="projects-list">
   <div class="projects-header">
-    <h1 class="font-['ZX_Spectrum-7'] header-text">Projects</h1>
+    <h1 class="font-['Departure_Mono'] header-text">Projects</h1>
   </div>
 
   <div class="block md:hidden">
@@ -34,7 +34,7 @@ const projects = [
           class="mobile-card-header"
           data-project-toggle={index}
         >
-          <h2 class="project-title font-['ZX_Spectrum-7'] text-3xl">{project.title}</h2>
+          <h2 class="project-title font-['Departure_Mono'] text-xl">{project.title}</h2>
         </button>
   
         <div
@@ -44,7 +44,7 @@ const projects = [
           <a href={project.link} target="_blank" rel="noopener" class="block">
             <img src={project.image} alt={project.title} class="project-image hover:opacity-80 transition-opacity" />
           </a>
-          <p class="project-description font-['ZX_Spectrum-7']">{project.description}</p>
+            <p class="project-description font-['Departure_Mono'] text-sm">{project.description}</p>
         </div>
       </div>
     ))}
@@ -53,7 +53,7 @@ const projects = [
   <div class="projects-container md:grid hidden">
     {projects.map(project => (
       <div class="project-card retro-card">
-        <h1 class="font-['ZX_Spectrum-7'] text-3xl text-center terminal-text tracking-wider leading-relaxed mb-8">
+        <h1 class="font-['Departure_Mono'] text-xl text-center terminal-text tracking-wider leading-relaxed mb-8">
           <div class="project-header">
             <h2 class="project-title">{project.title}</h2>
           </div>
@@ -88,7 +88,7 @@ const projects = [
     border: 2px solid #ffffff;
     position: relative;
     z-index: 1;
-    font-size: 2rem;
+    font-size: 1.2rem;
     text-shadow: 1px 1px 0 #000000;
   }
 
@@ -125,7 +125,7 @@ const projects = [
 
   .project-description {
     padding: 1rem;
-    font-size: 1.65rem;
+    font-size: 1.1rem;
     line-height: 1.5;
   }
 
@@ -153,7 +153,7 @@ const projects = [
     }
     
     .project-description {
-      font-size: 1.5rem;
+      font-size: 1.2rem;
     }
   }
 
