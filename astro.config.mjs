@@ -8,6 +8,6 @@ export default defineConfig({
     plugins: [tailwindcss()],
   },
   integrations: [sitemap()],
-  site: 'https://lexingtonthemes.com',
+  site: 'https://rafs-portfolio.vercel.app',
   compressHTML: true
 });
