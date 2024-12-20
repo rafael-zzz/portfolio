@@ -1,6 +1,6 @@
 ---
 ---
-<section class="projects-list mt-0 m:mt-20 sm:mt-8">
+<section class="projects-list">
   <div class="projects-header">
     <h1 class="font-['Departure_Mono'] header-text">About Me</h1>
   </div>
@@ -13,7 +13,7 @@
             <span class="inline-block">I'm Rafael</span>
           </h1>
           <p class="font-['Departure_Mono'] text-retro-primary text-xl">
-            A Brazilian Security enthusiast with a big passion for security and cryptography, with a lot of side interests and currently studying Computer Science.
+            A Brazilian security enthusiast, passionate about pentesting and cryptography, with a fondness for retro systems. Currently studying Computer Science while pursuing some tech-related interests.
           </p>
         </div>
 
@@ -29,7 +29,7 @@
             />
           </picture>
         </div>
-      </div>
+      </div> 
     </div>
   </div>
 </section>
@@ -64,11 +64,14 @@
   }
 
   @media (max-width: 768px) {
-    .border-retro-primary/20 {
-      border-width: 2px;
+    .projects-list {
+      margin-top: 20px;
     }
   }
   @media (max-width: 640px) {
+    .projects-list {
+      margin-top: -30px;
+    }
     .mt-16 {
       margin-top: 1rem;
     }

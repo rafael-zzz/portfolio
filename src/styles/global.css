@@ -6,15 +6,14 @@
   font-size: 11px;
 }
 
-
 @keyframes marquee {
-  100% {transform: translateX(0%);}
-  0% {transform: translateX(-127.5%);}
+  100% { transform: translateX(0); }
+  0% { transform: translateX(-69%); }
 }
 
 @keyframes gridMove {
-  0% {background-position: 0 0;}
-  100% {background-position: 50px 50px;}
+  0% { background-position: 0 0; }
+  100% { background-position: 100px 100px; }
 }
 
 .retro-grid-bg {
@@ -27,16 +26,29 @@
   height: 100vh;
   background-color: #000000;
   background-image: 
-    linear-gradient(rgba(255, 255, 255, 0.3) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.3) 1px, transparent 1px);
+    linear-gradient(rgba(255, 255, 255, 0.3) 2px, transparent 2px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.3) 2px, transparent 2px);
   background-size: 50px 50px;
   animation: gridMove 10s linear infinite;
   z-index: -1;
   pointer-events: none;
 }
 
+.marquee-wrapper {
+  display: flex;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
 .animate-marquee {
-  animation: marquee 8s linear infinite;
+  display: inline-block;
+  animation: marquee 20s linear infinite; /* Adjust duration as needed */
+}
+
+@media (max-width: 1024px) {
+  .animate-marquee {
+    animation: marquee 25s linear infinite; /* Adjust duration as needed */
+  }
 }
 
 body.overflow-hidden {
