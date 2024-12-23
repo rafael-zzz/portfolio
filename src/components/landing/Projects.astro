@@ -34,7 +34,7 @@ const projects = [
           class="mobile-card-header"
           data-project-toggle={index}
         >
-          <h2 class="project-title font-['Departure_Mono'] text-xl">{project.title}</h2>
+          <h2 class="project-title font-['Departure_Mono'] text-l">{project.title}</h2>
         </button>
   
         <div
@@ -53,7 +53,7 @@ const projects = [
   <div class="projects-container md:grid hidden">
     {projects.map(project => (
       <div class="project-card retro-card">
-        <h1 class="font-['Departure_Mono'] text-xl text-center terminal-text tracking-wider leading-relaxed mb-8">
+        <h1 class="font-['Departure_Mono'] text-l text-center terminal-text tracking-wider leading-relaxed mb-8">
           <div class="project-header">
             <h2 class="project-title">{project.title}</h2>
           </div>
@@ -131,7 +131,7 @@ const projects = [
 
   .mobile-card {
     background-color: #000000;
-    border: 2px solid rgba(255, 255, 255, 0.8);
+    border: 2px solid rgba(255, 255, 255, 0.5);
     margin: 1rem;
   }
 
@@ -139,7 +139,7 @@ const projects = [
     width: 100%;
     padding: 1rem;
     text-align: center;
-    border-bottom: 2px solid rgba(255, 255, 255, 0.8);
+    border-bottom: 2px solid rgba(255, 255, 255, 0.5);
   }
 
   .mobile-card-content {

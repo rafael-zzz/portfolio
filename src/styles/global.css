@@ -8,7 +8,7 @@
 
 @keyframes marquee {
   100% { transform: translateX(0); }
-  0% { transform: translateX(-69%); }
+  0% { transform: translateX(-70%); }
 }
 
 @keyframes gridMove {
@@ -36,18 +36,21 @@
 
 .marquee-wrapper {
   display: flex;
-  overflow: hidden;
-  white-space: nowrap;
 }
 
-.animate-marquee {
+.animate-marquee1 {
   display: inline-block;
-  animation: marquee 20s linear infinite; /* Adjust duration as needed */
+  animation: marquee 25s linear infinite;
+}
+
+.animate-marquee2 {
+  display: inline-block;
+  animation: marquee 25s linear infinite;
 }
 
 @media (max-width: 1024px) {
   .animate-marquee {
-    animation: marquee 25s linear infinite; /* Adjust duration as needed */
+    animation: marquee 20s linear infinite;
   }
 }
 

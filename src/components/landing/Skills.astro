@@ -1,10 +1,17 @@
 ---
 const skills = [
-  { name: "C", icon: "/icons/c.png" },
-  { name: "TailwindCSS", icon: "/icons/tailwindcss.png" },
-  { name: "Pentesting", icon: "/icons/pentesting.png" },
-  // Add more skills as needed
+  { name: "MacOS" , icon: "https://skillicons.dev/icons?i=apple" },
+  { name: "Linux", icon: "https://skillicons.dev/icons?i=linux" },
+  { name: "Windows", icon:"https://skillicons.dev/icons?i=windows"},
+  { name: "Neovim", icon: "https://skillicons.dev/icons?i=neovim"},
+  { name: "Bash", icon: "https://skillicons.dev/icons?i=bash"},
+  { name: "C", icon: "https://skillicons.dev/icons?i=c" },
 ];
+
+const learning = [
+  { name: "Rust", icon: "https://skillicons.dev/icons?i=rust" },
+  { name: "Haskell", icon: "https://skillicons.dev/icons?i=haskell" },
+]
 ---
 
 <section class="skills-list">
@@ -17,8 +24,26 @@ const skills = [
         <div class="skill-header">
           <img src={skill.icon} alt={skill.name} class="skill-icon" />
         </div>
+        <p class="text-l font-['Departure_Mono'] skill-title">{skill.name}</p>
       </div>
     ))}
+  </div>
+  
+  <button class="learning-toggle font-['Departure_Mono']">
+    Learning
+  </button>
+  
+  <div class="learning-content hidden md:block">
+    <div class="skills-container md:grid">
+      {learning.map(item => (
+        <div class="skill-card retro-card">
+          <div class="skill-header">
+            <img src={item.icon} alt={item.name} class="skill-icon" />
+          </div>
+          <p class="text-l font-['Departure_Mono'] skill-title">{item.name}</p>
+        </div>
+      ))}
+    </div>
   </div>
 </section>
 
@@ -31,7 +56,7 @@ const skills = [
   }
 
   .skills-header {
-    background-color: rgba(34, 34, 34, 0.8);
+    background-color: rgba(34, 34, 34, 0.5);
     text-align: center;
     border-bottom: 2px solid #ffffff;
     box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
@@ -49,24 +74,19 @@ const skills = [
 
   .skills-container {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-    gap: 1rem;
-    padding: 1rem;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 0.5rem;
+    padding: 0.5rem;
   }
 
   .skill-card {
-    background-color: rgba(0, 0, 0, 0.8);
-    border: 2px solid rgba(255, 255, 255, 0.5);
-    border-radius: 4px;
+    background-color: rgba(0, 0, 0, 0.5);
+    border: 2px solid rgba(255, 255, 255, 1);
+    border-radius: 0px;
     overflow: hidden;
     transition: transform 0.2s, border-color 0.2s;
     text-align: center;
-    padding: 1rem;
-  }
-
-  .skill-card:hover {
-    transform: translateY(-4px);
-    border-color: rgba(255, 255, 255, 1);
+    padding: 0.5rem;
   }
 
   .skill-header {
@@ -76,13 +96,45 @@ const skills = [
   }
 
   .skill-icon {
-    width: 50px;
-    height: 50px;
-    margin-bottom: 0.5rem;
+    width: 60px;
+    height: 60px;
+    margin-bottom: 0rem;
+    color: none;
   }
 
   .skill-title {
-    font-size: 1.1rem;
     color: #ffffff;
   }
+  .learning-section {
+    border-top: 2px solid rgba(255, 255, 255, 0.5);
+  }
+
+  .learning-toggle {
+    background: none;
+    border: 2px solid rgba(255, 255, 255, 0.5);
+    color: #ffffff;
+    padding: 2rem;
+    width: 100%;
+    text-align: center;
+    padding: 1rem;
+  }
+
+  .learning-content {
+    transition: max-height 0.3s ease-out;
+  }
+
+  @media (max-width: 768px) {
+    .learning-content.show {
+      display: block;
+    }
+  }
 </style>
+
+<script>
+  const toggleBtn = document.querySelector('.learning-toggle');
+  const content = document.querySelector('.learning-content');
+
+  toggleBtn?.addEventListener('click', () => {
+    content?.classList.toggle('hidden');
+  });
+</script>

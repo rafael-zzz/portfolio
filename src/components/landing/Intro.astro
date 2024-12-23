@@ -1,5 +1,8 @@
 ---
+import Image from "astro/components/Image.astro";
+
 ---
+
 <section class="projects-list">
   <div class="projects-header">
     <h1 class="font-['Departure_Mono'] header-text">About Me</h1>
@@ -13,14 +16,13 @@
             <span class="inline-block">I'm Rafael</span>
           </h1>
           <p class="font-['Departure_Mono'] text-retro-primary text-xl">
-            A Brazilian security enthusiast, passionate about pentesting and cryptography, with a fondness for retro systems. Currently studying Computer Science while pursuing some tech-related interests.
+            A brazilian cybersecurity enthusiast, passionate about pentesting and cryptography, with a fondness for retro systems. Currently studying Computer Science while pursuing some tech-related interests.
           </p>
         </div>
 
-        <!-- Right side: Image -->
         <div class="flex-1 flex items-center justify-center p-4 md:justify-end lg:pr-8 md:pr-8">
           <picture class="w-full max-w-[300px] lg:max-w-[400px]">
-            <img
+            <Image
               src="/images/rafael.jpg" 
               alt="Rafael"
               width="300"
@@ -78,5 +80,16 @@
     .sm\:mt-24 {
       margin-top: 1.5rem;
     }
+  }
+  
+  .spotify-container {
+    background-color: rgba(0, 0, 0, 0.8);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    padding: 0.75rem;
+  }
+
+  .now-playing {
+    display: flex;
+    align-items: center;
   }
 </style>
