@@ -12,8 +12,8 @@ import Image from "astro/components/Image.astro";
       <div class="min-h-[300px] relative flex flex-col md:flex-row">
         <!-- Left side: Text content -->
         <div class="flex-1 md:max-w-[50%] p-2 -mt-6 md:-mt-1">
-          <h1 class="font-['ZX_Spectrum-7'] text-5xl terminal-text mb-2">
-            <span class="inline-block">I'm Rafael</span>
+          <h1 class="intro-header font-['ZX_Spectrum-7'] mb-2">
+            <span class="inline-block">I'm Rafael Peixoto</span>
           </h1>
           <p class="font-['Departure_Mono'] text-retro-primary text-xl">
             A brazilian cybersecurity enthusiast, passionate about pentesting and cryptography, with a fondness for retro systems. Currently studying Computer Science while pursuing some tech-related interests.
@@ -22,13 +22,16 @@ import Image from "astro/components/Image.astro";
 
         <div class="flex-1 flex items-center justify-center p-4 md:justify-end lg:pr-8 md:pr-8">
           <picture class="w-full max-w-[300px] lg:max-w-[400px]">
-            <Image
-              src="/images/rafael.jpg" 
-              alt="Rafael"
-              width="300"
-              height="300"
-              class="w-full h-auto object-cover border-4 border-retro-primary/20"
-            />
+            <a href="https://linkedin.com/in/rafael-m-peixoto">
+              <Image
+                src="/images/rafael.jpg"
+                href="linkedin.com"
+                alt="Rafael"
+                width="300"
+                height="300"
+                class="w-full h-auto object-cover border-4 border-retro-primary/20"
+              />
+            </a>
           </picture>
         </div>
       </div> 
@@ -37,6 +40,11 @@ import Image from "astro/components/Image.astro";
 </section>
 
 <style>
+  .intro-header {
+
+    font-size: 2.8rem;
+  }
+
   .projects-list {
     background-color: #000;
     border: 2px solid #ffffff;
@@ -71,6 +79,9 @@ import Image from "astro/components/Image.astro";
     }
   }
   @media (max-width: 640px) {
+    .intro-header {
+      font-size: 2.5rem;
+    }
     .projects-list {
       margin-top: -30px;
     }

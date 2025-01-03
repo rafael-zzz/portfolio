@@ -28,12 +28,9 @@ const learning = [
       </div>
     ))}
   </div>
-  
   <button class="learning-toggle font-['Departure_Mono']">
     Learning
   </button>
-  
-  <div class="learning-content hidden md:block">
     <div class="skills-container md:grid">
       {learning.map(item => (
         <div class="skill-card retro-card">
@@ -81,12 +78,18 @@ const learning = [
 
   .skill-card {
     background-color: rgba(0, 0, 0, 0.5);
-    border: 2px solid rgba(255, 255, 255, 1);
+    border: 2px solid rgba(255, 255, 255, 0.6);
     border-radius: 0px;
     overflow: hidden;
     transition: transform 0.2s, border-color 0.2s;
     text-align: center;
     padding: 0.5rem;
+  }
+
+  .skill-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(255, 255, 255, 1);
+    background-color: rgba(255, 255, 255, 0.1);
   }
 
   .skill-header {
@@ -106,12 +109,12 @@ const learning = [
     color: #ffffff;
   }
   .learning-section {
-    border-top: 2px solid rgba(255, 255, 255, 0.5);
+    border-top: 2px solid rgba(255, 255, 255, 0.6);
   }
 
   .learning-toggle {
     background: none;
-    border: 2px solid rgba(255, 255, 255, 0.5);
+    border: 4px solid rgba(255, 255, 255, 1);
     color: #ffffff;
     padding: 2rem;
     width: 100%;
@@ -120,7 +123,7 @@ const learning = [
   }
 
   .learning-content {
-    transition: max-height 0.3s ease-out;
+    transition: max-height 0.2s ease-out;
   }
 
   @media (max-width: 768px) {

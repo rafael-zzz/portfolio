@@ -29,7 +29,7 @@ const menuItems: MenuItem[] = [
     isFile: true
   },
   {
-    label: "blog/",
+    label: "blog",
     icon: folderIcon,
     isFile: false,
     children: [
@@ -42,7 +42,7 @@ const menuItems: MenuItem[] = [
     ]
   },
   {
-    label: "projects/",
+    label: "projects",
     icon: folderIcon,
     isFile: false,
     children: [
@@ -53,7 +53,7 @@ const menuItems: MenuItem[] = [
         isFile: true
       },
       { 
-        label: "MRGL.exe",
+        label: "MyRetroGameList.exe",
         icon: fileIcon,
         path: "https://github.com/andgabx/myretrogamelist",
         isFile: true
@@ -61,7 +61,7 @@ const menuItems: MenuItem[] = [
     ]
   },
   {
-    label: "about me/",
+    label: "about me",
     icon: folderIcon,
     isFile: false,
     children: [
@@ -87,9 +87,7 @@ const renderFileItem = (item: MenuItem, isExternal: boolean) => `
     href="${item.path || '#'}"
     target="${isExternal ? '_blank' : '_self'}"
     rel="${isExternal ? 'noopener noreferrer' : ''}"
-    class="retro-item flex items-center px-2 py-1 text-white hover:bg-white/40 font-['ZX_Spectrum-7'] text-2xl group whitespace-nowrap"
-  >
-    ${item.icon}
+    class="retro-item flex items-center px-0 py-1 text-white hover:bg-white/40 font-['ZX_Spectrum-7'] text-2xl group whitespace-nowrap">
     <span class="ml-2 truncate">${item.label}</span>
   </a>
 `;
