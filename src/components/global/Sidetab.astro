@@ -81,7 +81,6 @@ const menuItems: MenuItem[] = [
   }
 ];
 
-// Create components for menu items using Astro template syntax
 const renderFileItem = (item: MenuItem, isExternal: boolean) => `
   <a 
     href="${item.path || '#'}"
@@ -119,7 +118,7 @@ const renderFolderItem = (item: MenuItem) => `
   />
 
   <aside
-    class="fixed left-0 top-0 h-screen w-64 lg:w-48 border-r border-retro-primary/20 bg-black/80 backdrop-blur-sm z-50 -translate-x-full lg:translate-x-0 transition-transform duration-200"
+    class="fixed left-0 top-0 h-screen w-64 lg:w-48 border-r border-retro-primary/20 bg-black/80 backdrop-blur-sm z-50 -translate-x-full lg:translate-x-0 transition-transform duration-150"
     id="sidebar"
   >
     <div class="p-2 h-full">

@@ -40,12 +40,12 @@
 
 .animate-marquee1 {
   display: inline-block;
-  animation: marquee 25s linear infinite;
+  animation: marquee 45s linear infinite;
 }
 
 .animate-marquee2 {
   display: inline-block;
-  animation: marquee 25s linear infinite;
+  animation: marquee 45s linear infinite;
 }
 
 @media (max-width: 1024px) {

@@ -31,14 +31,30 @@ const projects = [
     {projects.map((project, index) => (
       <div class="mobile-card" data-project-card={index}>
         <button 
-          class="mobile-card-header"
+          class="mobile-card-header group"
           data-project-toggle={index}
         >
-          <h2 class="project-title font-['Departure_Mono'] text-l">{project.title}</h2>
+          <div class="flex items-center justify-between w-full">
+            <h2 class="project-title font-['Departure_Mono'] text-l">{project.title}</h2>
+            <svg 
+              class="w-6 h-6 transform transition-transform duration-300 chevron" 
+              data-chevron={index}
+              fill="none" 
+              stroke="currentColor" 
+              viewBox="0 0 24 24"
+            >
+              <path 
+                stroke-linecap="round" 
+                stroke-linejoin="round" 
+                stroke-width="2" 
+                d="M19 9l-7 7-7-7"
+              />
+            </svg>
+          </div>
         </button>
   
         <div
-          class="mobile-card-content hidden transition-all duration-200 opacity-0 transform -translate-y-4"
+          class="mobile-card-content hidden"
           data-project-content={index}
         >
           <a href={project.link} target="_blank" rel="noopener" class="block">
@@ -131,15 +147,27 @@ const projects = [
 
   .mobile-card {
     background-color: #000000;
-    border: 2px solid rgba(255, 255, 255, 0.6);
+    border: 2px solid rgba(255, 255, 255, 0.8);
     margin: 1rem;
   }
 
   .mobile-card-header {
     width: 100%;
     padding: 1rem;
-    text-align: center;
-    border-bottom: 2px solid rgba(255, 255, 255, 0.6);
+    text-align: left;
+    border-bottom: 2px solid rgba(255, 255, 255, 0.8);
+  }
+
+  .mobile-card-header:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+  }
+
+  .chevron {
+    transition: transform 0.2s;
+  }
+
+  .chevron.rotate {
+    transform: rotate(180deg);
   }
 
   .mobile-card-content {
@@ -159,7 +187,7 @@ const projects = [
 
   @media (max-width: 768px) {
     .projects-container {
-      display: none !important; /* Force hide desktop view on mobile */
+      display: none !important;
     }
     
     .project-card {
@@ -169,27 +197,20 @@ const projects = [
 </style>
 
 <script>
-  // Handle mobile project cards
   document.querySelectorAll('[data-project-toggle]').forEach((button) => {
     button.addEventListener('click', () => {
       const index = button.getAttribute('data-project-toggle');
       const content = document.querySelector(`[data-project-content="${index}"]`);
-      
-      // Close all other cards
-      document.querySelectorAll('[data-project-content]').forEach((el) => {
+      const chevron = document.querySelector(`[data-chevron="${index}"]`);
+      document.querySelectorAll('[data-project-content]').forEach((el, i) => {
         if (el !== content) {
-          el.classList.add('hidden', 'opacity-0', '-translate-y-4');
+          el.classList.add('hidden');
+          document.querySelector(`[data-chevron="${i}"]`)?.classList.remove('rotate');
         }
       });
-
-      // Toggle current card
       if (content) {
         content.classList.toggle('hidden');
-        // Use requestAnimationFrame to ensure the transition works
-        requestAnimationFrame(() => {
-          content.classList.toggle('opacity-0');
-          content.classList.toggle('-translate-y-4');
-        });
+        chevron?.classList.toggle('rotate');
       }
     });
   });

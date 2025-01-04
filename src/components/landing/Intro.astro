@@ -21,7 +21,7 @@ import Image from "astro/components/Image.astro";
         </div>
 
         <div class="flex-1 flex items-center justify-center p-4 md:justify-end lg:pr-8 md:pr-8">
-          <picture class="w-full max-w-[300px] lg:max-w-[400px]">
+          <picture class="w-full max-w-[300px] lg:max-w-[400px] hover:scale-101 hover:opacity-95">
             <a href="https://linkedin.com/in/rafael-m-peixoto">
               <Image
                 src="/images/rafael.jpg"
@@ -40,7 +40,6 @@ import Image from "astro/components/Image.astro";
 
 <style>
   .intro-header {
-
     font-size: 2.8rem;
   }
 
@@ -79,7 +78,7 @@ import Image from "astro/components/Image.astro";
   }
   @media (max-width: 640px) {
     .intro-header {
-      font-size: 2.5rem;
+      font-size: 2.4rem;
     }
     .projects-list {
       margin-top: -30px;
@@ -90,16 +89,5 @@ import Image from "astro/components/Image.astro";
     .sm\:mt-24 {
       margin-top: 1.5rem;
     }
-  }
-  
-  .spotify-container {
-    background-color: rgba(0, 0, 0, 0.8);
-    border: 2px solid rgba(255, 255, 255, 0.2);
-    padding: 0.75rem;
-  }
-
-  .now-playing {
-    display: flex;
-    align-items: center;
   }
 </style>
