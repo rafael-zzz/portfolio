@@ -63,7 +63,6 @@ const projectsCollection = defineCollection({
       featured: z.boolean().default(false),
       sortOrder: z.coerce.number().int().default(0),
       repoUrl: z.string().url().optional(),
-      externalUrl: z.string().url(),
     }),
     "project",
   ),

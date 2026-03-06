@@ -8,7 +8,7 @@ export interface ProjectCard {
   status: string;
   stack: string[];
   year: number;
-  repoUrl?: string;
+  repoUrl: string;
   isFallback: boolean;
 }
 

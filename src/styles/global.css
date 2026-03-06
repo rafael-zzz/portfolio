@@ -1,26 +1,59 @@
 @import "tailwindcss";
 @import "../shared/styles/retro-panels.css";
 
+:root {
+  --site-accent-color: #b7d6ff;
+  --site-accent-rgb: 183, 214, 255;
+  --site-link-color: var(--site-accent-color);
+  --site-link-hover-color: #e8f3ff;
+}
+
 @font-face {
-  font-family: 'Departure Mono';
-  src: url('/fonts/DepartureMono-Regular.woff') format('woff');
+  font-family: "Departure Mono";
+  src: url("/fonts/DepartureMono-Regular.woff") format("woff");
   font-size: 11px;
 }
 
+@font-face {
+  font-family: "Wayfarer's Toy Box";
+  src: local("Wayfarer's Toy Box"), local("Wayfarers Toy Box"), local("Wayfarer Toy Box");
+  font-display: swap;
+}
+
 @keyframes marquee {
-  100% { transform: translateX(0); }
-  0% { transform: translateX(-70%); }
+  100% {
+    transform: translateX(0);
+  }
+  0% {
+    transform: translateX(-70%);
+  }
 }
 
 @keyframes gridMove {
-  0% { background-position: 0 0, 0 0; }
-  100% { background-position: 120px 120px, 60px 60px; }
+  0% {
+    background-position:
+      0 0,
+      0 0;
+  }
+  100% {
+    background-position:
+      120px 120px,
+      60px 60px;
+  }
 }
 
 body {
   background: #010308;
   color: #f5fbff;
   position: relative;
+}
+
+a {
+  color: var(--site-link-color);
+}
+
+a:hover {
+  color: var(--site-link-hover-color);
 }
 
 body::before,
@@ -34,8 +67,8 @@ body::after {
 
 body::before {
   background:
-    radial-gradient(circle at top, rgba(144, 248, 255, 0.08), transparent 35%),
-    radial-gradient(circle at 20% 20%, rgba(156, 255, 204, 0.04), transparent 28%),
+    radial-gradient(circle at top, rgba(215, 215, 215, 0.08), transparent 35%),
+    radial-gradient(circle at 20% 20%, rgba(220, 220, 220, 0.04), transparent 28%),
     radial-gradient(circle at bottom, rgba(0, 0, 0, 0.45), transparent 40%);
 }
 
@@ -49,7 +82,9 @@ body::after {
       transparent 1px,
       transparent 4px
     );
-  background-size: 100% 100%, 100% 4px;
+  background-size:
+    100% 100%,
+    100% 4px;
   mix-blend-mode: screen;
   opacity: 0.07;
 }
@@ -64,10 +99,13 @@ body::after {
   height: 100vh;
   background-color: transparent;
   background-image:
-    linear-gradient(rgba(144, 248, 255, 0.12) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(144, 248, 255, 0.12) 1px, transparent 1px),
-    radial-gradient(circle at top, rgba(144, 248, 255, 0.1), transparent 50%);
-  background-size: 56px 56px, 56px 56px, 100% 100%;
+    linear-gradient(rgba(215, 215, 215, 0.12) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(215, 215, 215, 0.12) 1px, transparent 1px),
+    radial-gradient(circle at top, rgba(215, 215, 215, 0.1), transparent 50%);
+  background-size:
+    56px 56px,
+    56px 56px,
+    100% 100%;
   animation: gridMove 16s linear infinite;
   opacity: 0.7;
   z-index: -2;

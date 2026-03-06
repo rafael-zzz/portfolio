@@ -1,13 +1,13 @@
 ---
 import type { Messages } from "@/i18n/schema";
-import type { HomeBlogPreview } from "@/features/home/model/blogPreviews";
+import type { WritingPreview } from "@/features/writing/model/writingPreviews";
 import SectionFrame from "@/shared/ui/SectionFrame.astro";
 import SectionHeader from "@/shared/ui/SectionHeader.astro";
 import RetroCard from "@/shared/ui/RetroCard.astro";
 
 interface Props {
-  copy: Messages["home"]["blog"];
-  posts: HomeBlogPreview[];
+  copy: Messages["home"]["featuredWriting"];
+  posts: WritingPreview[];
 }
 
 const { copy, posts } = Astro.props;
@@ -87,14 +87,14 @@ const isSinglePost = posts.length === 1;
 
   .blog-preview-meta {
     align-items: center;
-    color: rgba(156, 255, 226, 0.9);
+    color: rgba(212, 212, 212, 0.9);
     display: flex;
     font-size: 0.7rem;
     justify-content: space-between;
     letter-spacing: 0.12em;
     padding-bottom: 0.65rem;
     text-transform: uppercase;
-    border-bottom: 1px dashed rgba(156, 255, 226, 0.38);
+    border-bottom: 1px dashed rgba(212, 212, 212, 0.38);
   }
 
   .blog-preview-title {
@@ -112,16 +112,19 @@ const isSinglePost = posts.length === 1;
 
   .blog-preview-link {
     align-self: flex-start;
-    border: 1px solid rgba(144, 248, 255, 0.7);
-    color: #90f8ff;
+    border: 1px solid rgba(215, 215, 215, 0.7);
+    color: #b7d6ff;
     letter-spacing: 0.12em;
     padding: 0.55rem 0.8rem;
     text-transform: uppercase;
-    transition: background-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
+    transition:
+      background-color 0.2s ease,
+      color 0.2s ease,
+      transform 0.2s ease;
   }
 
   .blog-preview-link:hover {
-    background: rgba(144, 248, 255, 0.14);
+    background: rgba(215, 215, 215, 0.14);
     color: #ffffff;
     transform: translateY(-1px);
   }
@@ -137,7 +140,7 @@ const isSinglePost = posts.length === 1;
   }
 
   .blog-preview-empty-prompt {
-    color: #90f8ff;
+    color: #b7d6ff;
   }
 
   @media (max-width: 640px) {

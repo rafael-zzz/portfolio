@@ -39,7 +39,7 @@ const zineFileCode = sourceSlug.replace(/[^a-z0-9-]/gi, "-").toUpperCase();
   </div>
 
   <div class="writing-zine-masthead font-['Departure_Mono']">
-    <p class="writing-zine-kicker">TERMINAL EDITION // PERSONAL RESEARCH FILE</p>
+    <p class="writing-zine-kicker">PERSONAL RESEARCH FILE</p>
     <div class="writing-zine-grid">
       <span>ISS.{zineIssue}</span>
       <span>FILE.{zineFileCode}</span>
@@ -64,8 +64,8 @@ const zineFileCode = sourceSlug.replace(/[^a-z0-9-]/gi, "-").toUpperCase();
   .writing-terminal-shell {
     align-items: center;
     background:
-      linear-gradient(90deg, rgba(7, 28, 46, 0.78), rgba(7, 28, 46, 0.22)), rgba(2, 12, 24, 0.93);
-    border: 1px solid rgba(132, 230, 255, 0.38);
+      linear-gradient(90deg, rgba(20, 27, 42, 0.88), rgba(15, 21, 34, 0.34)), rgba(6, 9, 16, 0.94);
+    border: 1px solid rgba(214, 214, 214, 0.34);
     display: flex;
     flex-wrap: wrap;
     gap: 0.55rem;
@@ -74,14 +74,14 @@ const zineFileCode = sourceSlug.replace(/[^a-z0-9-]/gi, "-").toUpperCase();
   }
 
   .writing-terminal-label {
-    color: rgba(182, 240, 255, 0.96);
+    color: rgba(234, 239, 250, 0.96);
     font-size: 0.64rem;
     letter-spacing: 0.06em;
     white-space: nowrap;
   }
 
   .writing-terminal-command {
-    color: rgba(223, 248, 255, 0.97);
+    color: rgba(193, 212, 244, 0.97);
     font-size: 0.63rem;
     letter-spacing: 0.05em;
     overflow-wrap: anywhere;
@@ -89,9 +89,9 @@ const zineFileCode = sourceSlug.replace(/[^a-z0-9-]/gi, "-").toUpperCase();
 
   .writing-zine-masthead {
     background:
-      linear-gradient(90deg, rgba(137, 230, 255, 0.16), rgba(137, 230, 255, 0.03)),
-      rgba(2, 10, 21, 0.9);
-    border: 1px solid rgba(132, 230, 255, 0.34);
+      linear-gradient(90deg, rgba(143, 177, 245, 0.16), rgba(143, 177, 245, 0.03)),
+      rgba(9, 12, 21, 0.94);
+    border: 1px solid rgba(203, 203, 203, 0.3);
     margin: 0.5rem 1rem 0;
     overflow: hidden;
     padding: 0.85rem 0.95rem 0.95rem;
@@ -99,7 +99,7 @@ const zineFileCode = sourceSlug.replace(/[^a-z0-9-]/gi, "-").toUpperCase();
   }
 
   .writing-zine-masthead::after {
-    border-bottom: 1px dashed rgba(132, 230, 255, 0.58);
+    border-bottom: 1px dashed rgba(189, 197, 214, 0.56);
     bottom: 0.45rem;
     content: "";
     left: 0.9rem;
@@ -108,7 +108,8 @@ const zineFileCode = sourceSlug.replace(/[^a-z0-9-]/gi, "-").toUpperCase();
   }
 
   .writing-zine-kicker {
-    color: rgba(198, 244, 255, 0.94);
+    color: rgba(224, 235, 255, 0.95);
+    font-family: "Wayfarer's Toy Box", "Departure Mono", "IBM Plex Mono", monospace;
     font-size: 0.64rem;
     letter-spacing: 0.18em;
     margin: 0;
@@ -116,7 +117,7 @@ const zineFileCode = sourceSlug.replace(/[^a-z0-9-]/gi, "-").toUpperCase();
   }
 
   .writing-zine-grid {
-    color: rgba(179, 239, 255, 0.95);
+    color: rgba(204, 219, 244, 0.95);
     display: grid;
     gap: 0.35rem 0.75rem;
     grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
@@ -126,7 +127,7 @@ const zineFileCode = sourceSlug.replace(/[^a-z0-9-]/gi, "-").toUpperCase();
 
   .writing-zine-grid span,
   .writing-zine-grid time {
-    border: 1px dashed rgba(132, 230, 255, 0.44);
+    border: 1px dashed rgba(189, 202, 228, 0.42);
     font-size: 0.66rem;
     letter-spacing: 0.13em;
     line-height: 1.4;
@@ -134,7 +135,7 @@ const zineFileCode = sourceSlug.replace(/[^a-z0-9-]/gi, "-").toUpperCase();
   }
 
   .writing-zine-description {
-    color: rgba(220, 245, 255, 0.88);
+    color: rgba(198, 212, 238, 0.88);
     font-size: 0.74rem;
     letter-spacing: 0.08em;
     line-height: 1.6;
@@ -144,7 +145,8 @@ const zineFileCode = sourceSlug.replace(/[^a-z0-9-]/gi, "-").toUpperCase();
 
   .writing-tags {
     align-items: center;
-    border-bottom: 1px solid rgba(132, 230, 255, 0.2);
+    background: linear-gradient(90deg, rgba(146, 177, 240, 0.09), rgba(146, 177, 240, 0.02));
+    border-bottom: 1px solid rgba(195, 195, 195, 0.22);
     display: flex;
     flex-wrap: wrap;
     gap: 0.65rem;
@@ -153,7 +155,7 @@ const zineFileCode = sourceSlug.replace(/[^a-z0-9-]/gi, "-").toUpperCase();
   }
 
   .writing-tags-label {
-    color: rgba(179, 239, 255, 0.84);
+    color: rgba(201, 214, 237, 0.87);
     font-size: 0.68rem;
     letter-spacing: 0.16em;
     text-transform: uppercase;
@@ -166,8 +168,9 @@ const zineFileCode = sourceSlug.replace(/[^a-z0-9-]/gi, "-").toUpperCase();
   }
 
   .writing-tag-list span {
-    border: 1px dashed rgba(132, 230, 255, 0.38);
-    color: rgba(212, 247, 255, 0.93);
+    background: rgba(17, 24, 39, 0.55);
+    border: 1px dashed rgba(190, 201, 223, 0.42);
+    color: rgba(218, 230, 252, 0.94);
     font-size: 0.68rem;
     letter-spacing: 0.08em;
     padding: 0.18rem 0.42rem;
@@ -176,14 +179,16 @@ const zineFileCode = sourceSlug.replace(/[^a-z0-9-]/gi, "-").toUpperCase();
 
   .writing-post-content {
     --writing-font-scale: 1;
-    background: linear-gradient(180deg, rgba(3, 10, 19, 0.86), rgba(2, 7, 13, 0.96));
-    border: 1px solid rgba(132, 230, 255, 0.24);
-    box-shadow: inset 0 1px 0 rgba(194, 245, 255, 0.08);
-    color: rgba(224, 247, 255, 0.95);
+    background: linear-gradient(180deg, rgba(8, 12, 22, 0.92), rgba(5, 8, 15, 0.97));
+    border: 1px solid rgba(198, 198, 198, 0.24);
+    box-shadow:
+      inset 0 1px 0 rgba(236, 236, 236, 0.07),
+      0 0 0 1px rgba(128, 165, 230, 0.05);
+    color: rgba(228, 234, 247, 0.95);
     counter-reset: terminal-section terminal-subsection;
     font-family:
-      "JetBrains Mono", "Cascadia Mono", "SFMono-Regular", Menlo, Monaco, Consolas,
-      "Liberation Mono", "Courier New", monospace;
+      "IBM Plex Mono", "Departure Mono", "JetBrains Mono", "Cascadia Mono", "SFMono-Regular", Menlo,
+      Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
     font-size: calc(0.98rem * var(--writing-font-scale));
     line-height: 1.8;
     letter-spacing: 0.01em;
@@ -197,8 +202,8 @@ const zineFileCode = sourceSlug.replace(/[^a-z0-9-]/gi, "-").toUpperCase();
   .writing-post-content::before {
     background: repeating-linear-gradient(
       180deg,
-      rgba(133, 229, 255, 0.05) 0,
-      rgba(133, 229, 255, 0.05) 1px,
+      rgba(255, 255, 255, 0.045) 0,
+      rgba(255, 255, 255, 0.045) 1px,
       transparent 1px,
       transparent 3px
     );
@@ -212,8 +217,8 @@ const zineFileCode = sourceSlug.replace(/[^a-z0-9-]/gi, "-").toUpperCase();
   .writing-post-content :global(h2),
   .writing-post-content :global(h3),
   .writing-post-content :global(h4) {
-    color: #e9f8ff;
-    font-family: "Departure Mono", "JetBrains Mono", monospace;
+    color: #f3f7ff;
+    font-family: "Wayfarer's Toy Box", "Departure Mono", "IBM Plex Mono", monospace;
     letter-spacing: 0.03em;
     line-height: 1.2;
     margin-bottom: 0.75rem;
@@ -232,7 +237,7 @@ const zineFileCode = sourceSlug.replace(/[^a-z0-9-]/gi, "-").toUpperCase();
   }
 
   .writing-post-content :global(h2)::before {
-    color: rgba(163, 238, 255, 0.97);
+    color: rgba(186, 206, 240, 0.94);
     content: "$ section-" counter(terminal-section, decimal-leading-zero) " > ";
     font-family: "Departure Mono", monospace;
     font-size: 0.52em;
@@ -247,7 +252,7 @@ const zineFileCode = sourceSlug.replace(/[^a-z0-9-]/gi, "-").toUpperCase();
   }
 
   .writing-post-content :global(h3)::before {
-    color: rgba(142, 228, 255, 0.85);
+    color: rgba(171, 191, 226, 0.86);
     content: ">> " counter(terminal-section, decimal-leading-zero) "." counter(terminal-subsection)
       " ";
     font-family: "Departure Mono", monospace;
@@ -280,7 +285,7 @@ const zineFileCode = sourceSlug.replace(/[^a-z0-9-]/gi, "-").toUpperCase();
   }
 
   .writing-post-content :global(p:first-of-type)::before {
-    color: rgba(163, 238, 255, 0.86);
+    color: rgba(175, 196, 231, 0.88);
     content: "[boot] ";
     font-family: "Departure Mono", monospace;
     letter-spacing: 0.06em;
@@ -302,7 +307,7 @@ const zineFileCode = sourceSlug.replace(/[^a-z0-9-]/gi, "-").toUpperCase();
   }
 
   .writing-post-content :global(a) {
-    color: #84e6ff;
+    color: var(--site-link-color);
     text-decoration: underline;
     text-decoration-thickness: 1px;
     text-decoration-style: dotted;
@@ -310,18 +315,19 @@ const zineFileCode = sourceSlug.replace(/[^a-z0-9-]/gi, "-").toUpperCase();
   }
 
   .writing-post-content :global(a:hover) {
-    color: #d7f6ff;
+    color: var(--site-link-hover-color);
   }
 
   .writing-post-content :global(strong) {
-    color: #f3fbff;
+    color: #ffffff;
     font-weight: 600;
   }
 
   .writing-post-content :global(blockquote) {
     background:
-      linear-gradient(90deg, rgba(9, 26, 46, 0.38), rgba(9, 26, 46, 0.08)), rgba(4, 14, 28, 0.72);
-    border-left: 3px solid rgba(132, 230, 255, 0.64);
+      linear-gradient(90deg, rgba(118, 150, 212, 0.28), rgba(118, 150, 212, 0.08)),
+      rgba(16, 22, 36, 0.76);
+    border-left: 3px solid rgba(205, 217, 237, 0.64);
     margin-bottom: 0;
     margin-top: 1.1rem;
     padding: 0.9rem 0.95rem;
@@ -332,14 +338,14 @@ const zineFileCode = sourceSlug.replace(/[^a-z0-9-]/gi, "-").toUpperCase();
   }
 
   .writing-post-content :global(blockquote.md-callout) {
-    border: 1px solid rgba(132, 230, 255, 0.4);
+    border: 1px solid rgba(201, 210, 231, 0.36);
     border-left-width: 4px;
     padding-top: 1.9rem;
     position: relative;
   }
 
   .writing-post-content :global(blockquote.md-callout)::before {
-    color: rgba(198, 244, 255, 0.96);
+    color: rgba(221, 232, 250, 0.95);
     content: attr(data-callout);
     font-size: 0.68em;
     font-weight: 600;
@@ -352,38 +358,38 @@ const zineFileCode = sourceSlug.replace(/[^a-z0-9-]/gi, "-").toUpperCase();
 
   .writing-post-content :global(blockquote.md-callout-note),
   .writing-post-content :global(blockquote.md-callout-info) {
-    background: rgba(5, 20, 34, 0.72);
-    border-left-color: rgba(132, 230, 255, 0.9);
+    background: rgba(26, 34, 53, 0.75);
+    border-left-color: rgba(176, 201, 244, 0.82);
   }
 
   .writing-post-content :global(blockquote.md-callout-tip) {
-    background: rgba(5, 32, 42, 0.71);
-    border-left-color: rgba(166, 241, 255, 0.96);
+    background: rgba(20, 36, 49, 0.75);
+    border-left-color: rgba(168, 220, 243, 0.86);
   }
 
   .writing-post-content :global(blockquote.md-callout-warning),
   .writing-post-content :global(blockquote.md-callout-caution) {
-    background: rgba(52, 42, 9, 0.74);
-    border-left-color: rgba(255, 200, 107, 0.96);
+    background: rgba(55, 39, 21, 0.74);
+    border-left-color: rgba(246, 204, 137, 0.82);
   }
 
   .writing-post-content :global(blockquote.md-callout-danger) {
-    background: rgba(58, 12, 18, 0.72);
-    border-left-color: rgba(255, 123, 142, 0.95);
+    background: rgba(60, 24, 26, 0.75);
+    border-left-color: rgba(242, 149, 159, 0.8);
   }
 
   .writing-post-content :global(code) {
-    background: rgba(5, 16, 28, 0.92);
-    border: 1px solid rgba(132, 230, 255, 0.28);
-    color: rgba(214, 248, 255, 0.96);
-    font-family: "Departure Mono", "JetBrains Mono", "Cascadia Mono", monospace;
+    background: rgba(13, 20, 34, 0.93);
+    border: 1px solid rgba(192, 205, 230, 0.26);
+    color: rgba(236, 242, 255, 0.97);
+    font-family: "IBM Plex Mono", "Departure Mono", "JetBrains Mono", "Cascadia Mono", monospace;
     font-size: 0.9em;
     padding: 0.11em 0.34em;
   }
 
   .writing-post-content :global(pre) {
-    background: rgba(2, 10, 20, 0.95);
-    border: 1px solid rgba(132, 230, 255, 0.31);
+    background: rgba(8, 13, 24, 0.96);
+    border: 1px solid rgba(189, 203, 229, 0.32);
     margin-bottom: 0;
     margin-top: 1.1rem;
     overflow-x: auto;
@@ -392,7 +398,7 @@ const zineFileCode = sourceSlug.replace(/[^a-z0-9-]/gi, "-").toUpperCase();
   }
 
   .writing-post-content :global(pre)::before {
-    color: rgba(163, 238, 255, 0.95);
+    color: rgba(204, 220, 247, 0.93);
     content: "code";
     font-family: "Departure Mono", monospace;
     font-size: 0.6rem;
@@ -407,7 +413,7 @@ const zineFileCode = sourceSlug.replace(/[^a-z0-9-]/gi, "-").toUpperCase();
     background: transparent;
     border: 0;
     display: block;
-    font-family: "Departure Mono", "JetBrains Mono", "Cascadia Mono", monospace;
+    font-family: "IBM Plex Mono", "Departure Mono", "JetBrains Mono", "Cascadia Mono", monospace;
     font-size: 0.9em;
     line-height: 1.72;
     padding: 0.58rem 0 0;
@@ -416,7 +422,7 @@ const zineFileCode = sourceSlug.replace(/[^a-z0-9-]/gi, "-").toUpperCase();
 
   .writing-post-content :global(hr) {
     border: 0;
-    border-top: 1px dashed rgba(132, 230, 255, 0.54);
+    border-top: 1px dashed rgba(183, 197, 226, 0.5);
     margin-bottom: 0;
     margin-top: 1.35rem;
   }
@@ -433,27 +439,27 @@ const zineFileCode = sourceSlug.replace(/[^a-z0-9-]/gi, "-").toUpperCase();
 
   .writing-post-content :global(th),
   .writing-post-content :global(td) {
-    border: 1px solid rgba(132, 230, 255, 0.34);
+    border: 1px solid rgba(182, 195, 221, 0.34);
     padding: 0.42rem 0.58rem;
     text-align: left;
   }
 
   .writing-post-content :global(th) {
-    background: rgba(5, 18, 29, 0.9);
-    color: rgba(212, 247, 255, 0.95);
+    background: rgba(20, 28, 44, 0.9);
+    color: rgba(232, 238, 252, 0.95);
     letter-spacing: 0.03em;
   }
 
   .writing-post-content :global(details) {
-    background: rgba(4, 16, 28, 0.72);
-    border: 1px dashed rgba(132, 230, 255, 0.42);
+    background: rgba(14, 21, 35, 0.76);
+    border: 1px dashed rgba(184, 196, 223, 0.38);
     margin-bottom: 0;
     margin-top: 1.1rem;
     padding: 0.8rem 0.9rem;
   }
 
   .writing-post-content :global(summary) {
-    color: rgba(179, 239, 255, 0.94);
+    color: rgba(223, 233, 252, 0.93);
     cursor: pointer;
     font-size: 0.95em;
     font-weight: 600;
@@ -466,7 +472,7 @@ const zineFileCode = sourceSlug.replace(/[^a-z0-9-]/gi, "-").toUpperCase();
   }
 
   .writing-post-content :global(img) {
-    border: 1px solid rgba(132, 230, 255, 0.36);
+    border: 1px solid rgba(183, 195, 221, 0.36);
     margin-bottom: 0;
     margin-top: 1.1rem;
     max-width: 100%;
@@ -484,20 +490,21 @@ const zineFileCode = sourceSlug.replace(/[^a-z0-9-]/gi, "-").toUpperCase();
   }
 
   .writing-post-content :global(li.task-list-item input[type="checkbox"]) {
-    accent-color: #84e6ff;
+    accent-color: #b7d6ff;
     margin-top: 0.34rem;
   }
 
   .writing-post-content :global(.footnotes) {
-    border-top: 1px dashed rgba(132, 230, 255, 0.42);
+    border-top: 1px dashed rgba(183, 195, 221, 0.42);
     margin-top: 1.4rem;
     padding-top: 1rem;
   }
 
   .writing-post-content :global(.zine-pull) {
-    border-inline: 1px solid rgba(132, 230, 255, 0.35);
-    color: rgba(211, 246, 255, 0.97);
-    font-family: "Departure Mono", "JetBrains Mono", monospace;
+    background: linear-gradient(90deg, rgba(122, 154, 214, 0.2), rgba(122, 154, 214, 0.04));
+    border-inline: 1px solid rgba(192, 204, 228, 0.4);
+    color: rgba(234, 240, 255, 0.97);
+    font-family: "Wayfarer's Toy Box", "Departure Mono", "IBM Plex Mono", monospace;
     font-size: 1.06em;
     letter-spacing: 0.02em;
     margin: 1.2rem 0;
@@ -506,8 +513,8 @@ const zineFileCode = sourceSlug.replace(/[^a-z0-9-]/gi, "-").toUpperCase();
   }
 
   .writing-post-content :global(.zine-gloss) {
-    color: rgba(175, 222, 239, 0.89);
-    font-family: "Departure Mono", monospace;
+    color: rgba(186, 201, 229, 0.9);
+    font-family: "IBM Plex Mono", "Departure Mono", monospace;
     font-size: 0.85em;
     letter-spacing: 0.03em;
     line-height: 1.6;
@@ -538,7 +545,7 @@ const zineFileCode = sourceSlug.replace(/[^a-z0-9-]/gi, "-").toUpperCase();
   }
 
   .writing-post-content :global(.md-lead) {
-    color: rgba(236, 250, 255, 0.98);
+    color: rgba(242, 247, 255, 0.99);
     font-size: 1.08em;
     letter-spacing: 0.015em;
   }
@@ -548,8 +555,9 @@ const zineFileCode = sourceSlug.replace(/[^a-z0-9-]/gi, "-").toUpperCase();
   }
 
   .writing-post-content :global(.md-chip) {
-    border: 1px solid rgba(132, 230, 255, 0.5);
-    color: rgba(179, 239, 255, 0.95);
+    background: rgba(16, 23, 38, 0.55);
+    border: 1px solid rgba(194, 206, 230, 0.5);
+    color: rgba(226, 236, 255, 0.96);
     display: inline-block;
     font-size: 0.74em;
     letter-spacing: 0.12em;

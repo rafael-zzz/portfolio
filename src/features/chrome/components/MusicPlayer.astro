@@ -21,13 +21,28 @@ const statusId = "stereo-status";
     <p class="stereo-title font-['ZX_Spectrum-7']">STEREO DECK</p>
     <p id={trackId} class="stereo-track font-['Departure_Mono']">Loading track...</p>
     <div class="stereo-controls">
-      <button id={rewindId} type="button" class="stereo-button font-['Departure_Mono']" aria-label="Play previous track">
+      <button
+        id={rewindId}
+        type="button"
+        class="stereo-button font-['Departure_Mono']"
+        aria-label="Play previous track"
+      >
         Rewind
       </button>
-      <button id={toggleId} type="button" class="stereo-button font-['Departure_Mono']" aria-label="Play or pause track">
+      <button
+        id={toggleId}
+        type="button"
+        class="stereo-button font-['Departure_Mono']"
+        aria-label="Play or pause track"
+      >
         Pause
       </button>
-      <button id={skipId} type="button" class="stereo-button font-['Departure_Mono']" aria-label="Play next track">
+      <button
+        id={skipId}
+        type="button"
+        class="stereo-button font-['Departure_Mono']"
+        aria-label="Play next track"
+      >
         Skip
       </button>
     </div>
@@ -57,8 +72,7 @@ const statusId = "stereo-status";
       <select
         id={songId}
         class="stereo-song-select font-['Departure_Mono']"
-        aria-labelledby="stereo-song-label"
-      ></select>
+        aria-labelledby="stereo-song-label"></select>
       <span id="stereo-volume-label" class="stereo-volume-label font-['Departure_Mono']">VOL</span>
       <input
         id={volumeId}
@@ -145,9 +159,7 @@ const statusId = "stereo-status";
       songNode: rootNode?.querySelector(`#${PLAYER_DOM_IDS.song}`) ?? null,
       trackNode: rootNode?.querySelector(`#${PLAYER_DOM_IDS.track}`) ?? null,
       statusNode: rootNode?.querySelector(`#${PLAYER_DOM_IDS.status}`) ?? null,
-      modeButtons: rootNode
-        ? Array.from(rootNode.querySelectorAll("[data-stereo-playlist]"))
-        : [],
+      modeButtons: rootNode ? Array.from(rootNode.querySelectorAll("[data-stereo-playlist]")) : [],
     };
   };
 
@@ -163,7 +175,10 @@ const statusId = "stereo-status";
 
   const createTrackIndexByPlaylist = () =>
     Object.fromEntries(
-      PLAYLIST_IDS.map((playlistId) => [playlistId, getRandomTrackIndex(getPlaylistTracks(playlistId))]),
+      PLAYLIST_IDS.map((playlistId) => [
+        playlistId,
+        getRandomTrackIndex(getPlaylistTracks(playlistId)),
+      ]),
     );
 
   const normalizePlaylistId = (playlistId) =>
@@ -268,7 +283,8 @@ const statusId = "stereo-status";
       store.hasPlayerSession = Boolean(candidate.hasPlayerSession);
       store.player = candidate.player ?? null;
       store.resumeTime = normalizeResumeTime(candidate.resumeTime);
-      store.statusText = typeof candidate.statusText === "string" ? candidate.statusText : store.statusText;
+      store.statusText =
+        typeof candidate.statusText === "string" ? candidate.statusText : store.statusText;
       store.scriptInjected = Boolean(candidate.scriptInjected);
       store.ytHooked = Boolean(candidate.ytHooked);
       store.routerHooked = Boolean(candidate.routerHooked);
@@ -294,7 +310,8 @@ const statusId = "stereo-status";
     store.hasPlayerSession = Boolean(candidate.hasPlayerSession);
     store.player = candidate.player ?? null;
     store.resumeTime = normalizeResumeTime(candidate.resumeTime);
-    store.statusText = typeof candidate.statusText === "string" ? candidate.statusText : store.statusText;
+    store.statusText =
+      typeof candidate.statusText === "string" ? candidate.statusText : store.statusText;
     store.scriptInjected = Boolean(candidate.scriptInjected);
     store.ytHooked = Boolean(candidate.ytHooked);
     store.routerHooked = Boolean(candidate.routerHooked);
@@ -312,7 +329,9 @@ const statusId = "stereo-status";
   store.trackIndexByPlaylist = normalizeTrackIndexByPlaylist(store.trackIndexByPlaylist);
   store.volumeLevel = normalizeVolume(store.volumeLevel);
   store.isMutedPreference =
-    typeof store.isMutedPreference === "boolean" ? store.isMutedPreference : store.volumeLevel === 0;
+    typeof store.isMutedPreference === "boolean"
+      ? store.isMutedPreference
+      : store.volumeLevel === 0;
   store.dom = store.dom ?? {};
   store.handlers = store.handlers ?? null;
   store.hasPlayerSession = Boolean(store.hasPlayerSession);
@@ -386,9 +405,12 @@ const statusId = "stereo-status";
     return preference.volumeLevel;
   };
 
-  const activePlaylist = () => store.playlists[store.activePlaylistId] ?? store.playlists.electronic;
-  const currentTrackIndex = () => normalizeTrackIndex(store.activePlaylistId, store.trackIndexByPlaylist[store.activePlaylistId]);
-  const currentTrack = () => activePlaylist().tracks[currentTrackIndex()] ?? activePlaylist().tracks[0];
+  const activePlaylist = () =>
+    store.playlists[store.activePlaylistId] ?? store.playlists.electronic;
+  const currentTrackIndex = () =>
+    normalizeTrackIndex(store.activePlaylistId, store.trackIndexByPlaylist[store.activePlaylistId]);
+  const currentTrack = () =>
+    activePlaylist().tracks[currentTrackIndex()] ?? activePlaylist().tracks[0];
 
   const updateStatus = (message) => {
     store.statusText = message;
@@ -511,9 +533,7 @@ const statusId = "stereo-status";
     }
 
     const playerRequest =
-      startAtSeconds > 0
-        ? { videoId: track.videoId, startSeconds: startAtSeconds }
-        : track.videoId;
+      startAtSeconds > 0 ? { videoId: track.videoId, startSeconds: startAtSeconds } : track.videoId;
 
     if (shouldAutoplay) {
       store.player.loadVideoById(playerRequest);
@@ -541,14 +561,10 @@ const statusId = "stereo-status";
   };
 
   const loadTrack = (index, options = {}) => {
-    cueOrLoadTrack(
-      store.activePlaylistId,
-      index,
-      {
-        autoplay: options.autoplay ?? store.isPlaying,
-        startAtSeconds: options.startAtSeconds,
-      },
-    );
+    cueOrLoadTrack(store.activePlaylistId, index, {
+      autoplay: options.autoplay ?? store.isPlaying,
+      startAtSeconds: options.startAtSeconds,
+    });
   };
 
   const jumpTrack = (step, options = {}) => {
@@ -589,16 +605,14 @@ const statusId = "stereo-status";
   };
 
   const onReady = (event) => {
-    const startVolume = rememberVolumePreference(Number(store.dom.volumeNode?.value ?? store.volumeLevel));
-    event.target.setVolume(startVolume);
-    cueOrLoadTrack(
-      store.activePlaylistId,
-      store.trackIndexByPlaylist[store.activePlaylistId],
-      {
-        autoplay: store.hasPlayerSession ? store.isPlaying : !store.isMutedPreference,
-        startAtSeconds: store.hasPlayerSession ? store.resumeTime : 0,
-      },
+    const startVolume = rememberVolumePreference(
+      Number(store.dom.volumeNode?.value ?? store.volumeLevel),
     );
+    event.target.setVolume(startVolume);
+    cueOrLoadTrack(store.activePlaylistId, store.trackIndexByPlaylist[store.activePlaylistId], {
+      autoplay: store.hasPlayerSession ? store.isPlaying : !store.isMutedPreference,
+      startAtSeconds: store.hasPlayerSession ? store.resumeTime : 0,
+    });
     store.hasPlayerSession = true;
   };
 
@@ -840,13 +854,13 @@ const statusId = "stereo-status";
   }
 
   .stereo-shell {
-    border: 1px solid rgba(144, 248, 255, 0.48);
+    border: 1px solid rgba(215, 215, 215, 0.48);
     background:
       linear-gradient(180deg, rgba(4, 7, 10, 0.97), rgba(11, 17, 24, 0.95)),
-      radial-gradient(circle at top, rgba(144, 248, 255, 0.16), transparent 50%);
+      radial-gradient(circle at top, rgba(215, 215, 215, 0.16), transparent 50%);
     box-shadow:
       0 0 0 1px rgba(255, 255, 255, 0.08) inset,
-      0 0 22px rgba(75, 217, 255, 0.12),
+      0 0 22px rgba(var(--site-accent-rgb), 0.12),
       0 18px 30px rgba(0, 0, 0, 0.36);
     padding: 0.85rem;
     position: relative;
@@ -876,7 +890,7 @@ const statusId = "stereo-status";
   }
 
   .stereo-track {
-    color: #8df7ff;
+    color: var(--site-accent-color);
     font-size: 0.74rem;
     margin-top: 0.2rem;
     margin-bottom: 0.65rem;
@@ -900,14 +914,17 @@ const statusId = "stereo-status";
     padding: 0.5rem 0.65rem;
     text-transform: uppercase;
     letter-spacing: 0.08em;
-    transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+    transition:
+      background-color 0.2s ease,
+      color 0.2s ease,
+      border-color 0.2s ease;
   }
 
   .stereo-button:hover,
   .stereo-mode-button:hover {
     color: #ffffff;
-    border-color: rgba(144, 248, 255, 0.7);
-    background: rgba(144, 248, 255, 0.14);
+    border-color: rgba(215, 215, 215, 0.7);
+    background: rgba(215, 215, 215, 0.14);
   }
 
   .stereo-mode-row {
@@ -933,9 +950,9 @@ const statusId = "stereo-status";
   }
 
   .stereo-mode-button-active {
-    background: rgba(144, 248, 255, 0.2);
-    border-color: rgba(144, 248, 255, 0.74);
-    color: #90f8ff;
+    background: rgba(215, 215, 215, 0.2);
+    border-color: rgba(215, 215, 215, 0.74);
+    color: var(--site-accent-color);
   }
 
   .stereo-mix-row {
@@ -951,7 +968,7 @@ const statusId = "stereo-status";
     min-width: 0;
     border: 1px solid rgba(255, 255, 255, 0.2);
     background: rgba(6, 10, 14, 0.92);
-    color: #8df7ff;
+    color: var(--site-accent-color);
     padding: 0.32rem 0.38rem;
     font-size: 0.68rem;
     line-height: 1.2;
@@ -959,7 +976,7 @@ const statusId = "stereo-status";
 
   .stereo-volume {
     width: 100%;
-    accent-color: #8df7ff;
+    accent-color: var(--site-accent-color);
   }
 
   .stereo-status {

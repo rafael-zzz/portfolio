@@ -56,7 +56,10 @@ const { copy, locale, entries } = Astro.props;
   }
 
   <div class="writing-preview-footer">
-    <a class="writing-preview-browse font-['Departure_Mono']" href={getLocalizedPath(locale, "writing")}>
+    <a
+      class="writing-preview-browse font-['Departure_Mono']"
+      href={getLocalizedPath(locale, "writing")}
+    >
       {copy.browseLabel}
     </a>
   </div>
@@ -105,8 +108,8 @@ const { copy, locale, entries } = Astro.props;
   }
 
   .writing-preview-meta {
-    border-bottom: 1px dashed rgba(156, 255, 226, 0.38);
-    color: rgba(156, 255, 226, 0.9);
+    border-bottom: 1px dashed rgba(212, 212, 212, 0.38);
+    color: rgba(212, 212, 212, 0.9);
     font-size: 0.7rem;
     justify-content: space-between;
     letter-spacing: 0.12em;
@@ -129,8 +132,8 @@ const { copy, locale, entries } = Astro.props;
 
   .writing-preview-tag,
   .writing-preview-fallback {
-    border: 1px solid rgba(144, 248, 255, 0.28);
-    color: rgba(144, 248, 255, 0.88);
+    border: 1px solid rgba(215, 215, 215, 0.28);
+    color: rgba(215, 215, 215, 0.88);
     font-size: 0.68rem;
     letter-spacing: 0.08em;
     padding: 0.2rem 0.45rem;
@@ -139,17 +142,20 @@ const { copy, locale, entries } = Astro.props;
 
   .writing-preview-link,
   .writing-preview-browse {
-    border: 1px solid rgba(144, 248, 255, 0.7);
-    color: #90f8ff;
+    border: 1px solid rgba(215, 215, 215, 0.7);
+    color: #b7d6ff;
     letter-spacing: 0.12em;
     padding: 0.55rem 0.8rem;
     text-transform: uppercase;
-    transition: background-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
+    transition:
+      background-color 0.2s ease,
+      color 0.2s ease,
+      transform 0.2s ease;
   }
 
   .writing-preview-link:hover,
   .writing-preview-browse:hover {
-    background: rgba(144, 248, 255, 0.14);
+    background: rgba(215, 215, 215, 0.14);
     color: #ffffff;
     transform: translateY(-1px);
   }
@@ -165,7 +171,7 @@ const { copy, locale, entries } = Astro.props;
   }
 
   .writing-preview-empty-prompt {
-    color: #90f8ff;
+    color: #b7d6ff;
   }
 
   .writing-preview-footer {

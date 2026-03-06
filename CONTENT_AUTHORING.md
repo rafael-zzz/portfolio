@@ -54,7 +54,6 @@ Runtime serves static localized markdown only.
 - `featured: boolean`
 - `sortOrder: number`
 - `repoUrl?: string`
-- `externalUrl: string`
 
 ## Notes
 
@@ -64,7 +63,7 @@ Runtime serves static localized markdown only.
 
 ## Writing Formatting Extras
 
-- Ice terminal-zine mode is the default rendering style for all writing posts.
+- Monochrome terminal mode with CRT texture is the default rendering style for all writing posts.
 - Use `fontScale` in writing frontmatter to tune readability per post.
 - GitHub-flavored markdown features are supported in posts: tables, task lists, strikethrough, and footnotes.
 - Use callouts with blockquotes:
