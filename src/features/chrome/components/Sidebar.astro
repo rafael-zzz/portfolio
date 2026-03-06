@@ -1,0 +1,56 @@
+---
+import SidebarTree, { type SidebarItem } from "@/features/chrome/islands/SidebarTree";
+import type { Messages } from "@/i18n/schema";
+import type { Locale } from "@/i18n/config";
+import { getLocalizedPath } from "@/i18n/routes";
+
+interface Props {
+  locale: Locale;
+  copy: Messages["sidebar"];
+}
+
+const { locale, copy } = Astro.props;
+
+const items: SidebarItem[] = [
+  {
+    id: "overview",
+    label: copy.menu.overview,
+    href: getLocalizedPath(locale, "home"),
+  },
+  {
+    id: "writing",
+    label: copy.menu.writing,
+    href: getLocalizedPath(locale, "writing"),
+  },
+  {
+    id: "projects",
+    label: copy.menu.projects,
+    href: getLocalizedPath(locale, "projects"),
+  },
+  {
+    id: "profiles",
+    label: copy.menu.profiles,
+    children: [
+      {
+        id: "github",
+        label: copy.menu.github,
+        href: "https://github.com/rafael-zzz",
+        isExternal: true,
+      },
+      {
+        id: "linkedin",
+        label: copy.menu.linkedin,
+        href: "https://linkedin.com/in/rafael-m-peixoto",
+        isExternal: true,
+      },
+    ],
+  },
+];
+---
+
+<SidebarTree
+  client:load
+  title={copy.title}
+  closeLabel={copy.closeSidebarLabel}
+  items={items}
+/>

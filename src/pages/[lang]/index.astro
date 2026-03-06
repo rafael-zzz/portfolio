@@ -1,0 +1,32 @@
+---
+import SiteLayout from "@/features/chrome/components/SiteLayout.astro";
+import HomePage from "@/features/home/components/HomePage.astro";
+import { getHomePageData } from "@/features/home/model/getHomePageData";
+import { isLocale, LOCALES } from "@/i18n";
+
+export function getStaticPaths() {
+  return LOCALES.map((lang) => ({ params: { lang } }));
+}
+
+const maybeLocale = Astro.params.lang;
+
+if (!isLocale(maybeLocale)) {
+  return Astro.redirect("/en/");
+}
+
+const pageData = await getHomePageData(maybeLocale);
+---
+
+<SiteLayout
+  locale={pageData.locale}
+  routeKey="home"
+  messages={pageData.messages}
+  routeMeta={pageData.routeMeta}
+>
+  <HomePage
+    locale={pageData.locale}
+    copy={pageData.messages.home}
+    writingEntries={pageData.writingEntries}
+    projectCards={pageData.projectCards}
+  />
+</SiteLayout>

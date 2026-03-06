@@ -1,0 +1,23 @@
+---
+import { getCanonicalWritingSlugs } from "@/features/writing/lib/content";
+import { isLocale, LOCALES } from "@/i18n";
+
+export async function getStaticPaths() {
+  const slugs = await getCanonicalWritingSlugs();
+
+  return LOCALES.flatMap((lang) =>
+    slugs.map((slug) => ({
+      params: { lang, slug },
+    })),
+  );
+}
+
+const maybeLocale = Astro.params.lang;
+const slug = Astro.params.slug;
+
+if (!isLocale(maybeLocale) || !slug) {
+  return Astro.redirect("/en/");
+}
+
+return Astro.redirect(`/${maybeLocale}/writing/${slug}`);
+---

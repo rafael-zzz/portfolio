@@ -1,0 +1,187 @@
+---
+import type { Messages } from "@/i18n/schema";
+import type { ProjectCard } from "@/features/projects/model/projectCards";
+import SectionFrame from "@/shared/ui/SectionFrame.astro";
+import SectionHeader from "@/shared/ui/SectionHeader.astro";
+import RetroCard from "@/shared/ui/RetroCard.astro";
+import LocalizedFallbackNotice from "@/shared/ui/LocalizedFallbackNotice.astro";
+
+interface Props {
+  copy: Messages["projects"]["page"];
+  fallbackCopy: Messages["contentFallback"];
+  cards: ProjectCard[];
+  hasFallback: boolean;
+}
+
+const { copy, fallbackCopy, cards, hasFallback } = Astro.props;
+---
+
+<SectionFrame>
+  <SectionHeader title={copy.title} eyebrow={copy.eyebrow} />
+  <div class="projects-page-summary font-['Departure_Mono']">{copy.summary}</div>
+
+  {hasFallback && <LocalizedFallbackNotice copy={fallbackCopy} contentLocale="en" />}
+
+  {
+    cards.length > 0 ? (
+      <div class="projects-page-grid">
+        {cards.map((card) => (
+          <RetroCard>
+            <article class="projects-page-card font-['Departure_Mono']">
+              <div class="projects-page-header">
+                <span class="projects-page-kicker">EXECUTABLE</span>
+                <h2 class="projects-page-title font-['ZX_Spectrum-7']">{card.title}</h2>
+              </div>
+              <p class="projects-page-description">{card.summary}</p>
+              <dl class="projects-page-meta">
+                <div>
+                  <dt>{copy.roleLabel}</dt>
+                  <dd>{card.role}</dd>
+                </div>
+                <div>
+                  <dt>{copy.statusLabel}</dt>
+                  <dd>{card.status}</dd>
+                </div>
+                <div>
+                  <dt>{copy.yearLabel}</dt>
+                  <dd>{card.year}</dd>
+                </div>
+              </dl>
+              <div class="projects-page-stack">
+                {card.stack.map((item) => (
+                  <span>{item}</span>
+                ))}
+              </div>
+              <div class="projects-page-actions">
+                {card.repoUrl && (
+                  <a href={card.repoUrl} target="_blank" rel="noopener noreferrer">
+                    {copy.repoLabel}
+                  </a>
+                )}
+                {card.isFallback && <span class="projects-page-fallback">EN</span>}
+              </div>
+            </article>
+          </RetroCard>
+        ))}
+      </div>
+    ) : (
+      <div class="projects-page-empty font-['Departure_Mono']">
+        <span class="projects-page-empty-prompt">C:\&gt;</span> {copy.emptyLabel}
+      </div>
+    )
+  }
+</SectionFrame>
+
+<style>
+  .projects-page-summary {
+    color: rgba(214, 246, 255, 0.92);
+    font-size: 0.92rem;
+    letter-spacing: 0.04em;
+    line-height: 1.7;
+    padding: 1rem 1.2rem 0;
+    text-transform: uppercase;
+  }
+
+  .projects-page-grid {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    padding: 1rem;
+  }
+
+  .projects-page-card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+    height: 100%;
+    padding: 1rem;
+  }
+
+  .projects-page-header {
+    border-bottom: 1px solid rgba(144, 248, 255, 0.18);
+    display: grid;
+    gap: 0.35rem;
+    padding-bottom: 0.75rem;
+  }
+
+  .projects-page-kicker {
+    color: rgba(156, 255, 204, 0.76);
+    font-size: 0.64rem;
+    letter-spacing: 0.18em;
+  }
+
+  .projects-page-title {
+    color: #ffffff;
+    font-size: 1.1rem;
+    line-height: 1.25;
+  }
+
+  .projects-page-description {
+    color: rgba(232, 245, 255, 0.88);
+    flex: 1;
+    font-size: 0.92rem;
+    line-height: 1.75;
+  }
+
+  .projects-page-meta {
+    display: grid;
+    gap: 0.55rem;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .projects-page-meta dt {
+    color: rgba(156, 255, 204, 0.76);
+    font-size: 0.64rem;
+    letter-spacing: 0.16em;
+  }
+
+  .projects-page-meta dd {
+    color: #ffffff;
+    font-size: 0.78rem;
+    margin: 0.2rem 0 0;
+  }
+
+  .projects-page-stack {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+  }
+
+  .projects-page-stack span,
+  .projects-page-fallback {
+    border: 1px solid rgba(144, 248, 255, 0.28);
+    color: rgba(144, 248, 255, 0.88);
+    font-size: 0.68rem;
+    letter-spacing: 0.08em;
+    padding: 0.2rem 0.45rem;
+    text-transform: uppercase;
+  }
+
+  .projects-page-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.7rem;
+  }
+
+  .projects-page-actions a {
+    border: 1px solid rgba(144, 248, 255, 0.7);
+    color: #90f8ff;
+    letter-spacing: 0.12em;
+    padding: 0.55rem 0.8rem;
+    text-transform: uppercase;
+  }
+
+  .projects-page-empty {
+    border-top: 1px solid rgba(255, 255, 255, 0.18);
+    color: rgba(232, 245, 255, 0.82);
+    font-size: 0.95rem;
+    letter-spacing: 0.08em;
+    margin: 1rem 1.1rem 0;
+    padding: 1rem 0.25rem 1.2rem;
+    text-transform: uppercase;
+  }
+
+  .projects-page-empty-prompt {
+    color: #90f8ff;
+  }
+</style>

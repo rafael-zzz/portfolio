@@ -20,4 +20,6 @@ pnpm-debug.log*
 .VSCode 
 .astro
 .vercel
+test-results/
+playwright-report/
 .gitignore

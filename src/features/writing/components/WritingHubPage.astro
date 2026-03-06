@@ -1,0 +1,148 @@
+---
+import type { Messages } from "@/i18n/schema";
+import type { WritingPreview } from "@/features/writing/model/writingPreviews";
+import SectionFrame from "@/shared/ui/SectionFrame.astro";
+import SectionHeader from "@/shared/ui/SectionHeader.astro";
+import RetroCard from "@/shared/ui/RetroCard.astro";
+import LocalizedFallbackNotice from "@/shared/ui/LocalizedFallbackNotice.astro";
+
+interface Props {
+  copy: Messages["writing"]["page"];
+  fallbackCopy: Messages["contentFallback"];
+  entries: WritingPreview[];
+  hasFallback: boolean;
+}
+
+const { copy, fallbackCopy, entries, hasFallback } = Astro.props;
+---
+
+<SectionFrame>
+  <SectionHeader title={copy.title} eyebrow={copy.eyebrow} />
+  <div class="writing-hub-summary font-['Departure_Mono']">{copy.summary}</div>
+
+  {hasFallback && <LocalizedFallbackNotice copy={fallbackCopy} contentLocale="en" />}
+
+  {
+    entries.length > 0 ? (
+      <div class="writing-hub-grid">
+        {entries.map((entry) => (
+          <RetroCard>
+            <article class="writing-hub-card font-['Departure_Mono']">
+              <div class="writing-hub-meta">
+                <span>ENTRY_LOG</span>
+                <time datetime={entry.publishedAt.toISOString()}>{entry.publishedDateLabel}</time>
+              </div>
+              <h2 class="writing-hub-title font-['Departure_Mono']">{entry.title}</h2>
+              <p class="writing-hub-description">{entry.description}</p>
+              <div class="writing-hub-tags">
+                {entry.tags.map((tag) => (
+                  <span>{tag}</span>
+                ))}
+              </div>
+              <div class="writing-hub-footer">
+                <a class="writing-hub-link" href={entry.href}>
+                  {copy.readMoreLabel}
+                </a>
+                {entry.isFallback && <span class="writing-hub-fallback">EN</span>}
+              </div>
+            </article>
+          </RetroCard>
+        ))}
+      </div>
+    ) : (
+      <div class="writing-hub-empty font-['Departure_Mono']">
+        <span class="writing-hub-empty-prompt">C:\&gt;</span> {copy.emptyLabel}
+      </div>
+    )
+  }
+</SectionFrame>
+
+<style>
+  .writing-hub-summary {
+    color: rgba(214, 246, 255, 0.92);
+    font-size: 0.92rem;
+    letter-spacing: 0.04em;
+    line-height: 1.7;
+    padding: 1rem 1.2rem 0;
+    text-transform: uppercase;
+  }
+
+  .writing-hub-grid {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    padding: 1rem;
+  }
+
+  .writing-hub-card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+    height: 100%;
+    padding: 1rem;
+  }
+
+  .writing-hub-meta,
+  .writing-hub-footer,
+  .writing-hub-tags {
+    align-items: center;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+  }
+
+  .writing-hub-meta {
+    border-bottom: 1px dashed rgba(156, 255, 226, 0.38);
+    color: rgba(156, 255, 226, 0.9);
+    font-size: 0.7rem;
+    justify-content: space-between;
+    letter-spacing: 0.12em;
+    padding-bottom: 0.65rem;
+    text-transform: uppercase;
+  }
+
+  .writing-hub-title {
+    color: #ffffff;
+    font-size: 1.3rem;
+    line-height: 1.2;
+  }
+
+  .writing-hub-description {
+    color: rgba(232, 245, 255, 0.88);
+    flex: 1;
+    font-size: 0.92rem;
+    line-height: 1.7;
+  }
+
+  .writing-hub-tags span,
+  .writing-hub-fallback {
+    border: 1px solid rgba(144, 248, 255, 0.28);
+    color: rgba(144, 248, 255, 0.88);
+    font-size: 0.68rem;
+    letter-spacing: 0.08em;
+    padding: 0.2rem 0.45rem;
+    text-transform: uppercase;
+  }
+
+  .writing-hub-link {
+    border: 1px solid rgba(144, 248, 255, 0.7);
+    color: #90f8ff;
+    letter-spacing: 0.12em;
+    padding: 0.55rem 0.8rem;
+    text-transform: uppercase;
+  }
+
+  .writing-hub-empty {
+    border-top: 1px solid rgba(255, 255, 255, 0.18);
+    color: rgba(232, 245, 255, 0.82);
+    font-size: 0.95rem;
+    letter-spacing: 0.08em;
+    margin: 1rem 1.1rem 0;
+    padding: 1rem 0.25rem 1.2rem;
+    text-transform: uppercase;
+  }
+
+  .writing-hub-empty-prompt {
+    color: #90f8ff;
+  }
+</style>

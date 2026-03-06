@@ -1,0 +1,24 @@
+---
+import type { Messages } from "@/i18n/schema";
+
+interface Props {
+  copy: Messages["footer"];
+}
+
+const { copy } = Astro.props;
+---
+
+<footer class="mt-10 border-t border-retro-primary/20 bg-black/80 backdrop-blur-sm z-50">
+  <div class="max-w-7xl mx-auto px-4 py-8">
+    <div class="flex flex-col items-center justify-center gap-6">
+      <div class="flex items-center justify-center">
+        <img src="/logos/logo.png" alt="logo" class="w-10 h-10 border-retro-primary/20" />
+      </div>
+      <div class="text-center">
+        <h2 class="text-retro-primary font-['ZX_Spectrum-7'] text-sm">
+          {copy.rightsReserved}
+        </h2>
+      </div>
+    </div>
+  </div>
+</footer>

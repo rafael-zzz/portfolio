@@ -1,0 +1,205 @@
+---
+import type { Messages } from "@/i18n/schema";
+import type { Locale } from "@/i18n";
+import { getLocalizedPath } from "@/i18n/routes";
+import type { ProjectCard } from "@/features/projects/model/projectCards";
+import SectionFrame from "@/shared/ui/SectionFrame.astro";
+import SectionHeader from "@/shared/ui/SectionHeader.astro";
+import RetroCard from "@/shared/ui/RetroCard.astro";
+
+interface Props {
+  copy: Messages["home"]["featuredProjects"];
+  locale: Locale;
+  projects: ProjectCard[];
+}
+
+const { copy, locale, projects } = Astro.props;
+---
+
+<SectionFrame>
+  <SectionHeader title={copy.title} eyebrow={copy.eyebrow} />
+
+  <div class="projects-summary font-['Departure_Mono']">{copy.summary}</div>
+
+  {
+    projects.length > 0 ? (
+      <div class="projects-grid">
+        {projects.map((project) => (
+          <RetroCard>
+            <article class="project-card font-['Departure_Mono']">
+              <div class="project-header">
+                <span class="project-kicker">EXECUTABLE</span>
+                <h2 class="project-title font-['ZX_Spectrum-7']">{project.title}</h2>
+              </div>
+              <p class="project-summary">{project.summary}</p>
+              <dl class="project-meta">
+                <div>
+                  <dt>{copy.repoLabel}</dt>
+                  <dd>{project.repoUrl ? "YES" : "NO"}</dd>
+                </div>
+                <div>
+                  <dt>STATUS</dt>
+                  <dd>{project.status}</dd>
+                </div>
+                <div>
+                  <dt>YEAR</dt>
+                  <dd>{project.year}</dd>
+                </div>
+              </dl>
+              <div class="project-stack">
+                {project.stack.map((item) => (
+                  <span>{item}</span>
+                ))}
+              </div>
+              <div class="project-actions">
+                {project.repoUrl && (
+                  <a href={project.repoUrl} target="_blank" rel="noopener noreferrer">
+                    {copy.repoLabel}
+                  </a>
+                )}
+              </div>
+            </article>
+          </RetroCard>
+        ))}
+      </div>
+    ) : (
+      <div class="projects-empty font-['Departure_Mono']">
+        <span class="projects-empty-prompt">C:\&gt;</span> {copy.emptyLabel}
+      </div>
+    )
+  }
+
+  <div class="projects-footer">
+    <a class="projects-browse font-['Departure_Mono']" href={getLocalizedPath(locale, "projects")}>
+      {copy.browseLabel}
+    </a>
+  </div>
+</SectionFrame>
+
+<style>
+  .projects-summary {
+    color: rgba(214, 246, 255, 0.92);
+    font-size: 0.92rem;
+    letter-spacing: 0.04em;
+    line-height: 1.7;
+    padding: 1rem 1.2rem 0;
+    text-transform: uppercase;
+  }
+
+  .projects-grid {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    padding: 1rem 1rem 0;
+  }
+
+  .project-card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+    height: 100%;
+    padding: 1rem;
+  }
+
+  .project-header {
+    border-bottom: 1px solid rgba(144, 248, 255, 0.18);
+    display: grid;
+    gap: 0.35rem;
+    padding-bottom: 0.75rem;
+  }
+
+  .project-kicker {
+    color: rgba(156, 255, 204, 0.76);
+    font-size: 0.64rem;
+    letter-spacing: 0.18em;
+  }
+
+  .project-title {
+    color: #ffffff;
+    font-size: 1.1rem;
+    line-height: 1.25;
+  }
+
+  .project-summary {
+    color: rgba(232, 245, 255, 0.88);
+    flex: 1;
+    font-size: 0.9rem;
+    line-height: 1.7;
+  }
+
+  .project-meta {
+    display: grid;
+    gap: 0.55rem;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .project-meta dt {
+    color: rgba(156, 255, 204, 0.76);
+    font-size: 0.64rem;
+    letter-spacing: 0.16em;
+  }
+
+  .project-meta dd {
+    color: #ffffff;
+    font-size: 0.78rem;
+    margin: 0.2rem 0 0;
+  }
+
+  .project-stack {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+  }
+
+  .project-stack span {
+    border: 1px solid rgba(144, 248, 255, 0.28);
+    color: rgba(144, 248, 255, 0.88);
+    font-size: 0.68rem;
+    letter-spacing: 0.08em;
+    padding: 0.2rem 0.45rem;
+    text-transform: uppercase;
+  }
+
+  .project-actions,
+  .projects-footer {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.7rem;
+  }
+
+  .project-actions a,
+  .projects-browse {
+    border: 1px solid rgba(144, 248, 255, 0.7);
+    color: #90f8ff;
+    letter-spacing: 0.12em;
+    padding: 0.55rem 0.8rem;
+    text-transform: uppercase;
+    transition: background-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
+  }
+
+  .project-actions a:hover,
+  .projects-browse:hover {
+    background: rgba(144, 248, 255, 0.14);
+    color: #ffffff;
+    transform: translateY(-1px);
+  }
+
+  .projects-empty {
+    border-top: 1px solid rgba(255, 255, 255, 0.18);
+    color: rgba(232, 245, 255, 0.82);
+    font-size: 0.95rem;
+    letter-spacing: 0.08em;
+    margin: 1rem 1.1rem 0;
+    padding: 1rem 0.25rem 0;
+    text-transform: uppercase;
+  }
+
+  .projects-empty-prompt {
+    color: #90f8ff;
+  }
+
+  .projects-footer {
+    justify-content: flex-end;
+    padding: 1rem 1rem 1.2rem;
+  }
+</style>

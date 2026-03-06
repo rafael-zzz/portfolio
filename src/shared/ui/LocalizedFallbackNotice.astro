@@ -1,0 +1,55 @@
+---
+import type { Messages } from "@/i18n/schema";
+import type { Locale } from "@/i18n";
+
+interface Props {
+  copy: Messages["contentFallback"];
+  contentLocale: Locale;
+}
+
+const { copy, contentLocale } = Astro.props;
+---
+
+<div class="fallback-notice">
+  <p class="fallback-badge font-['Departure_Mono']">{copy.badge}</p>
+  <h2 class="fallback-title font-['Departure_Mono']">{copy.title}</h2>
+  <p class="fallback-description font-['Departure_Mono']">
+    {copy.description}
+    <span class="fallback-locale">[{contentLocale.toUpperCase()}]</span>
+  </p>
+</div>
+
+<style>
+  .fallback-notice {
+    border: 1px solid rgba(255, 196, 107, 0.36);
+    background: linear-gradient(180deg, rgba(31, 22, 8, 0.9), rgba(22, 15, 5, 0.9));
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.04) inset;
+    margin: 1rem 1rem 0;
+    padding: 0.9rem 1rem;
+  }
+
+  .fallback-badge {
+    color: rgba(255, 208, 122, 0.9);
+    font-size: 0.68rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+  }
+
+  .fallback-title {
+    color: #fff4dd;
+    font-size: 1rem;
+    margin-top: 0.35rem;
+  }
+
+  .fallback-description {
+    color: rgba(255, 241, 220, 0.86);
+    font-size: 0.9rem;
+    line-height: 1.65;
+    margin-top: 0.45rem;
+  }
+
+  .fallback-locale {
+    color: #ffd07a;
+    letter-spacing: 0.08em;
+  }
+</style>

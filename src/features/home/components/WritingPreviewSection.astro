@@ -1,0 +1,193 @@
+---
+import type { Messages } from "@/i18n/schema";
+import type { Locale } from "@/i18n";
+import { getLocalizedPath } from "@/i18n/routes";
+import type { WritingPreview } from "@/features/writing/model/writingPreviews";
+import SectionFrame from "@/shared/ui/SectionFrame.astro";
+import SectionHeader from "@/shared/ui/SectionHeader.astro";
+import RetroCard from "@/shared/ui/RetroCard.astro";
+
+interface Props {
+  copy: Messages["home"]["featuredWriting"];
+  locale: Locale;
+  entries: WritingPreview[];
+}
+
+const { copy, locale, entries } = Astro.props;
+---
+
+<SectionFrame class="writing-preview-section">
+  <SectionHeader title={copy.title} eyebrow={copy.eyebrow} />
+
+  <div class="writing-preview-summary font-['Departure_Mono']">{copy.summary}</div>
+
+  {
+    entries.length > 0 ? (
+      <div class="writing-preview-grid">
+        {entries.map((entry) => (
+          <RetroCard class="writing-preview-card">
+            <article class="writing-preview-card-body">
+              <div class="writing-preview-meta font-['Departure_Mono']">
+                <span>ENTRY_LOG</span>
+                <time datetime={entry.publishedAt.toISOString()}>{entry.publishedDateLabel}</time>
+              </div>
+              <h2 class="writing-preview-title font-['ZX_Spectrum-7']">{entry.title}</h2>
+              <p class="writing-preview-description font-['Departure_Mono']">{entry.description}</p>
+              <div class="writing-preview-tags font-['Departure_Mono']">
+                {entry.tags.map((tag) => (
+                  <span class="writing-preview-tag">{tag}</span>
+                ))}
+              </div>
+              <div class="writing-preview-actions font-['Departure_Mono']">
+                <a class="writing-preview-link" href={entry.href}>
+                  {copy.readMoreLabel}
+                </a>
+                {entry.isFallback && <span class="writing-preview-fallback">EN</span>}
+              </div>
+            </article>
+          </RetroCard>
+        ))}
+      </div>
+    ) : (
+      <div class="writing-preview-empty font-['Departure_Mono']">
+        <span class="writing-preview-empty-prompt">C:\&gt;</span> {copy.emptyLabel}
+      </div>
+    )
+  }
+
+  <div class="writing-preview-footer">
+    <a class="writing-preview-browse font-['Departure_Mono']" href={getLocalizedPath(locale, "writing")}>
+      {copy.browseLabel}
+    </a>
+  </div>
+</SectionFrame>
+
+<style>
+  .writing-preview-section {
+    margin-top: 1rem;
+  }
+
+  .writing-preview-summary {
+    color: rgba(214, 246, 255, 0.92);
+    font-size: 0.92rem;
+    letter-spacing: 0.04em;
+    line-height: 1.7;
+    padding: 1rem 1.2rem 0;
+    text-transform: uppercase;
+  }
+
+  .writing-preview-grid {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    padding: 1rem 1.1rem 0;
+  }
+
+  .writing-preview-card {
+    min-height: 100%;
+  }
+
+  .writing-preview-card-body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+    min-height: 100%;
+    padding: 1rem;
+  }
+
+  .writing-preview-meta,
+  .writing-preview-actions,
+  .writing-preview-tags {
+    align-items: center;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+  }
+
+  .writing-preview-meta {
+    border-bottom: 1px dashed rgba(156, 255, 226, 0.38);
+    color: rgba(156, 255, 226, 0.9);
+    font-size: 0.7rem;
+    justify-content: space-between;
+    letter-spacing: 0.12em;
+    padding-bottom: 0.65rem;
+    text-transform: uppercase;
+  }
+
+  .writing-preview-title {
+    color: #ffffff;
+    font-size: 1.3rem;
+    line-height: 1.2;
+  }
+
+  .writing-preview-description {
+    color: rgba(232, 245, 255, 0.88);
+    flex: 1;
+    font-size: 0.92rem;
+    line-height: 1.7;
+  }
+
+  .writing-preview-tag,
+  .writing-preview-fallback {
+    border: 1px solid rgba(144, 248, 255, 0.28);
+    color: rgba(144, 248, 255, 0.88);
+    font-size: 0.68rem;
+    letter-spacing: 0.08em;
+    padding: 0.2rem 0.45rem;
+    text-transform: uppercase;
+  }
+
+  .writing-preview-link,
+  .writing-preview-browse {
+    border: 1px solid rgba(144, 248, 255, 0.7);
+    color: #90f8ff;
+    letter-spacing: 0.12em;
+    padding: 0.55rem 0.8rem;
+    text-transform: uppercase;
+    transition: background-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
+  }
+
+  .writing-preview-link:hover,
+  .writing-preview-browse:hover {
+    background: rgba(144, 248, 255, 0.14);
+    color: #ffffff;
+    transform: translateY(-1px);
+  }
+
+  .writing-preview-empty {
+    border-top: 1px solid rgba(255, 255, 255, 0.18);
+    color: rgba(232, 245, 255, 0.82);
+    font-size: 0.95rem;
+    letter-spacing: 0.08em;
+    margin: 1rem 1.1rem 0;
+    padding: 1rem 0.25rem 0;
+    text-transform: uppercase;
+  }
+
+  .writing-preview-empty-prompt {
+    color: #90f8ff;
+  }
+
+  .writing-preview-footer {
+    display: flex;
+    justify-content: flex-end;
+    padding: 1rem 1.1rem 1.2rem;
+  }
+
+  @media (max-width: 640px) {
+    .writing-preview-summary {
+      font-size: 0.82rem;
+      padding: 0.9rem 0.9rem 0;
+    }
+
+    .writing-preview-grid,
+    .writing-preview-footer {
+      padding-left: 0.9rem;
+      padding-right: 0.9rem;
+    }
+
+    .writing-preview-title {
+      font-size: 1.15rem;
+    }
+  }
+</style>

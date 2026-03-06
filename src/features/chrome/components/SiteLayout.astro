@@ -1,0 +1,56 @@
+---
+import SiteHead from "@/features/chrome/components/SiteHead.astro";
+import TopNavigation from "@/features/chrome/components/TopNavigation.astro";
+import Sidebar from "@/features/chrome/components/Sidebar.astro";
+import FooterBar from "@/features/chrome/components/FooterBar.astro";
+import MusicPlayer from "@/features/chrome/components/MusicPlayer.astro";
+import { ClientRouter } from "astro:transitions";
+import { HTML_LANG_BY_LOCALE, type Locale } from "@/i18n/config";
+import type { Messages } from "@/i18n/schema";
+import type { LocalizedRouteMeta, RouteKey } from "@/i18n/routes";
+
+interface Props {
+  locale: Locale;
+  routeKey: RouteKey;
+  messages: Messages;
+  routeMeta: LocalizedRouteMeta;
+}
+
+const { locale, routeKey, messages, routeMeta } = Astro.props;
+---
+
+<html
+  lang={HTML_LANG_BY_LOCALE[locale]}
+  class="selection:bg-retro-primary selection:text-retro-dark"
+>
+  <head>
+    <ClientRouter />
+    <SiteHead
+      locale={locale}
+      headCopy={messages.head}
+      canonicalPath={routeMeta.canonicalPath}
+      languagePaths={routeMeta.languagePaths}
+      xDefaultPath={routeMeta.xDefaultPath}
+    />
+    <style is:global>
+      @import url("https://fonts.cdnfonts.com/css/zx-spectrum-7");
+    </style>
+  </head>
+  <body class="text-white bg-black">
+    <div class="retro-grid-bg"></div>
+    <TopNavigation
+      locale={locale}
+      routeKey={routeKey}
+      copy={messages.navigation}
+      languagePaths={routeMeta.languagePaths}
+    />
+    <Sidebar locale={locale} copy={messages.sidebar} />
+    <div class="lg:pl-48">
+      <main class="mx-auto max-w-7xl px-4 pt-32 md:pt-24 sm:pt-20">
+        <slot />
+      </main>
+      <FooterBar copy={messages.footer} />
+    </div>
+    <MusicPlayer transition:persist />
+  </body>
+</html>

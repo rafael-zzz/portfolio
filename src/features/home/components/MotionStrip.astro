@@ -1,0 +1,20 @@
+---
+interface Props {
+  terms: string[];
+  animationClass: "animate-marquee1" | "animate-marquee2";
+}
+
+const { terms, animationClass } = Astro.props;
+const repeatedTerms = [...terms, ...terms, ...terms];
+const marqueeText = repeatedTerms.join(" ∆ ");
+---
+
+<div class="mx-auto overflow-hidden overflow-x-hidden py-3 relative">
+  <div class="w-full justify-between grid">
+    <div class="absolute inset-0 left-0 via-transparent w-44 z-20 bg-gradient-to-r"></div>
+    <div class="absolute inset-0 left-0 via-transparent w-44 z-10 bg-gradient-to-l ml-auto"></div>
+  </div>
+  <div class:list={["flex items-center font-['Departure_Mono'] font-display gap-4 relative tracking-widest whitespace-nowrap", animationClass]}>
+    <span class="lg:inline">∆</span> {marqueeText}
+  </div>
+</div>

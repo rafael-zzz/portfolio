@@ -6,6 +6,8 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
+    "jsx": "react-jsx",
+    "jsxImportSource": "preact",
     "baseUrl": ".",
     "paths": {
       "@/*": [
@@ -13,5 +15,13 @@
       ]
     }
   },
+  "exclude": [
+    "dist",
+    ".astro",
+    "node_modules",
+    "tests",
+    "vitest.config.ts",
+    "playwright.config.ts"
+  ],
   "extends": "astro/tsconfigs/strict"
 }

@@ -1,0 +1,103 @@
+---
+import type { Messages } from "@/i18n/schema";
+import SectionFrame from "@/shared/ui/SectionFrame.astro";
+import SectionHeader from "@/shared/ui/SectionHeader.astro";
+import LearningToggle from "@/features/home/islands/LearningToggle";
+import { coreSkills, learningSkills } from "@/features/home/model/skillsCatalog";
+
+interface Props {
+  copy: Messages["home"]["skills"];
+}
+
+const { copy } = Astro.props;
+---
+
+<SectionFrame>
+  <SectionHeader title={copy.title} eyebrow={copy.eyebrow} />
+
+  <div class="skills-container md:grid">
+    {coreSkills.map((skill) => (
+      <div class="skill-card">
+        <div class="skill-header">
+          <img src={skill.icon} alt={skill.name} class="skill-icon" />
+        </div>
+        <p class="text-l font-['Departure_Mono'] skill-title">{skill.name}</p>
+      </div>
+    ))}
+  </div>
+
+  <LearningToggle client:load label={copy.learningLabel} items={learningSkills} />
+</SectionFrame>
+
+<style>
+  :global(.skills-container) {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 0.7rem;
+    padding: 1rem;
+  }
+
+  :global(.skill-card) {
+    background: linear-gradient(180deg, rgba(5, 9, 15, 0.86), rgba(9, 15, 22, 0.8));
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    box-shadow: 0 0 0 1px rgba(144, 248, 255, 0.08) inset;
+    overflow: hidden;
+    transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+    text-align: center;
+    padding: 0.8rem 0.5rem 0.65rem;
+    position: relative;
+  }
+
+  :global(.skill-card)::before {
+    content: "MODULE";
+    position: absolute;
+    top: 0.45rem;
+    left: 0.45rem;
+    color: rgba(156, 255, 204, 0.65);
+    font-family: 'Departure Mono', monospace;
+    font-size: 0.58rem;
+    letter-spacing: 0.16em;
+  }
+
+  :global(.skill-card:hover) {
+    transform: translateY(-4px);
+    border-color: rgba(144, 248, 255, 0.34);
+    box-shadow: 0 0 18px rgba(144, 248, 255, 0.08);
+  }
+
+  :global(.skill-header) {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 0.7rem;
+  }
+
+  :global(.skill-icon) {
+    width: 60px;
+    height: 60px;
+    margin-bottom: 0.35rem;
+    filter: drop-shadow(0 0 12px rgba(144, 248, 255, 0.16));
+  }
+
+  :global(.skill-title) {
+    color: #ffffff;
+    font-size: 0.92rem;
+    letter-spacing: 0.06em;
+  }
+
+  :global(.learning-toggle) {
+    background: linear-gradient(180deg, rgba(4, 8, 12, 0.92), rgba(8, 13, 20, 0.92));
+    border: 1px solid rgba(144, 248, 255, 0.32);
+    color: #ffffff;
+    width: calc(100% - 2rem);
+    margin: 0 1rem 1rem;
+    text-align: center;
+    padding: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+  }
+
+  :global(.learning-content) {
+    transition: max-height 0.2s ease-out;
+  }
+</style>

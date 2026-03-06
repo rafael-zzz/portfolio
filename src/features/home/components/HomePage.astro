@@ -1,0 +1,31 @@
+---
+import type { Locale } from "@/i18n";
+import type { Messages } from "@/i18n/schema";
+import type { WritingPreview } from "@/features/writing/model/writingPreviews";
+import type { ProjectCard } from "@/features/projects/model/projectCards";
+import IntroSection from "@/features/home/components/IntroSection.astro";
+import WritingPreviewSection from "@/features/home/components/WritingPreviewSection.astro";
+import MotionStrip from "@/features/home/components/MotionStrip.astro";
+import SkillsSection from "@/features/home/components/SkillsSection.astro";
+import ProjectsSection from "@/features/home/components/ProjectsSection.astro";
+import ExperiencesSection from "@/features/home/components/ExperiencesSection.astro";
+import CtaSection from "@/features/home/components/CtaSection.astro";
+
+interface Props {
+  locale: Locale;
+  copy: Messages["home"];
+  writingEntries: WritingPreview[];
+  projectCards: ProjectCard[];
+}
+
+const { locale, copy, writingEntries, projectCards } = Astro.props;
+---
+
+<IntroSection copy={copy.hero} />
+<MotionStrip terms={copy.motion.first} animationClass="animate-marquee1" />
+<ProjectsSection copy={copy.featuredProjects} locale={locale} projects={projectCards} />
+<SkillsSection copy={copy.skills} />
+<MotionStrip terms={copy.motion.second} animationClass="animate-marquee2" />
+<ExperiencesSection copy={copy.experience} />
+<WritingPreviewSection copy={copy.featuredWriting} locale={locale} entries={writingEntries} />
+<CtaSection copy={copy.cta} />

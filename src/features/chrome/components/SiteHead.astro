@@ -1,0 +1,40 @@
+---
+import type { Messages } from "@/i18n/schema";
+import type { Locale } from "@/i18n/config";
+import { HTML_LANG_BY_LOCALE, LOCALES } from "@/i18n/config";
+import "@/styles/global.css";
+
+interface Props {
+  locale: Locale;
+  headCopy: Messages["head"];
+  canonicalPath: string;
+  languagePaths: Record<Locale, string>;
+  xDefaultPath: string;
+}
+
+const { locale, headCopy, canonicalPath, languagePaths, xDefaultPath } = Astro.props;
+
+const siteUrl = Astro.site ?? new URL("https://rafs-portfolio.vercel.app");
+const canonicalUrl = new URL(canonicalPath, siteUrl).toString();
+const xDefaultUrl = new URL(xDefaultPath, siteUrl).toString();
+const openGraphLocale = HTML_LANG_BY_LOCALE[locale].replace("-", "_");
+
+const alternateLinks = LOCALES.map((language) => ({
+  hreflang: language,
+  href: new URL(languagePaths[language], siteUrl).toString(),
+}));
+---
+
+<title>{headCopy.title}</title>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="author" content="rafael-zzz" />
+<meta name="description" content={headCopy.description} />
+<meta property="og:locale" content={openGraphLocale} />
+<link rel="icon" href="/logos/logo.png" />
+<link rel="canonical" href={canonicalUrl} />
+{alternateLinks.map((alternate) => (
+  <link rel="alternate" hreflang={alternate.hreflang} href={alternate.href} />
+))}
+<link rel="alternate" hreflang="x-default" href={xDefaultUrl} />

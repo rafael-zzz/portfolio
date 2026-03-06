@@ -1,0 +1,32 @@
+---
+import SiteLayout from "@/features/chrome/components/SiteLayout.astro";
+import WritingHubPage from "@/features/writing/components/WritingHubPage.astro";
+import { getWritingHubData } from "@/features/writing/model/getWritingHubData";
+import { isLocale, LOCALES } from "@/i18n";
+
+export function getStaticPaths() {
+  return LOCALES.map((lang) => ({ params: { lang } }));
+}
+
+const maybeLocale = Astro.params.lang;
+
+if (!isLocale(maybeLocale)) {
+  return Astro.redirect("/en/writing");
+}
+
+const pageData = await getWritingHubData(maybeLocale);
+---
+
+<SiteLayout
+  locale={pageData.locale}
+  routeKey="writing"
+  messages={pageData.messages}
+  routeMeta={pageData.routeMeta}
+>
+  <WritingHubPage
+    copy={pageData.messages.writing.page}
+    fallbackCopy={pageData.messages.contentFallback}
+    entries={pageData.entries}
+    hasFallback={pageData.hasFallback}
+  />
+</SiteLayout>

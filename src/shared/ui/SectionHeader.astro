@@ -1,0 +1,14 @@
+---
+interface Props {
+  title: string;
+  eyebrow?: string;
+  class?: string;
+}
+
+const { title, eyebrow, class: className = "" } = Astro.props;
+---
+
+<div class:list={["section-header-wrap", className]}>
+  {eyebrow && <p class="font-['Departure_Mono'] section-header-eyebrow">{eyebrow}</p>}
+  <h1 class="font-['Departure_Mono'] section-header-title">{title}</h1>
+</div>

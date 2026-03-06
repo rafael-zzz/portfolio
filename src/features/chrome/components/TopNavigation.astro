@@ -1,0 +1,161 @@
+---
+import type { Messages } from "@/i18n/schema";
+import { LOCALE_LABELS, LOCALES, type Locale } from "@/i18n/config";
+import { getLocalizedPath, type RouteKey } from "@/i18n/routes";
+
+interface Props {
+  locale: Locale;
+  routeKey: RouteKey;
+  copy: Messages["navigation"];
+  languagePaths?: Record<Locale, string>;
+}
+
+const { locale, routeKey, copy, languagePaths } = Astro.props;
+
+const languageOptions = LOCALES.map((language) => ({
+  href: languagePaths?.[language] ?? getLocalizedPath(language, routeKey),
+  label: LOCALE_LABELS[language],
+  active: language === locale,
+}));
+
+const routeLinks = [
+  { key: "home" as const, label: copy.overviewLabel, href: getLocalizedPath(locale, "home") },
+  { key: "writing" as const, label: copy.writingLabel, href: getLocalizedPath(locale, "writing") },
+  { key: "projects" as const, label: copy.projectsLabel, href: getLocalizedPath(locale, "projects") },
+];
+---
+
+<section class="fixed top-0 right-0 left-0 border-b border-retro-primary/20 bg-black/80 backdrop-blur-sm lg:left-48 z-40">
+  <div class="bg-transparent">
+    <div class="text-white w-full flex items-center justify-between px-4 py-2 gap-3">
+      <div class="flex items-center flex-shrink-0 gap-3">
+        <button
+          type="button"
+          id="nav-toggle-btn"
+          class="p-2 text-retro-primary hover:bg-retro-primary/20 rounded-lg transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-retro-primary lg:hidden"
+          aria-label={copy.toggleNavigationLabel}
+        >
+          <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M2 6.00087C2 5.44811 2.45531 5 2.9918 5H8.6082C8.85391 5 9.09086 5.09085 9.27504 5.25532L11.1666 6.99468C11.3508 7.15915 11.5878 7.25 11.8334 7.25H21.0082C21.5447 7.25 22 7.69811 22 8.25087V18.9991C22 19.5519 21.5447 20 21.0082 20H2.9918C2.45531 20 2 19.5519 2 18.9991V6.00087Z" fill="currentColor" />
+          </svg>
+        </button>
+        <img src="/logos/logo.png" alt="logo" class="hidden lg:block w-8 h-8 border-retro-primary/20" />
+      </div>
+
+      <div class="flex-grow min-w-0 text-center">
+        <span class="text-white text-sm lg:text-sm font-['Departure_Mono'] inline-flex items-center px-0 text-center py-2 dir-text max-w-full">
+          <span class="terminal-text text-retro-primary truncate">&nbsp; &rarr; {copy.terminalPathLabel}</span>
+        </span>
+      </div>
+
+      <div class="flex-shrink-0 flex items-center gap-3 nav-actions">
+        <nav class="hidden md:flex items-center gap-2" aria-label="Primary">
+          {routeLinks.map((link) => (
+            <a
+              href={link.href}
+              class:list={[
+                "route-chip font-['Departure_Mono']",
+                routeKey === link.key && "route-chip-active",
+              ]}
+            >
+              {link.label}
+            </a>
+          ))}
+        </nav>
+
+        <nav class="flex items-center gap-1 flex-wrap justify-end" aria-label={copy.languageSwitcherLabel}>
+          {languageOptions.map((option) => (
+            <a
+              href={option.href}
+              class:list={[
+                "lang-chip font-['Departure_Mono'] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-retro-primary",
+                option.active && "lang-chip-active",
+              ]}
+              aria-current={option.active ? "page" : undefined}
+            >
+              {option.label}
+            </a>
+          ))}
+        </nav>
+
+        <div class="hidden lg:flex items-center gap-2">
+          <a
+            href="https://github.com/rafael-zzz"
+            class="action-link font-['Departure_Mono']"
+          >
+            {copy.githubLabel}
+          </a>
+          <a
+            href="https://linkedin.com/in/rafael-m-peixoto"
+            class="action-link font-['Departure_Mono']"
+          >
+            {copy.linkedinLabel}
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  const toggleButton = document.getElementById("nav-toggle-btn");
+  toggleButton?.addEventListener("click", () => {
+    window.dispatchEvent(new Event("sidebar:toggle"));
+  });
+</script>
+
+<style>
+  .dir-text {
+    font-size: 0.9rem;
+  }
+
+  .nav-actions {
+    max-width: 72%;
+  }
+
+  .route-chip,
+  .lang-chip,
+  .action-link {
+    border: 2px solid rgba(255, 255, 255, 0.7);
+    color: #ffffff;
+    font-size: 0.7rem;
+    line-height: 1;
+    padding: 0.4rem 0.55rem;
+    text-align: center;
+    transition: background-color 0.2s, color 0.2s, border-color 0.2s;
+  }
+
+  .route-chip:hover,
+  .lang-chip:hover,
+  .action-link:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+  }
+
+  .route-chip-active,
+  .lang-chip-active {
+    background-color: #ffffff;
+    color: #000000;
+    border-color: #ffffff;
+  }
+
+  @media (max-width: 860px) {
+    .nav-actions {
+      max-width: 70%;
+    }
+  }
+
+  @media (max-width: 430px) {
+    .lang-chip {
+      font-size: 0.62rem;
+      padding: 0.33rem 0.4rem;
+    }
+
+    .dir-text {
+      font-size: 0.75rem;
+    }
+
+    .nav-actions {
+      max-width: 64%;
+    }
+  }
+</style>
