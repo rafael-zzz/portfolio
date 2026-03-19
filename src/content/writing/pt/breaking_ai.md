@@ -78,7 +78,7 @@ A partir desse ponto, já que nosso time era multidisciplinar, "separamos" a ent
 Tínhamos como hipótese que o idioma poderia ser um grande facilitador de ataques, dependendo de como eles são treinados. Ainda creio que podem ser, mas tivemos a descoberta que não há grande diferença entre português e inglês, mesmo com um treinamento majoritário no nosso idioma. Cogitamos, pelo fim do projeto, expandir os idiomas testados, mas já que nosso projeto tem complexidade exponencial, executar os testes pra expandir a hipótese se tornou inviável, ainda mais com os gastos em infraestrutura (se brincar, Paulo ainda tá chorando).
 
 
-## A Ferramenta (Não a banda)
+## A Ferramenta
 O que é interessante sobre a ferramenta é que ela permite o uso de presets e seleção de diferentes mutators, vítimas e juízes, funcionando com GPUs NVIDIA, AMD, Intel e Apple para paralelização tanto dos ataques quanto dos modelos testados, executando eles em diferentes núcleos (se você tiver a infraestrutura para fazer isso, é claro). E como disse, os resultados são visíveis através do CLI ou você pode solicitar a criação de um arquivo HTML condensado que facilita essa visualização.
 
 ```
