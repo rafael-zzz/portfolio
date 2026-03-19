@@ -78,7 +78,7 @@ A partir desse ponto, já que nosso time era multidisciplinar, "separamos" a ent
 Tínhamos como hipótese que o idioma poderia ser um grande facilitador de ataques, dependendo de como eles são treinados. Ainda creio que podem ser, mas tivemos a descoberta que não há grande diferença entre português e inglês, mesmo com um treinamento majoritário no nosso idioma. Cogitamos, pelo fim do projeto, expandir os idiomas testados, mas já que nosso projeto tem complexidade exponencial, executar os testes pra expandir a hipótese se tornou inviável, ainda mais com os gastos em infraestrutura (se brincar, Paulo ainda tá chorando).
 
 
-### A Ferramenta (Não a banda)
+## A Ferramenta (Não a banda)
 
 O que é interessante sobre a ferramenta é que ela permite o uso de presets e seleção de diferentes mutators, vítimas e juízes, funcionando com GPUs NVIDIA, AMD, Intel e Apple para paralelização tanto dos ataques quanto dos modelos testados, executando eles em diferentes núcleos (se você tiver a infraestrutura para fazer isso, é claro). E como disse, os resultados são visíveis através do CLI ou você pode solicitar a criação de um arquivo HTML condensado que facilita essa visualização.
 
@@ -86,7 +86,7 @@ O que é interessante sobre a ferramenta é que ela permite o uso de presets e s
 Detalhe engraçado: Dois dias após o final do nosso projeto, Pliny lançou a ferramenta OBLITERALUS, que é bem similar à nossa.
 ```
 
-### A Ferramenta Gráfica
+## A Ferramenta Gráfica
 
 Ainda precisávamos de uma forma de permitir que usuários não-técnicos usassem nossa ferramenta, então prototipamos uma GUI que é uma expansão da ferramenta CLI, nomeada Inje.X (de prompt injection) e planejamos que tivesse as mesmas funcionalidades que a ferramenta original tinha, sendo elas: presets, seleção de modelos, seleção de métodos, multiplataforma. Você não conseguiria alterar os arquivos para importar novas sementes, mas existe a ferramenta original que faz isso, então..?
 
