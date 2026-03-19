@@ -43,7 +43,7 @@ Agora você sabe o escopo do que planejamos, mas como esses ataques realmente ac
 
 ### Ataques Adversariais
 ![Por Henrique Arcoverde](public/writing/breaking_ai/adversarial_attacks.png)
-- 3.3.1: Alguém que deseja classificar incorretamente uma imagem e tem acesso direto aos pesos do modelo pode encontrar algoritmicamente o mínimo local da função de classificação, onde a linha de inferência entre gatos e cachorros é desenhada, através de `Gradient Descent`.
+- 3.3.1: Alguém que deseja classificar incorretamente uma imagem e tem acesso direto aos pesos do modelo pode encontrar algoritmicamente o inverso local da função de classificação, onde a linha de inferência entre gatos e cachorros é desenhada, através de técnicas de otimização. Podendo ser `Gradient Ascent` ou `Gradient Descent`.
 - 3.3.2: Existem muitos ataques adversariais diferentes que exploram isso, sendo classificados em `White Box` (Caixa Branca) e `Black Box` (Caixa Preta), a diferença reside no conhecimento do atacante. Em um ataque de caixa branca, o atacante tem acesso completo à arquitetura e pesos do modelo. Em um ataque de caixa preta, eles não têm, então devem sondar o modelo com entradas e estudar as saídas para inferir suas fraquezas.
 - 3.3.3: Um ataque adversarial específico de caixa branca contra imagens é feito como foi dito em 3.1, mas como são feitos contra texto? Texto é discreto; você não pode fazer mudanças "minúsculas" em uma palavra como pode fazer em um pixel e manter a estrutura geral intacta. Mudar um caractere ou palavra cria um novo token, que é um salto  maior no espaço de entrada do modelo. Isto leva a gente à arquitetura projetada para lidar com texto: o `Transformer`.
 
@@ -79,7 +79,6 @@ Tínhamos como hipótese que o idioma poderia ser um grande facilitador de ataqu
 
 
 ## A Ferramenta (Não a banda)
-
 O que é interessante sobre a ferramenta é que ela permite o uso de presets e seleção de diferentes mutators, vítimas e juízes, funcionando com GPUs NVIDIA, AMD, Intel e Apple para paralelização tanto dos ataques quanto dos modelos testados, executando eles em diferentes núcleos (se você tiver a infraestrutura para fazer isso, é claro). E como disse, os resultados são visíveis através do CLI ou você pode solicitar a criação de um arquivo HTML condensado que facilita essa visualização.
 
 ```
@@ -87,12 +86,11 @@ Detalhe engraçado: Dois dias após o final do nosso projeto, Pliny lançou a fe
 ```
 
 ## A Ferramenta Gráfica
-
 Ainda precisávamos de uma forma de permitir que usuários não-técnicos usassem nossa ferramenta, então prototipamos uma GUI que é uma expansão da ferramenta CLI, nomeada Inje.X (de prompt injection) e planejamos que tivesse as mesmas funcionalidades que a ferramenta original tinha, sendo elas: presets, seleção de modelos, seleção de métodos, multiplataforma. Você não conseguiria alterar os arquivos para importar novas sementes, mas existe a ferramenta original que faz isso, então..?
 
 
 ## Conclusão
-Foram ótimas 6 semanas, pude estar em um ambiente que fui diariamente desafiado com gente animada, que queria estar ali e rir à toa, se desafiando junto, "já que a única forma de fazer coisas impossíveis é se divertir enquanto faz, se rodeando de gente mais inteligente que você". Me marcou de uma forma que já lembro saudoso. Fico feliz com o que conseguimos fazer com o projeto, e só conseguimos graças a todo o apoio e estrutura fornecidos.
+Foram ótimas 6 semanas, onde pude estar em um ambiente que fui diariamente desafiado com gente animada, que queria estar ali e rir à toa, se desafiando junto, "já que a única forma de fazer coisas impossíveis é se divertir enquanto faz, se rodeando de gente mais inteligente que você". Me marcou de uma forma que já lembro saudoso. Fico feliz com o que conseguimos fazer com o projeto, e só conseguimos graças a todo o apoio e estrutura fornecidos.
 
 
 #### "Se eu vi mais longe, foi por estar sobre ombros de gigantes."

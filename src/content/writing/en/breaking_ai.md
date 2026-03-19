@@ -41,7 +41,7 @@ Right, now you know the scope of what we are getting at, but how do these attack
 
 ### Adversarial Attacks
 ![By Henrique Arcoverde](public/writing/breaking_ai/adversarial_attacks.png)
-- 3.3.1: Someone who desires to misclassify an image and has direct access to the model-weights may algorithmically find the local minimum of the classification function, where the inference line between cats and dogs is drawn, through `Gradient Descent`.
+- 3.3.1: Someone who desires to misclassify an image and has direct access to the model-weights may algorithmically find the local inverse of the classification function, where the inference line between cats and dogs is drawn, through optimization techniques. They may be `Gradient Ascent` or `Gradient Descent`.
 - 3.3.2: There are many different adversarial attacks that exploit this, being classified into `White-Box` and `Black-Box`, the difference lies in the attacker's knowledge. In a white-box attack, the attacker has full access to the model's architecture and weights. In a black-box attack, they do not, so they must probe the model with inputs and study the outputs to infer its weaknesses.
 - 3.3.3: A specific white box adversarial attack against images is done as have been said on 3.1, but how are they done against text? Text is discrete; you cannot make "tiny" changes to a word like you can to a pixel and keep the overall structure intact. Changing a single character or word creates a new token, which is a much larger leap in the model's input space. This leads us to the architecture designed to handle text: the `Transformer`.
 
