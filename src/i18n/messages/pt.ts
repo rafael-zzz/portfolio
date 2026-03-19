@@ -20,12 +20,12 @@ export const ptMessages = {
     title: "Explorador de Arquivos",
     closeSidebarLabel: "Fechar barra lateral",
     menu: {
-      overview: "visao-geral.exe",
+      overview: "./visao_geral.sh",
       writing: "textos",
       projects: "projetos",
       profiles: "perfis",
-      github: "github.exe",
-      linkedin: "linkedin.exe",
+      github: "./github.sh",
+      linkedin: "./linkedin.sh",
     },
   },
   footer: {
@@ -41,7 +41,7 @@ export const ptMessages = {
       title: "Visão Geral",
       heading: "Sou Rafael Peixoto",
       description:
-        "Sou estudante brasileiro de Ciência da Computação com foco em cibersegurança e arquitetura de sistemas. Combino práticas modernas de segurança com desenvolvimento eficiente para criar soluções de alto desempenho. Atualmente exploro formas de conectar princípios clássicos da computação com tecnologia moderna.",
+        "Sou um estudante brasileiro de Ciência da Computação com foco em cibersegurança e arquitetura de sistemas. Combino práticas modernas de segurança com desenvolvimento eficiente para criar soluções de alto desempenho. Atualmente exploro formas de conectar princípios clássicos da computação com tecnologia moderna.",
       imageAlt: "Animação de buraco negro",
     },
     featuredProjects: {
@@ -88,22 +88,22 @@ export const ptMessages = {
       eyebrow: "/sys/experience",
       places: [
         {
-          company: "Freelance",
-          role: "Consultor de Software e Segurança",
-          period: "2023 - Presente",
+          company: "CISSA",
+          role: "Estágio como Pesquisador de Segurança",
+          period: "2026 - 2026",
           highlights: [
-            "Desenvolvimento e manutenção de funcionalidades web seguras para clientes pequenos.",
-            "Revisão de vulnerabilidades e hardening em aplicações públicas.",
-            "Documentação de playbooks de deploy e checklists de resposta a incidentes.",
+            "Colaboração no desenvolvimento de um paper técnico.",
+            "Desenvolvimento de ferramenta escalável para medição de robustez contra diferentes ataques adversariais em modelos de IA.",
+            "Documentação de modelagem de ameaças robusta contra possíveis vetores de ataque à infraestrutura crítica.",
           ],
         },
         {
-          company: "Times Acadêmicos e CTF",
-          role: "Colaborador em Pesquisa de Segurança",
-          period: "2022 - Presente",
+          company: "Time de CTF 0xBit",
+          role: "Líder, Recrutador, Membro Ativo",
+          period: "2023 - Presente",
           highlights: [
             "Pesquisa de cadeias de exploit e mitigação em laboratórios controlados.",
-            "Colaboração em resolução de desafios CTF e publicação de write-ups.",
+            "Colaboração em resolução de desafios CTF. Sendo eles: THM Advent of Cyber'24, srdnlen'25, srdnlen'26.",
             "Apresentação de achados de segurança e defesas práticas para colegas.",
           ],
         },

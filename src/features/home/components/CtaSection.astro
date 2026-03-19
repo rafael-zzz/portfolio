@@ -12,13 +12,13 @@ const destinations = [
     href: "https://github.com/rafael-zzz",
     label: copy.githubLabel,
     path: "github.com/rafael-zzz",
-    eyebrow: "/outbound/github",
+    eyebrow: "/out/github",
   },
   {
     href: "https://linkedin.com/in/rafael-m-peixoto",
     label: copy.linkedinLabel,
-    path: "linkedin.com/in/rafael-m-peixoto",
-    eyebrow: "/outbound/linkedin",
+    path: "linkedin.com/rafael-peixoto",
+    eyebrow: "/out/linkedin",
   },
 ];
 ---
@@ -36,7 +36,7 @@ const destinations = [
           <a href={destination.href} class="cta-panel">
             <div class="cta-copy">
               <p class="cta-panel-kicker font-['Departure_Mono']">{destination.eyebrow}</p>
-              <p class="cta-title font-['ZX_Spectrum-7']">{destination.label}</p>
+              <p class="cta-title font-wayfarers">{destination.label}</p>
             </div>
 
             <div class="cta-destination font-['Departure_Mono']">
@@ -124,7 +124,7 @@ const destinations = [
 
   .cta-title {
     color: #f5fbff;
-    font-size: clamp(1.2rem, 2.4vw, 1.8rem);
+    font-size: clamp(0.63rem, 1.26vw, 0.945rem);
     line-height: 1.15;
     text-shadow: 0 0 10px rgba(215, 215, 215, 0.12);
   }
@@ -152,7 +152,7 @@ const destinations = [
     overflow-wrap: anywhere;
   }
 
-  @media (max-width: 720px) {
+  @media (max-width: 900px) {
     .cta-panel {
       grid-template-columns: 1fr;
     }

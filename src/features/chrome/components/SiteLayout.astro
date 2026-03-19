@@ -34,7 +34,6 @@ const { locale, routeKey, messages, routeMeta } = Astro.props;
     />
     <style is:global>
       @import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&display=swap");
-      @import url("https://fonts.cdnfonts.com/css/zx-spectrum-7");
     </style>
   </head>
   <body class="text-white bg-black">
@@ -50,8 +49,60 @@ const { locale, routeKey, messages, routeMeta } = Astro.props;
       <main class="mx-auto max-w-7xl px-4 pt-32 md:pt-24 sm:pt-20">
         <slot />
       </main>
-      <FooterBar copy={messages.footer} />
-    </div>
-    <MusicPlayer transition:persist />
-  </body>
+    <FooterBar copy={messages.footer} />
+  </div>
+  <MusicPlayer transition:persist />
+  <script type="module">
+    import { navigate } from "astro:transitions/client";
+
+    const GLOBAL_NAV_HOOK_KEY = "__globalClientNavHooked";
+
+    if (!window[GLOBAL_NAV_HOOK_KEY]) {
+      window[GLOBAL_NAV_HOOK_KEY] = true;
+
+      document.addEventListener("click", (event) => {
+        if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) {
+          return;
+        }
+
+      const target = event.target;
+      if (!(target instanceof Element)) {
+        return;
+      }
+
+      const link = target.closest("a");
+      if (!(link instanceof HTMLAnchorElement)) {
+        return;
+      }
+
+        if (link.hasAttribute("download") || link.dataset.astroReload !== undefined || link.dataset.noNav !== undefined) {
+          return;
+        }
+
+        const href = link.getAttribute("href");
+        if (!href || href.startsWith("#") || href.startsWith("mailto:") || href.startsWith("tel:")) {
+          return;
+        }
+
+        if (link.target && link.target !== "_self") {
+          return;
+        }
+
+        let url;
+        try {
+          url = new URL(link.href, window.location.href);
+        } catch {
+          return;
+        }
+
+        if (url.origin !== window.location.origin) {
+          return;
+        }
+
+        event.preventDefault();
+        void navigate(`${url.pathname}${url.search}${url.hash}`);
+      });
+    }
+  </script>
+</body>
 </html>

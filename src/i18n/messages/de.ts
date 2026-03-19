@@ -20,12 +20,12 @@ export const deMessages = {
     title: "Datei-Explorer",
     closeSidebarLabel: "Seitenleiste schließen",
     menu: {
-      overview: "ubersicht.exe",
+      overview: "./ubersicht.sh",
       writing: "texte",
       projects: "projekte",
       profiles: "profile",
-      github: "github.exe",
-      linkedin: "linkedin.exe",
+      github: "./github.sh",
+      linkedin: "./linkedin.sh",
     },
   },
   footer: {
@@ -88,22 +88,22 @@ export const deMessages = {
       eyebrow: "/sys/experience",
       places: [
         {
-          company: "Freelance",
-          role: "Software- und Sicherheitsberater",
-          period: "2023 - Heute",
+          company: "CISSA",
+          role: "Praktikant als Sicherheitsforscher",
+          period: "2026 - 2026",
           highlights: [
-            "Sichere Web-Features fur kleine Unternehmen entwickelt und betreut.",
-            "Vulnerability-Reviews und Hardening fur offentliche Anwendungen durchgefuhrt.",
-            "Deployment-Playbooks und Incident-Response-Checklisten dokumentiert.",
+            "Mitarbeit an der Entwicklung eines technischen Papiers",
+            "Entwickelte ein skalierbares Tool zur Messung der Robustheit von KI-Modellen gegen verschiedene gegnerische Angriffe.",
+            "Dokumentierte robuste Bedrohungsmodellierung möglicher Angriffsvektoren gegen kritische Infrastruktur.",
           ],
         },
         {
-          company: "Akademische und CTF-Teams",
-          role: "Beitragender in der Sicherheitsforschung",
-          period: "2022 - Heute",
+          company: "0xBit CTF-Team",
+          role: "Leiter, Rekrutierer, Aktives Mitglied",
+          period: "2023 - Heute",
           highlights: [
             "Exploit-Ketten und Mitigationsmuster in kontrollierten Labs analysiert.",
-            "An CTF-Losungen und der Veroffentlichung von Write-ups mitgearbeitet.",
+            "An CTF-Losungen und der Veroffentlichung Sie zu sein: THM Advent of Cyber'24, srdnlen'25, srdnlen'26.",
             "Sicherheitsbefunde und praktische Abwehrstrategien vorgestellt.",
           ],
         },

@@ -20,12 +20,12 @@ export const enMessages = {
     title: "File Explorer",
     closeSidebarLabel: "Close sidebar",
     menu: {
-      overview: "overview.exe",
+      overview: "./overview.sh",
       writing: "writing",
       projects: "projects",
       profiles: "profiles",
-      github: "github.exe",
-      linkedin: "linkedin.exe",
+      github: "./github.sh",
+      linkedin: "./linkedin.sh",
     },
   },
   footer: {
@@ -89,22 +89,22 @@ export const enMessages = {
       eyebrow: "/sys/experience",
       places: [
         {
-          company: "Freelance",
-          role: "Software and Security Consultant",
-          period: "2023 - Present",
+          company: "CISSA",
+          role: "Intern Security Researcher",
+          period: "2026 - 2026",
           highlights: [
-            "Built and maintained secure web features for small business clients.",
-            "Performed vulnerability reviews and hardening for public-facing apps.",
-            "Documented deployment playbooks and incident response checklists.",
+            "Colaborated on the development of a technical paper",
+            "Developed a scalable tool for measuring AI models robustness against different adversarial attacks.",
+            "Documented robust threat modeling on possible attack vectors against critical infrastructure.",
           ],
         },
         {
-          company: "Academic and CTF Teams",
-          role: "Security Research Contributor",
-          period: "2022 - Present",
+          company: "0xBit CTF Team",
+          role: "Leader, Recruiter, Active Member",
+          period: "2023 - Present",
           highlights: [
             "Researched exploit chains and mitigation patterns in controlled labs.",
-            "Collaborated on CTF challenge solving and write-up publication.",
+            "Collaborated on CTF challenge solving. Being them: THM Advent of Cyber'24, srdnlen'25, srdnlen'26",
             "Presented security findings and practical defenses to peers.",
           ],
         },

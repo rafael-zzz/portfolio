@@ -5,9 +5,11 @@ const volumeId = "stereo-volume";
 const toggleId = "stereo-toggle";
 const rewindId = "stereo-rewind";
 const skipId = "stereo-skip";
-const songId = "stereo-song";
 const trackId = "stereo-track";
 const statusId = "stereo-status";
+const closeId = "stereo-close";
+const reopenId = "stereo-reopen";
+const genreId = "stereo-genre";
 ---
 
 <section
@@ -18,7 +20,17 @@ const statusId = "stereo-status";
   aria-label="Music player"
 >
   <div class="stereo-shell">
-    <p class="stereo-title font-['ZX_Spectrum-7']">STEREO DECK</p>
+    <div class="stereo-header">
+      <p class="stereo-title font-wayfarers">STEREO DECK</p>
+      <button
+        id={closeId}
+        type="button"
+        class="stereo-close font-['Departure_Mono']"
+        aria-label="Close music player"
+      >
+        Close
+      </button>
+    </div>
     <p id={trackId} class="stereo-track font-['Departure_Mono']">Loading track...</p>
     <div class="stereo-controls">
       <button
@@ -46,33 +58,12 @@ const statusId = "stereo-status";
         Skip
       </button>
     </div>
-    <div class="stereo-mode-row">
-      <span class="stereo-mode-label font-['Departure_Mono']">MODE</span>
-      <div class="stereo-mode-switch" role="group" aria-label="Select music mode">
-        <button
-          type="button"
-          class="stereo-mode-button font-['Departure_Mono']"
-          data-stereo-playlist="electronic"
-          aria-pressed="true"
-        >
-          Electronic
-        </button>
-        <button
-          type="button"
-          class="stereo-mode-button font-['Departure_Mono']"
-          data-stereo-playlist="nuMetal"
-          aria-pressed="false"
-        >
-          Nu Metal
-        </button>
-      </div>
-    </div>
     <div class="stereo-mix-row">
-      <span id="stereo-song-label" class="stereo-song-label font-['Departure_Mono']">SONG</span>
+      <span id="stereo-genre-label" class="stereo-genre-label font-['Departure_Mono']">GENRE</span>
       <select
-        id={songId}
-        class="stereo-song-select font-['Departure_Mono']"
-        aria-labelledby="stereo-song-label"></select>
+        id={genreId}
+        class="stereo-genre-select font-['Departure_Mono']"
+        aria-labelledby="stereo-genre-label"></select>
       <span id="stereo-volume-label" class="stereo-volume-label font-['Departure_Mono']">VOL</span>
       <input
         id={volumeId}
@@ -86,6 +77,14 @@ const statusId = "stereo-status";
     </div>
     <p id={statusId} class="stereo-status font-['Departure_Mono']">Loading...</p>
   </div>
+  <button
+    id={reopenId}
+    type="button"
+    class="stereo-reopen font-['Departure_Mono']"
+    aria-label="Open music player"
+  >
+    Open player
+  </button>
   <div id={playerId} class="stereo-hidden-player" aria-hidden="true"></div>
 </section>
 
@@ -97,9 +96,11 @@ const statusId = "stereo-status";
     toggle: "stereo-toggle",
     rewind: "stereo-rewind",
     skip: "stereo-skip",
-    song: "stereo-song",
     track: "stereo-track",
     status: "stereo-status",
+    close: "stereo-close",
+    reopen: "stereo-reopen",
+    genre: "stereo-genre",
   };
 
   const PLAYLISTS = {
@@ -130,12 +131,110 @@ const statusId = "stereo-status";
   };
 
   const PLAYLIST_IDS = Object.keys(PLAYLISTS);
-  const STORE_KEY = "__stereoDeckStore";
-  const LEGACY_STORE_KEYS = ["__nuMetalDeckStore"];
-  const VOLUME_STORAGE_KEY = "stereoDeckVolumePreference";
+  const STORAGE_KEY = "stereoPlayerState";
   const DEFAULT_VOLUME = 30;
   const MIN_VOLUME = 0;
   const MAX_VOLUME = 100;
+  const MOBILE_MEDIA_QUERY = "(max-width: 640px)";
+  const GLOBAL_KEY = "__stereoPlayer";
+
+  const createState = () => ({
+    playlistId: PLAYLIST_IDS[0] ?? "electronic",
+    trackIndex: 0,
+    volume: DEFAULT_VOLUME,
+    isPlaying: false,
+    resumeTime: 0,
+    isClosed: false,
+  });
+
+  const normalizePlaylistId = (playlistId) =>
+    PLAYLIST_IDS.includes(playlistId) ? playlistId : PLAYLIST_IDS[0] ?? "electronic";
+
+  const getTracks = (playlistId) => PLAYLISTS[playlistId]?.tracks ?? [];
+
+  const normalizeTrackIndex = (playlistId, index) => {
+    const tracks = getTracks(playlistId);
+    if (!tracks.length) {
+      return 0;
+    }
+
+    if (!Number.isInteger(index)) {
+      return 0;
+    }
+
+    return ((index % tracks.length) + tracks.length) % tracks.length;
+  };
+
+  const normalizeVolume = (value) => {
+    if (typeof value !== "number" || Number.isNaN(value)) {
+      return DEFAULT_VOLUME;
+    }
+
+    return Math.min(MAX_VOLUME, Math.max(MIN_VOLUME, Math.round(value)));
+  };
+
+  const normalizeResumeTime = (value) => {
+    if (typeof value !== "number" || Number.isNaN(value) || value < 0) {
+      return 0;
+    }
+
+    return value;
+  };
+
+  const normalizeState = (candidate) => {
+    const base = createState();
+    if (!candidate || typeof candidate !== "object") {
+      return base;
+    }
+
+    const playlistId = normalizePlaylistId(candidate.playlistId);
+    return {
+      playlistId,
+      trackIndex: normalizeTrackIndex(playlistId, candidate.trackIndex),
+      volume: normalizeVolume(candidate.volume),
+      isPlaying: Boolean(candidate.isPlaying),
+      resumeTime: normalizeResumeTime(candidate.resumeTime),
+      isClosed: Boolean(candidate.isClosed),
+    };
+  };
+
+  const loadState = () => {
+    try {
+      const raw = window.localStorage.getItem(STORAGE_KEY);
+      if (!raw) {
+        return null;
+      }
+      return normalizeState(JSON.parse(raw));
+    } catch {
+      return null;
+    }
+  };
+
+  const store =
+    window[GLOBAL_KEY] ??
+    ({
+      player: null,
+      state: loadState() ?? createState(),
+      dom: {},
+      handlers: null,
+      scriptInjected: false,
+      ytHooked: false,
+      routerHooked: false,
+      resizeHooked: false,
+      visibilityHooked: false,
+      statusOverride: null,
+    });
+
+  store.state = normalizeState(store.state ?? loadState() ?? createState());
+  window[GLOBAL_KEY] = store;
+
+  const persistState = () => {
+    try {
+      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(store.state));
+    } catch {
+      // Ignore storage write errors.
+    }
+  };
 
   const findPlayerRoot = (preferredRoot) => {
     if (preferredRoot instanceof HTMLElement && preferredRoot.isConnected) {
@@ -156,464 +255,368 @@ const statusId = "stereo-status";
       toggleNode: rootNode?.querySelector(`#${PLAYER_DOM_IDS.toggle}`) ?? null,
       rewindNode: rootNode?.querySelector(`#${PLAYER_DOM_IDS.rewind}`) ?? null,
       skipNode: rootNode?.querySelector(`#${PLAYER_DOM_IDS.skip}`) ?? null,
-      songNode: rootNode?.querySelector(`#${PLAYER_DOM_IDS.song}`) ?? null,
       trackNode: rootNode?.querySelector(`#${PLAYER_DOM_IDS.track}`) ?? null,
       statusNode: rootNode?.querySelector(`#${PLAYER_DOM_IDS.status}`) ?? null,
-      modeButtons: rootNode ? Array.from(rootNode.querySelectorAll("[data-stereo-playlist]")) : [],
+      closeNode: rootNode?.querySelector(`#${PLAYER_DOM_IDS.close}`) ?? null,
+      reopenNode: rootNode?.querySelector(`#${PLAYER_DOM_IDS.reopen}`) ?? null,
+      genreNode: rootNode?.querySelector(`#${PLAYER_DOM_IDS.genre}`) ?? null,
     };
   };
 
-  const getPlaylistTracks = (playlistId) => PLAYLISTS[playlistId]?.tracks ?? [];
-
-  const getRandomTrackIndex = (tracks) => {
-    if (!tracks.length) {
-      return 0;
-    }
-
-    return Math.floor(Math.random() * tracks.length);
+  const getCurrentTrack = () => {
+    const tracks = getTracks(store.state.playlistId);
+    return tracks[store.state.trackIndex] ?? tracks[0] ?? null;
   };
 
-  const createTrackIndexByPlaylist = () =>
-    Object.fromEntries(
-      PLAYLIST_IDS.map((playlistId) => [
-        playlistId,
-        getRandomTrackIndex(getPlaylistTracks(playlistId)),
-      ]),
-    );
-
-  const normalizePlaylistId = (playlistId) =>
-    PLAYLIST_IDS.includes(playlistId) ? playlistId : "electronic";
-
-  const normalizeTrackIndex = (playlistId, index) => {
-    const tracks = getPlaylistTracks(playlistId);
-    if (!tracks.length) {
-      return 0;
-    }
-
-    if (!Number.isInteger(index)) {
-      return 0;
-    }
-
-    return ((index % tracks.length) + tracks.length) % tracks.length;
-  };
-
-  const normalizeResumeTime = (value) => {
-    if (typeof value !== "number" || Number.isNaN(value) || value < 0) {
-      return 0;
-    }
-
-    return value;
-  };
-
-  const normalizeVolume = (value) => {
-    if (typeof value !== "number" || Number.isNaN(value)) {
-      return DEFAULT_VOLUME;
-    }
-
-    return Math.min(MAX_VOLUME, Math.max(MIN_VOLUME, Math.round(value)));
-  };
-
-  const normalizeTrackIndexByPlaylist = (candidate) => {
-    const normalized = createTrackIndexByPlaylist();
-
-    PLAYLIST_IDS.forEach((playlistId) => {
-      normalized[playlistId] = normalizeTrackIndex(playlistId, candidate?.[playlistId]);
-    });
-
-    return normalized;
-  };
-
-  const createStore = () => ({
-    playlists: PLAYLISTS,
-    activePlaylistId: "electronic",
-    trackIndexByPlaylist: createTrackIndexByPlaylist(),
-    volumeLevel: DEFAULT_VOLUME,
-    isMutedPreference: false,
-    isPlaying: false,
-    hasPlayerSession: false,
-    player: null,
-    resumeTime: 0,
-    statusText: "Loading...",
-    dom: {},
-    handlers: null,
-    scriptInjected: false,
-    ytHooked: false,
-    routerHooked: false,
-  });
-
-  const readExistingStore = () => {
-    if (window[STORE_KEY]) {
-      return window[STORE_KEY];
-    }
-
-    for (const legacyKey of LEGACY_STORE_KEYS) {
-      if (window[legacyKey]) {
-        return window[legacyKey];
-      }
-    }
-
-    return null;
-  };
-
-  const getPlaylistIdForVideo = (videoId) => {
-    if (!videoId) {
-      return null;
-    }
-
-    return PLAYLIST_IDS.find((playlistId) =>
-      getPlaylistTracks(playlistId).some((track) => track.videoId === videoId),
-    );
-  };
-
-  const normalizeLegacyStore = (candidate) => {
-    const store = createStore();
-    if (!candidate || typeof candidate !== "object") {
-      return store;
-    }
-
-    if (candidate.playlists && candidate.trackIndexByPlaylist) {
-      store.activePlaylistId = normalizePlaylistId(candidate.activePlaylistId);
-      store.trackIndexByPlaylist = normalizeTrackIndexByPlaylist(candidate.trackIndexByPlaylist);
-      store.volumeLevel = normalizeVolume(candidate.volumeLevel);
-      store.isMutedPreference =
-        typeof candidate.isMutedPreference === "boolean"
-          ? candidate.isMutedPreference
-          : store.volumeLevel === 0;
-      store.isPlaying = Boolean(candidate.isPlaying);
-      store.hasPlayerSession = Boolean(candidate.hasPlayerSession);
-      store.player = candidate.player ?? null;
-      store.resumeTime = normalizeResumeTime(candidate.resumeTime);
-      store.statusText =
-        typeof candidate.statusText === "string" ? candidate.statusText : store.statusText;
-      store.scriptInjected = Boolean(candidate.scriptInjected);
-      store.ytHooked = Boolean(candidate.ytHooked);
-      store.routerHooked = Boolean(candidate.routerHooked);
-      return store;
-    }
-
-    const legacyTracks = Array.isArray(candidate.tracks) ? candidate.tracks : [];
-    const legacyTrack = legacyTracks[candidate.currentTrackIndex] ?? null;
-    const legacyVideoId = legacyTrack?.videoId;
-    const legacyPlaylistId = getPlaylistIdForVideo(legacyVideoId) ?? "electronic";
-
-    store.activePlaylistId = legacyPlaylistId;
-    if (legacyVideoId) {
-      const matchedIndex = getPlaylistTracks(legacyPlaylistId).findIndex(
-        (track) => track.videoId === legacyVideoId,
-      );
-      if (matchedIndex >= 0) {
-        store.trackIndexByPlaylist[legacyPlaylistId] = matchedIndex;
-      }
-    }
-
-    store.isPlaying = Boolean(candidate.isPlaying);
-    store.hasPlayerSession = Boolean(candidate.hasPlayerSession);
-    store.player = candidate.player ?? null;
-    store.resumeTime = normalizeResumeTime(candidate.resumeTime);
-    store.statusText =
-      typeof candidate.statusText === "string" ? candidate.statusText : store.statusText;
-    store.scriptInjected = Boolean(candidate.scriptInjected);
-    store.ytHooked = Boolean(candidate.ytHooked);
-    store.routerHooked = Boolean(candidate.routerHooked);
-    return store;
-  };
-
-  const existingStore = readExistingStore();
-  const store =
-    existingStore?.playlists && existingStore?.trackIndexByPlaylist
-      ? existingStore
-      : normalizeLegacyStore(existingStore);
-
-  store.playlists = PLAYLISTS;
-  store.activePlaylistId = normalizePlaylistId(store.activePlaylistId);
-  store.trackIndexByPlaylist = normalizeTrackIndexByPlaylist(store.trackIndexByPlaylist);
-  store.volumeLevel = normalizeVolume(store.volumeLevel);
-  store.isMutedPreference =
-    typeof store.isMutedPreference === "boolean"
-      ? store.isMutedPreference
-      : store.volumeLevel === 0;
-  store.dom = store.dom ?? {};
-  store.handlers = store.handlers ?? null;
-  store.hasPlayerSession = Boolean(store.hasPlayerSession);
-  store.resumeTime = normalizeResumeTime(store.resumeTime);
-  store.scriptInjected = Boolean(store.scriptInjected);
-  store.ytHooked = Boolean(store.ytHooked);
-  store.routerHooked = Boolean(store.routerHooked);
-
-  const readVolumePreference = () => {
-    try {
-      const rawPreference = window.localStorage.getItem(VOLUME_STORAGE_KEY);
-      if (!rawPreference) {
-        return null;
-      }
-
-      const parsedPreference = JSON.parse(rawPreference);
-      const volumeLevel = normalizeVolume(parsedPreference?.volumeLevel ?? parsedPreference?.value);
-      const isMuted =
-        typeof parsedPreference?.isMuted === "boolean"
-          ? parsedPreference.isMuted
-          : typeof parsedPreference?.muted === "boolean"
-            ? parsedPreference.muted
-            : volumeLevel === 0;
-
-      return { volumeLevel, isMuted };
-    } catch {
-      return null;
-    }
-  };
-
-  const writeVolumePreference = (volumeLevel) => {
-    const normalizedVolume = normalizeVolume(volumeLevel);
-    const isMuted = normalizedVolume === 0;
-
-    try {
-      window.localStorage.setItem(
-        VOLUME_STORAGE_KEY,
-        JSON.stringify({ volumeLevel: normalizedVolume, isMuted }),
-      );
-    } catch {
-      // Ignore storage write errors in private modes.
-    }
-
-    return { volumeLevel: normalizedVolume, isMuted };
-  };
-
-  const storedVolumePreference = readVolumePreference();
-  if (storedVolumePreference) {
-    store.volumeLevel = storedVolumePreference.volumeLevel;
-    store.isMutedPreference = storedVolumePreference.isMuted;
-  } else {
-    store.isMutedPreference = store.volumeLevel === 0;
-  }
-
-  window[STORE_KEY] = store;
-
-  const rememberVolumePreference = (value, options = {}) => {
-    const normalizedVolume = normalizeVolume(value);
-    const shouldPersist = options.persist ?? true;
-    const preference = shouldPersist
-      ? writeVolumePreference(normalizedVolume)
-      : { volumeLevel: normalizedVolume, isMuted: normalizedVolume === 0 };
-
-    store.volumeLevel = preference.volumeLevel;
-    store.isMutedPreference = preference.isMuted;
-
-    if (store.dom.volumeNode) {
-      store.dom.volumeNode.value = String(preference.volumeLevel);
-    }
-
-    return preference.volumeLevel;
-  };
-
-  const activePlaylist = () =>
-    store.playlists[store.activePlaylistId] ?? store.playlists.electronic;
-  const currentTrackIndex = () =>
-    normalizeTrackIndex(store.activePlaylistId, store.trackIndexByPlaylist[store.activePlaylistId]);
-  const currentTrack = () =>
-    activePlaylist().tracks[currentTrackIndex()] ?? activePlaylist().tracks[0];
-
-  const updateStatus = (message) => {
-    store.statusText = message;
-    if (store.dom.statusNode) {
-      store.dom.statusNode.textContent = message;
-    }
-  };
-
-  const updateToggle = (label) => {
+  const updateToggle = () => {
     if (store.dom.toggleNode) {
-      store.dom.toggleNode.textContent = label;
+      store.dom.toggleNode.textContent = store.state.isPlaying ? "Pause" : "Play";
     }
   };
 
   const updateTrackTitle = () => {
-    const track = currentTrack();
-    if (store.dom.trackNode && track) {
-      store.dom.trackNode.textContent = track.title;
+    const track = getCurrentTrack();
+    if (store.dom.trackNode) {
+      store.dom.trackNode.textContent = track ? track.title : "No track available";
     }
   };
 
-  const updateModeButtons = () => {
-    if (!store.dom.modeButtons?.length) {
+  const updateStatus = () => {
+    if (!store.dom.statusNode) {
       return;
     }
 
-    store.dom.modeButtons.forEach((button) => {
-      const isActive = button.dataset.stereoPlaylist === store.activePlaylistId;
-      button.classList.toggle("stereo-mode-button-active", isActive);
-      button.setAttribute("aria-pressed", String(isActive));
-    });
-  };
-
-  const syncSongSelect = () => {
-    const track = currentTrack();
-    if (!store.dom.songNode || !track) {
+    if (store.statusOverride) {
+      store.dom.statusNode.textContent = store.statusOverride;
       return;
     }
 
-    if (store.dom.songNode.value !== track.videoId) {
-      store.dom.songNode.value = track.videoId;
-    }
-  };
-
-  const syncVolumeControl = () => {
-    if (!store.dom.volumeNode || !store.player || typeof store.player.getVolume !== "function") {
-      return;
-    }
-
-    const volume = Number(store.player.getVolume());
-    if (!Number.isNaN(volume)) {
-      rememberVolumePreference(volume);
-    }
-  };
-
-  const capturePlaybackSnapshot = () => {
-    if (!store.player || typeof store.player.getCurrentTime !== "function") {
-      return;
-    }
-
-    store.resumeTime = normalizeResumeTime(Number(store.player.getCurrentTime()));
-  };
-
-  const refreshUI = () => {
-    if (store.dom.volumeNode) {
-      store.dom.volumeNode.value = String(store.volumeLevel);
-    }
-
-    updateTrackTitle();
-    updateModeButtons();
-    ensureSongOptions();
-    syncSongSelect();
-    updateToggle(store.isPlaying ? "Pause" : "Play");
-
-    if (store.statusText) {
-      updateStatus(store.statusText);
-      return;
-    }
-
-    const track = currentTrack();
-    if (track) {
-      updateStatus(store.isPlaying ? `Playing: ${track.title}` : `Ready: ${track.title}`);
-    }
-  };
-
-  const setVolume = (value) => {
-    const normalizedVolume = rememberVolumePreference(value);
-
-    if (store.player && typeof store.player.setVolume === "function") {
-      store.player.setVolume(normalizedVolume);
-    }
-  };
-
-  const cueOrLoadTrack = (playlistId, index, options = {}) => {
-    const normalizedPlaylistId = normalizePlaylistId(playlistId);
-    const normalizedIndex = normalizeTrackIndex(normalizedPlaylistId, index);
-    const track = getPlaylistTracks(normalizedPlaylistId)[normalizedIndex];
-    const shouldAutoplay = Boolean(options.autoplay);
-    const startAtSeconds = normalizeResumeTime(options.startAtSeconds);
-
+    const track = getCurrentTrack();
     if (!track) {
-      updateStatus("No tracks available");
+      store.dom.statusNode.textContent = "No tracks available";
       return;
     }
 
-    store.activePlaylistId = normalizedPlaylistId;
-    store.trackIndexByPlaylist[normalizedPlaylistId] = normalizedIndex;
-    store.resumeTime = startAtSeconds;
+    store.dom.statusNode.textContent = store.state.isPlaying
+      ? `Playing: ${track.title}`
+      : `Ready: ${track.title}`;
+  };
+
+  const setStatusOverride = (message) => {
+    store.statusOverride = message;
+    updateStatus();
+  };
+
+  const ensureGenreOptions = () => {
+    if (!store.dom.genreNode) {
+      return;
+    }
+
+    const marker = PLAYLIST_IDS.join("|");
+    if (
+      store.dom.genreNode.dataset.playlists === marker &&
+      store.dom.genreNode.options.length === PLAYLIST_IDS.length
+    ) {
+      store.dom.genreNode.value = store.state.playlistId;
+      return;
+    }
+
+    store.dom.genreNode.innerHTML = "";
+    PLAYLIST_IDS.forEach((playlistId) => {
+      const option = document.createElement("option");
+      option.value = playlistId;
+      option.textContent = PLAYLISTS[playlistId]?.label ?? playlistId;
+      store.dom.genreNode.appendChild(option);
+    });
+
+    store.dom.genreNode.dataset.playlists = marker;
+    store.dom.genreNode.value = store.state.playlistId;
+  };
+
+  const getPlayingStateFromPlayer = () => {
+    if (!store.player || typeof store.player.getPlayerState !== "function") {
+      return null;
+    }
+
+    if (!window.YT || !window.YT.PlayerState) {
+      return null;
+    }
+
+    const state = store.player.getPlayerState();
+    if (state === window.YT.PlayerState.PLAYING || state === window.YT.PlayerState.BUFFERING) {
+      return true;
+    }
+
+    if (
+      state === window.YT.PlayerState.PAUSED ||
+      state === window.YT.PlayerState.CUED ||
+      state === window.YT.PlayerState.ENDED
+    ) {
+      return false;
+    }
+
+    // UNSTARTED (-1) is intentionally excluded above and falls through to `null`.
+    // When transition:persist transplants the section between documents via
+    // adoptNode(), the YT iframe can transiently report UNSTARTED even while
+    // the video is mid-play.  Returning null tells syncIsPlayingFromPlayer()
+    // to leave store.state.isPlaying untouched so the value snapshot() saved
+    // in astro:before-swap remains authoritative.
+
+    return null;
+  };
+
+  const syncIsPlayingFromPlayer = () => {
+    const isPlaying = getPlayingStateFromPlayer();
+    if (isPlaying === null) {
+      return false;
+    }
+
+    store.state.isPlaying = isPlaying;
+    updateToggle();
+    updateStatus();
+    return true;
+  };
+
+  const applyVisibility = () => {
+    const rootNode = store.dom.rootNode ?? findPlayerRoot();
+    if (!rootNode) {
+      return;
+    }
+
+    const isMobile =
+      typeof window.matchMedia === "function" && window.matchMedia(MOBILE_MEDIA_QUERY).matches;
+
+    if (!isMobile) {
+      store.state.isClosed = false;
+      rootNode.removeAttribute("data-stereo-closed");
+      return;
+    }
+
+    if (store.state.isClosed) {
+      rootNode.setAttribute("data-stereo-closed", "true");
+    } else {
+      rootNode.removeAttribute("data-stereo-closed");
+    }
+  };
+
+  const setVolume = (value, options = {}) => {
+    const normalized = normalizeVolume(value);
+    store.state.volume = normalized;
+    if (store.dom.volumeNode) {
+      store.dom.volumeNode.value = String(normalized);
+    }
+    if (store.player && typeof store.player.setVolume === "function") {
+      store.player.setVolume(normalized);
+    }
+
+    if (options.persist !== false) {
+      persistState();
+    }
+  };
+
+  const snapshot = () => {
+    if (store.player && typeof store.player.getCurrentTime === "function") {
+      store.state.resumeTime = normalizeResumeTime(Number(store.player.getCurrentTime()));
+    }
+    syncIsPlayingFromPlayer();
+    persistState();
+  };
+
+  const loadTrack = (index, options = {}) => {
+    const playlistId = normalizePlaylistId(store.state.playlistId);
+    const tracks = getTracks(playlistId);
+    if (!tracks.length) {
+      setStatusOverride("No tracks available");
+      return;
+    }
+
+    const normalizedIndex = normalizeTrackIndex(playlistId, index);
+    store.state.trackIndex = normalizedIndex;
+    store.state.resumeTime = normalizeResumeTime(options.startAtSeconds ?? 0);
+    persistState();
 
     updateTrackTitle();
-    updateModeButtons();
-    ensureSongOptions();
-    syncSongSelect();
+    updateStatus();
 
     if (!store.player) {
-      store.isPlaying = shouldAutoplay;
-      updateToggle(store.isPlaying ? "Pause" : "Play");
-      updateStatus(`${store.isPlaying ? "Loading" : "Ready"}: ${track.title}`);
       return;
     }
 
-    const playerRequest =
-      startAtSeconds > 0 ? { videoId: track.videoId, startSeconds: startAtSeconds } : track.videoId;
+    const track = tracks[normalizedIndex];
+    const request =
+      store.state.resumeTime > 0
+        ? { videoId: track.videoId, startSeconds: store.state.resumeTime }
+        : track.videoId;
 
-    if (shouldAutoplay) {
-      store.player.loadVideoById(playerRequest);
-      store.isPlaying = true;
-      updateToggle("Pause");
-      updateStatus(`Playing: ${track.title}`);
+    if (options.autoplay) {
+      store.player.loadVideoById(request);
       return;
     }
 
     if (typeof store.player.cueVideoById === "function") {
-      store.player.cueVideoById(playerRequest);
-    } else {
-      store.player.loadVideoById(playerRequest);
-      if (startAtSeconds > 0 && typeof store.player.seekTo === "function") {
-        store.player.seekTo(startAtSeconds, true);
-      }
-      if (typeof store.player.pauseVideo === "function") {
-        store.player.pauseVideo();
-      }
-    }
-
-    store.isPlaying = false;
-    updateToggle("Play");
-    updateStatus(`Ready: ${track.title}`);
-  };
-
-  const loadTrack = (index, options = {}) => {
-    cueOrLoadTrack(store.activePlaylistId, index, {
-      autoplay: options.autoplay ?? store.isPlaying,
-      startAtSeconds: options.startAtSeconds,
-    });
-  };
-
-  const jumpTrack = (step, options = {}) => {
-    loadTrack(currentTrackIndex() + step, options);
-  };
-
-  const switchPlaylist = (playlistId) => {
-    if (!PLAYLIST_IDS.includes(playlistId)) {
+      store.player.cueVideoById(request);
       return;
     }
 
-    cueOrLoadTrack(playlistId, store.trackIndexByPlaylist[playlistId], {
-      autoplay: store.isPlaying,
-    });
+    store.player.loadVideoById(request);
+    if (typeof store.player.pauseVideo === "function") {
+      store.player.pauseVideo();
+    }
+  };
+
+  const jumpTrack = (step) => {
+    store.statusOverride = null;
+    const nextIndex = normalizeTrackIndex(store.state.playlistId, store.state.trackIndex + step);
+    loadTrack(nextIndex, { autoplay: store.state.isPlaying, startAtSeconds: 0 });
+  };
+
+  const changePlaylist = (playlistId) => {
+    store.state.playlistId = normalizePlaylistId(playlistId);
+    store.state.trackIndex = 0;
+    store.state.resumeTime = 0;
+    store.statusOverride = null;
+    ensureGenreOptions();
+    loadTrack(store.state.trackIndex, { autoplay: store.state.isPlaying, startAtSeconds: 0 });
+  };
+
+  const play = () => {
+    if (!store.player || typeof store.player.playVideo !== "function") {
+      setStatusOverride("Player unavailable");
+      store.state.isPlaying = false;
+      updateToggle();
+      return;
+    }
+
+    store.statusOverride = null;
+    store.player.playVideo();
+    store.state.isPlaying = true;
+    updateToggle();
+    updateStatus();
+    persistState();
+  };
+
+  const pause = () => {
+    if (!store.player || typeof store.player.pauseVideo !== "function") {
+      setStatusOverride("Player unavailable");
+      store.state.isPlaying = false;
+      updateToggle();
+      return;
+    }
+
+    store.player.pauseVideo();
+    store.state.isPlaying = false;
+    updateToggle();
+    updateStatus();
+    persistState();
   };
 
   const togglePlayback = () => {
     if (!store.player) {
-      updateStatus("Player unavailable");
+      setStatusOverride("Player unavailable");
+      store.state.isPlaying = false;
+      updateToggle();
       return;
     }
 
-    if (store.isPlaying) {
-      store.player.pauseVideo();
-      store.isPlaying = false;
-      updateToggle("Play");
-      updateStatus("Paused");
+    const isPlaying = getPlayingStateFromPlayer();
+    if (isPlaying === null ? store.state.isPlaying : isPlaying) {
+      pause();
       return;
     }
 
-    store.player.playVideo();
-    store.isPlaying = true;
-    updateToggle("Pause");
-    const track = currentTrack();
-    if (track) {
-      updateStatus(`Playing: ${track.title}`);
+    play();
+  };
+
+  const closePlayer = () => {
+    store.state.isClosed = true;
+    store.statusOverride = "Paused";
+    pause();
+    applyVisibility();
+    persistState();
+  };
+
+  const reopenPlayer = () => {
+    store.state.isClosed = false;
+    store.statusOverride = null;
+    applyVisibility();
+    updateStatus();
+    persistState();
+  };
+
+  const updateUI = () => {
+    if (store.dom.volumeNode) {
+      store.dom.volumeNode.value = String(store.state.volume);
+    }
+
+    ensureGenreOptions();
+    updateTrackTitle();
+    applyVisibility();
+
+    if (!syncIsPlayingFromPlayer()) {
+      updateToggle();
+      updateStatus();
     }
   };
 
-  const onReady = (event) => {
-    const startVolume = rememberVolumePreference(
-      Number(store.dom.volumeNode?.value ?? store.volumeLevel),
-    );
-    event.target.setVolume(startVolume);
-    cueOrLoadTrack(store.activePlaylistId, store.trackIndexByPlaylist[store.activePlaylistId], {
-      autoplay: store.hasPlayerSession ? store.isPlaying : !store.isMutedPreference,
-      startAtSeconds: store.hasPlayerSession ? store.resumeTime : 0,
+  const bindDom = () => {
+    const previousDom = store.dom;
+    const nextDom = getNodes(previousDom.rootNode);
+
+    if (!store.handlers) {
+      store.handlers = {
+        onVolumeInput: () => {
+          if (store.dom.volumeNode) {
+            setVolume(Number(store.dom.volumeNode.value));
+          }
+        },
+        onToggleClick: togglePlayback,
+        onRewindClick: () => jumpTrack(-1),
+        onSkipClick: () => jumpTrack(1),
+        onGenreChange: () => {
+          if (store.dom.genreNode) {
+            changePlaylist(store.dom.genreNode.value);
+          }
+        },
+        onCloseClick: closePlayer,
+        onReopenClick: reopenPlayer,
+      };
+    }
+
+    const bindingPlan = [
+      { key: "volumeNode", eventName: "input", handlerName: "onVolumeInput" },
+      { key: "toggleNode", eventName: "click", handlerName: "onToggleClick" },
+      { key: "rewindNode", eventName: "click", handlerName: "onRewindClick" },
+      { key: "skipNode", eventName: "click", handlerName: "onSkipClick" },
+      { key: "genreNode", eventName: "change", handlerName: "onGenreChange" },
+      { key: "closeNode", eventName: "click", handlerName: "onCloseClick" },
+      { key: "reopenNode", eventName: "click", handlerName: "onReopenClick" },
+    ];
+
+    bindingPlan.forEach(({ key, eventName, handlerName }) => {
+      const oldNode = previousDom[key];
+      const newNode = nextDom[key];
+      const handler = store.handlers[handlerName];
+
+      if (oldNode && oldNode !== newNode) {
+        oldNode.removeEventListener(eventName, handler);
+      }
+
+      if (newNode && oldNode !== newNode) {
+        newNode.addEventListener(eventName, handler);
+      }
     });
-    store.hasPlayerSession = true;
+
+    store.dom = nextDom;
+    updateUI();
+  };
+
+  const onReady = (event) => {
+    setVolume(store.state.volume, { persist: false });
+    loadTrack(store.state.trackIndex, {
+      autoplay: store.state.isPlaying,
+      startAtSeconds: store.state.resumeTime,
+    });
+    window.setTimeout(syncIsPlayingFromPlayer, 300);
   };
 
   const onStateChange = (event) => {
@@ -621,65 +624,50 @@ const statusId = "stereo-status";
       return;
     }
 
-    const track = currentTrack();
-
     if (event.data === window.YT.PlayerState.PLAYING) {
-      store.isPlaying = true;
-      capturePlaybackSnapshot();
-      updateToggle("Pause");
-      if (track) {
-        updateStatus(`Playing: ${track.title}`);
-      }
+      store.state.isPlaying = true;
+      store.statusOverride = null;
+      updateToggle();
+      updateStatus();
+      persistState();
       return;
     }
 
-    if (event.data === window.YT.PlayerState.PAUSED) {
-      store.isPlaying = false;
-      capturePlaybackSnapshot();
-      updateToggle("Play");
-      updateStatus("Paused");
-      return;
-    }
-
-    if (event.data === window.YT.PlayerState.CUED) {
-      store.isPlaying = false;
-      capturePlaybackSnapshot();
-      updateToggle("Play");
-      if (track) {
-        updateStatus(`Ready: ${track.title}`);
-      }
+    if (event.data === window.YT.PlayerState.PAUSED || event.data === window.YT.PlayerState.CUED) {
+      store.state.isPlaying = false;
+      updateToggle();
+      updateStatus();
+      snapshot();
       return;
     }
 
     if (event.data === window.YT.PlayerState.ENDED) {
-      jumpTrack(1, { autoplay: true });
+      jumpTrack(1);
     }
   };
 
   const mountPlayer = () => {
     if (!store.dom.playerNode) {
-      updateStatus("Audio blocked");
+      setStatusOverride("Audio blocked");
       return;
     }
 
     const hasMountedIframe = Boolean(store.dom.playerNode.querySelector("iframe"));
 
     if (store.player && typeof store.player.getPlayerState === "function" && hasMountedIframe) {
-      refreshUI();
-      syncVolumeControl();
+      syncIsPlayingFromPlayer();
+      updateUI();
       return;
     }
-
-    store.player = null;
 
     if (!window.YT || !window.YT.Player) {
-      updateStatus("Audio blocked");
+      setStatusOverride("Audio blocked");
       return;
     }
 
-    const track = currentTrack();
-    if (!track || !track.videoId) {
-      updateStatus("No tracks available");
+    const track = getCurrentTrack();
+    if (!track) {
+      setStatusOverride("No tracks available");
       return;
     }
 
@@ -702,105 +690,6 @@ const statusId = "stereo-status";
         onStateChange,
       },
     });
-  };
-
-  function ensureSongOptions() {
-    if (!store.dom.songNode) {
-      return;
-    }
-
-    const tracks = activePlaylist().tracks;
-    if (
-      store.dom.songNode.options.length === tracks.length &&
-      store.dom.songNode.dataset.playlistId === store.activePlaylistId
-    ) {
-      syncSongSelect();
-      return;
-    }
-
-    store.dom.songNode.innerHTML = "";
-    tracks.forEach((track) => {
-      const option = document.createElement("option");
-      option.value = track.videoId;
-      option.textContent = track.title;
-      store.dom.songNode.appendChild(option);
-    });
-
-    store.dom.songNode.dataset.playlistId = store.activePlaylistId;
-    syncSongSelect();
-  }
-
-  const bindDom = () => {
-    const previousDom = store.dom;
-    const nextDom = getNodes(previousDom.rootNode);
-
-    if (!store.handlers) {
-      store.handlers = {
-        onVolumeInput: () => {
-          if (store.dom.volumeNode) {
-            setVolume(Number(store.dom.volumeNode.value));
-          }
-        },
-        onToggleClick: togglePlayback,
-        onRewindClick: () => jumpTrack(-1),
-        onSkipClick: () => jumpTrack(1),
-        onSongChange: () => {
-          if (!store.dom.songNode) {
-            return;
-          }
-
-          const nextIndex = activePlaylist().tracks.findIndex(
-            (track) => track.videoId === store.dom.songNode.value,
-          );
-          if (nextIndex >= 0) {
-            loadTrack(nextIndex);
-          }
-        },
-        onModeClick: (event) => {
-          const nextPlaylistId = event.currentTarget?.dataset?.stereoPlaylist;
-          if (nextPlaylistId) {
-            switchPlaylist(nextPlaylistId);
-          }
-        },
-      };
-    }
-
-    const bindingPlan = [
-      { key: "volumeNode", eventName: "input", handlerName: "onVolumeInput" },
-      { key: "toggleNode", eventName: "click", handlerName: "onToggleClick" },
-      { key: "rewindNode", eventName: "click", handlerName: "onRewindClick" },
-      { key: "skipNode", eventName: "click", handlerName: "onSkipClick" },
-      { key: "songNode", eventName: "change", handlerName: "onSongChange" },
-    ];
-
-    bindingPlan.forEach(({ key, eventName, handlerName }) => {
-      const oldNode = previousDom[key];
-      const newNode = nextDom[key];
-      const handler = store.handlers[handlerName];
-
-      if (oldNode && oldNode !== newNode) {
-        oldNode.removeEventListener(eventName, handler);
-      }
-
-      if (newNode && oldNode !== newNode) {
-        newNode.addEventListener(eventName, handler);
-      }
-    });
-
-    if (Array.isArray(previousDom.modeButtons)) {
-      previousDom.modeButtons.forEach((button) => {
-        button.removeEventListener("click", store.handlers.onModeClick);
-      });
-    }
-
-    if (Array.isArray(nextDom.modeButtons)) {
-      nextDom.modeButtons.forEach((button) => {
-        button.addEventListener("click", store.handlers.onModeClick);
-      });
-    }
-
-    store.dom = nextDom;
-    refreshUI();
   };
 
   const bootstrapPlayer = () => {
@@ -831,14 +720,53 @@ const statusId = "stereo-status";
   };
 
   if (!store.routerHooked) {
-    document.addEventListener("astro:before-swap", () => {
-      capturePlaybackSnapshot();
-    });
+    document.addEventListener("astro:before-swap", snapshot);
     document.addEventListener("astro:after-swap", () => {
+      // Capture isPlaying BEFORE bindDom() runs.  bindDom() -> updateUI() ->
+      // syncIsPlayingFromPlayer() can read a transient UNSTARTED state from
+      // the YT player right after document adoption and would write false into
+      // store.state.isPlaying, discarding the accurate value snapshot() saved
+      // moments ago in astro:before-swap.
+      const wasPlaying = store.state.isPlaying;
+
       bindDom();
+
+      // Restore the authoritative value in case syncIsPlayingFromPlayer() ran
+      // during bindDom/updateUI and wrote a bad state from a transitional
+      // player reading.
+      store.state.isPlaying = wasPlaying;
+
       mountPlayer();
+
+      // Only call playVideo() directly when the iframe is already mounted.
+      // If transition:persist kept it alive (the normal case) the iframe is
+      // there and we resume immediately.  If mountPlayer() is constructing a
+      // fresh YT.Player (transition:persist failed / first visit after a gap),
+      // the player is not ready yet and playVideo() would silently no-op;
+      // onReady() handles autoplay in that path using store.state.isPlaying,
+      // which is correctly preserved above.
+      const hasIframe = Boolean(store.dom.playerNode?.querySelector("iframe"));
+      if (wasPlaying && hasIframe && store.player && typeof store.player.playVideo === "function") {
+        store.player.playVideo();
+        window.setTimeout(syncIsPlayingFromPlayer, 300);
+      }
     });
     store.routerHooked = true;
+  }
+
+  if (!store.resizeHooked) {
+    window.addEventListener("resize", applyVisibility);
+    store.resizeHooked = true;
+  }
+
+  if (!store.visibilityHooked) {
+    document.addEventListener("visibilitychange", () => {
+      if (document.visibilityState === "hidden") {
+        snapshot();
+      }
+    });
+    window.addEventListener("pagehide", snapshot);
+    store.visibilityHooked = true;
   }
 
   bootstrapPlayer();
@@ -867,6 +795,13 @@ const statusId = "stereo-status";
     overflow: hidden;
   }
 
+  .stereo-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.6rem;
+  }
+
   .stereo-shell::before {
     content: "";
     position: absolute;
@@ -885,8 +820,9 @@ const statusId = "stereo-status";
 
   .stereo-title {
     color: #ffffff;
-    font-size: 0.98rem;
+    font-size: 0.515rem;
     letter-spacing: 0.14em;
+    margin: 0;
   }
 
   .stereo-track {
@@ -904,8 +840,7 @@ const statusId = "stereo-status";
     gap: 0.55rem;
   }
 
-  .stereo-button,
-  .stereo-mode-button {
+  .stereo-button {
     border: 1px solid rgba(255, 255, 255, 0.28);
     color: #f5fbff;
     background: rgba(255, 255, 255, 0.07);
@@ -920,39 +855,25 @@ const statusId = "stereo-status";
       border-color 0.2s ease;
   }
 
-  .stereo-button:hover,
-  .stereo-mode-button:hover {
+  .stereo-button:hover {
     color: #ffffff;
     border-color: rgba(215, 215, 215, 0.7);
     background: rgba(215, 215, 215, 0.14);
   }
 
-  .stereo-mode-row {
-    display: grid;
-    grid-template-columns: auto 1fr;
-    gap: 0.55rem;
-    align-items: center;
-    margin-top: 0.55rem;
-  }
-
-  .stereo-mode-label,
-  .stereo-volume-label,
-  .stereo-song-label {
-    font-size: 0.72rem;
-    color: #ffffff;
+  .stereo-close,
+  .stereo-reopen {
+    border: 1px solid rgba(255, 255, 255, 0.28);
+    color: #f5fbff;
+    background: rgba(255, 255, 255, 0.08);
+    font-size: 0.62rem;
+    line-height: 1;
+    padding: 0.35rem 0.55rem;
+    text-transform: uppercase;
     letter-spacing: 0.08em;
-  }
-
-  .stereo-mode-switch {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 0.45rem;
-  }
-
-  .stereo-mode-button-active {
-    background: rgba(215, 215, 215, 0.2);
-    border-color: rgba(215, 215, 215, 0.74);
-    color: var(--site-accent-color);
+    display: none;
+    align-items: center;
+    justify-content: center;
   }
 
   .stereo-mix-row {
@@ -963,7 +884,14 @@ const statusId = "stereo-status";
     gap: 0.45rem;
   }
 
-  .stereo-song-select {
+  .stereo-genre-label,
+  .stereo-volume-label {
+    font-size: 0.72rem;
+    color: #ffffff;
+    letter-spacing: 0.08em;
+  }
+
+  .stereo-genre-select {
     width: 100%;
     min-width: 0;
     border: 1px solid rgba(255, 255, 255, 0.2);
@@ -1003,6 +931,42 @@ const statusId = "stereo-status";
 
     .stereo-mix-row {
       grid-template-columns: auto 1fr;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .stereo-shell {
+      padding: 0.65rem;
+    }
+
+    .stereo-title {
+      font-size: 0.86rem;
+    }
+
+    .stereo-track {
+      font-size: 0.68rem;
+    }
+
+    .stereo-button {
+      font-size: 0.64rem;
+      padding: 0.45rem 0.55rem;
+    }
+
+    .stereo-close {
+      display: inline-flex;
+    }
+
+    .stereo-reopen {
+      width: 100%;
+      display: none;
+    }
+
+    .stereo-player[data-stereo-closed="true"] .stereo-shell {
+      display: none;
+    }
+
+    .stereo-player[data-stereo-closed="true"] .stereo-reopen {
+      display: flex;
     }
   }
 </style>

@@ -60,6 +60,7 @@ Runtime serves static localized markdown only.
 - Keep brand and product names stable (`GitHub`, `LinkedIn`, `Krypto`, `MyRetroGameList`, `Inje.X`).
 - Do not translate content at request/runtime.
 - Projects are external-first in this phase; the hub summarizes them and links out.
+- Writing images live under `public/writing/<slug>/` and should be referenced as `/writing/<slug>/<file>`.
 
 ## Writing Formatting Extras
 

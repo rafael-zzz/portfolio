@@ -32,7 +32,7 @@ const { copy, fallbackCopy, entries, hasFallback } = Astro.props;
                 <span>ENTRY_LOG</span>
                 <time datetime={entry.publishedAt.toISOString()}>{entry.publishedDateLabel}</time>
               </div>
-              <h2 class="writing-hub-title font-['Departure_Mono']">{entry.title}</h2>
+              <h2 class="writing-hub-title font-wayfarers">{entry.title}</h2>
               <p class="writing-hub-description">{entry.description}</p>
               <div class="writing-hub-tags">
                 {entry.tags.map((tag) => (
@@ -105,7 +105,7 @@ const { copy, fallbackCopy, entries, hasFallback } = Astro.props;
 
   .writing-hub-title {
     color: #ffffff;
-    font-size: 1.3rem;
+    font-size: 0.9rem;
     line-height: 1.2;
   }
 

@@ -17,6 +17,7 @@ const languageOptions = LOCALES.map((language) => ({
   label: LOCALE_LABELS[language],
   active: language === locale,
 }));
+const activeLanguage = languageOptions.find((option) => option.active) ?? languageOptions[0];
 
 const routeLinks = [
   { key: "home" as const, label: copy.overviewLabel, href: getLocalizedPath(locale, "home") },
@@ -43,7 +44,7 @@ const routeLinks = [
       </div>
 
       <div class="flex-grow min-w-0 text-center">
-        <span class="text-white text-sm lg:text-sm font-['Departure_Mono'] inline-flex items-center px-0 text-center py-2 dir-text max-w-full">
+        <span class="text-white text-sm lg:text-sm font-wayfarers font-size:0.9rem inline-flex items-center px-0 text-center py-2 dir-text max-w-full">
           <span class="terminal-text text-retro-primary truncate">&nbsp; &rarr; {copy.terminalPathLabel}</span>
         </span>
       </div>
@@ -53,6 +54,7 @@ const routeLinks = [
           {routeLinks.map((link) => (
             <a
               href={link.href}
+              data-astro-nav
               class:list={[
                 "route-chip font-['Departure_Mono']",
                 routeKey === link.key && "route-chip-active",
@@ -63,19 +65,34 @@ const routeLinks = [
           ))}
         </nav>
 
-        <nav class="flex items-center gap-1 flex-wrap justify-end" aria-label={copy.languageSwitcherLabel}>
-          {languageOptions.map((option) => (
-            <a
-              href={option.href}
-              class:list={[
-                "lang-chip font-['Departure_Mono'] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-retro-primary",
-                option.active && "lang-chip-active",
-              ]}
-              aria-current={option.active ? "page" : undefined}
+        <nav class="flex items-center justify-end" aria-label={copy.languageSwitcherLabel}>
+          <details class="lang-dropdown">
+            <summary
+              class="lang-chip font-['Departure_Mono'] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-retro-primary"
+              aria-label={copy.languageSwitcherLabel}
             >
-              {option.label}
-            </a>
-          ))}
+              <span>{activeLanguage.label}</span>
+              <svg class="lang-caret" viewBox="0 0 12 8" aria-hidden="true">
+                <path d="M1 1.5L6 6.5L11 1.5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.5" />
+              </svg>
+            </summary>
+            <div class="lang-menu" role="menu">
+              {languageOptions.map((option) => (
+                <a
+                  href={option.href}
+                  data-astro-nav
+                  class:list={[
+                    "lang-chip lang-menu-item font-['Departure_Mono'] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-retro-primary",
+                    option.active && "lang-chip-active",
+                  ]}
+                  aria-current={option.active ? "page" : undefined}
+                  role="menuitem"
+                >
+                  {option.label}
+                </a>
+              ))}
+            </div>
+          </details>
         </nav>
 
         <div class="hidden lg:flex items-center gap-2">
@@ -97,11 +114,61 @@ const routeLinks = [
   </div>
 </section>
 
-<script>
-  const toggleButton = document.getElementById("nav-toggle-btn");
-  toggleButton?.addEventListener("click", () => {
-    window.dispatchEvent(new Event("sidebar:toggle"));
-  });
+<script type="module">
+  import { navigate } from "astro:transitions/client";
+
+  const NAV_HOOK_KEY = "__topNavClientRoutingHooked";
+
+  if (!window[NAV_HOOK_KEY]) {
+    window[NAV_HOOK_KEY] = true;
+
+    document.addEventListener("click", (event) => {
+      const target = event.target;
+      if (!(target instanceof Element)) {
+        return;
+      }
+
+      const openDropdown = document.querySelector(".lang-dropdown[open]");
+      if (openDropdown) {
+        const dropdownParent = target.closest(".lang-dropdown");
+        if (!dropdownParent) {
+          openDropdown.removeAttribute("open");
+        }
+      }
+
+      const link = target.closest("a[data-astro-nav]");
+      if (!(link instanceof HTMLAnchorElement)) {
+        return;
+      }
+
+      if (
+        event.defaultPrevented ||
+        event.button !== 0 ||
+        event.metaKey ||
+        event.ctrlKey ||
+        event.shiftKey ||
+        event.altKey
+      ) {
+        return;
+      }
+
+      const href = link.getAttribute("href");
+      if (!href || !href.startsWith("/")) {
+        return;
+      }
+
+      event.preventDefault();
+      void navigate(href);
+    });
+
+    document.addEventListener("keydown", (event) => {
+      if (event.key !== "Escape") {
+        return;
+      }
+      const openDropdown = document.querySelector(".lang-dropdown[open]");
+      openDropdown?.removeAttribute("open");
+    });
+  }
 </script>
 
 <style>
@@ -116,9 +183,12 @@ const routeLinks = [
   .route-chip,
   .lang-chip,
   .action-link {
+    align-items: center;
     border: 2px solid rgba(255, 255, 255, 0.7);
     color: #ffffff;
+    display: inline-flex;
     font-size: 0.7rem;
+    gap: 0.35rem;
     line-height: 1;
     padding: 0.4rem 0.55rem;
     text-align: center;
@@ -136,6 +206,45 @@ const routeLinks = [
     background-color: #ffffff;
     color: #000000;
     border-color: #ffffff;
+  }
+
+  .lang-dropdown {
+    position: relative;
+  }
+
+  .lang-dropdown summary {
+    cursor: pointer;
+    list-style: none;
+  }
+
+  .lang-dropdown summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .lang-caret {
+    height: 0.5rem;
+    width: 0.75rem;
+  }
+
+  .lang-menu {
+    position: absolute;
+    right: 0;
+    top: calc(100% + 0.35rem);
+    display: grid;
+    gap: 0.35rem;
+    min-width: 3.5rem;
+    padding: 0.35rem;
+    background: linear-gradient(180deg, rgba(4, 7, 11, 0.98), rgba(9, 15, 23, 0.94));
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    box-shadow:
+      0 0 0 1px rgba(255, 255, 255, 0.08) inset,
+      0 18px 28px rgba(0, 0, 0, 0.45);
+    z-index: 50;
+  }
+
+  .lang-menu-item {
+    justify-content: center;
+    width: 100%;
   }
 
   @media (max-width: 860px) {

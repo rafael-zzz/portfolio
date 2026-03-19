@@ -20,12 +20,12 @@ export const esMessages = {
     title: "Explorador de Archivos",
     closeSidebarLabel: "Cerrar barra lateral",
     menu: {
-      overview: "resumen.exe",
+      overview: "./resumen",
       writing: "escritos",
       projects: "proyectos",
       profiles: "perfiles",
-      github: "github.exe",
-      linkedin: "linkedin.exe",
+      github: "./github",
+      linkedin: "./linkedin",
     },
   },
   footer: {
@@ -88,22 +88,22 @@ export const esMessages = {
       eyebrow: "/sys/experience",
       places: [
         {
-          company: "Freelance",
-          role: "Consultor de Software y Seguridad",
-          period: "2023 - Presente",
+          company: "CISSA",
+          role: "Investigador en Seguridad en Prácticas",
+          period: "2026 - 2026",
           highlights: [
-            "Desarrollo y mantenimiento de funcionalidades web seguras para clientes pequenos.",
-            "Revision de vulnerabilidades y hardening en aplicaciones publicas.",
-            "Documentacion de playbooks de despliegue y listas de respuesta a incidentes.",
+            "Colaboración en el desarrollo de un artículo técnico.",
+            "Desarrollo de una herramienta escalable para medir la robustez frente a diferentes ataques adversariales en modelos de IA.",
+            "Documentación robusta de modelado de amenazas frente a posibles vectores de ataque en infraestructuras críticas.",
           ],
         },
         {
-          company: "Equipos Academicos y CTF",
-          role: "Colaborador en Investigacion de Seguridad",
-          period: "2022 - Presente",
+          company: "Equipo de CTF 0xBit",
+          role: "Líder, Reclutador, Miembro Activo",
+          period: "2023 - Presente",
           highlights: [
             "Analisis de cadenas de exploit y patrones de mitigacion en laboratorios controlados.",
-            "Colaboracion en resolucion de retos CTF y publicacion de write-ups.",
+            "Colaboracion en resolucion de retos CTF. Siendo ellos: THM Advent of Cyber'24, srdnlen'25, srdnlen'26.",
             "Presentacion de hallazgos de seguridad y defensas practicas.",
           ],
         },

@@ -11,15 +11,16 @@ interface Props {
   entry: LocalizedContent<WritingEntry>;
   fallbackCopy: Messages["contentFallback"];
   tagsLabel: string;
+  issueNumber: number;
 }
 
-const { entry, fallbackCopy, tagsLabel } = Astro.props;
+const { entry, fallbackCopy, tagsLabel, issueNumber } = Astro.props;
 const { Content } = await entry.entry.render();
 const safeFontScale = Math.min(Math.max(entry.entry.data.fontScale, 0.85), 1.45);
 const publishedDateIso = entry.entry.data.publishedAt.toISOString().slice(0, 10);
 const sourceSlug = getSourceSlug(entry.entry);
 const sourceLocale = entry.contentLocale;
-const zineIssue = String(entry.entry.data.publishedAt.getUTCMonth() + 1).padStart(2, "0");
+const zineIssue = String(issueNumber).padStart(2, "0");
 const zineFileCode = sourceSlug.replace(/[^a-z0-9-]/gi, "-").toUpperCase();
 ---
 
@@ -41,8 +42,8 @@ const zineFileCode = sourceSlug.replace(/[^a-z0-9-]/gi, "-").toUpperCase();
   <div class="writing-zine-masthead font-['Departure_Mono']">
     <p class="writing-zine-kicker">PERSONAL RESEARCH FILE</p>
     <div class="writing-zine-grid">
-      <span>ISS.{zineIssue}</span>
-      <span>FILE.{zineFileCode}</span>
+      <span>FILE:{zineFileCode}</span>
+      <span>ISS:{zineIssue}</span>
       <time datetime={entry.entry.data.publishedAt.toISOString()}>{publishedDateIso}</time>
     </div>
     <p class="writing-zine-description">{entry.entry.data.description}</p>
@@ -58,6 +59,94 @@ const zineFileCode = sourceSlug.replace(/[^a-z0-9-]/gi, "-").toUpperCase();
   <article class="writing-post-content" style={`--writing-font-scale: ${safeFontScale};`}>
     <Content />
   </article>
+
+  <script is:inline>
+    (() => {
+      const root = document.querySelector(".writing-post-content");
+      if (!root) {
+        return;
+      }
+
+      const isWhitespace = (node) =>
+        node.nodeType === Node.TEXT_NODE && !node.textContent.trim();
+
+      const extractImage = (node) => {
+        if (!node || node.nodeType !== Node.ELEMENT_NODE) {
+          return null;
+        }
+
+        const element = node;
+
+        if (element.tagName === "IMG") {
+          return { image: element, wrapper: element };
+        }
+
+        if (element.tagName === "PICTURE") {
+          const img = element.querySelector("img");
+          if (img) {
+            return { image: img, wrapper: element };
+          }
+        }
+
+        if (element.tagName === "A") {
+          const meaningful = Array.from(element.childNodes).filter(
+            (child) => !isWhitespace(child),
+          );
+
+          if (meaningful.length === 1) {
+            return extractImage(meaningful[0]);
+          }
+        }
+
+        return null;
+      };
+
+      const wrapBlock = (block) => {
+        if (block.closest("figure.md-figure")) {
+          return;
+        }
+
+        const meaningful = Array.from(block.childNodes).filter(
+          (child) => !isWhitespace(child),
+        );
+
+        if (meaningful.length !== 1) {
+          return;
+        }
+
+        const extracted = extractImage(meaningful[0]);
+
+        if (!extracted) {
+          return;
+        }
+
+        const alt = extracted.image.getAttribute("alt")?.trim() ?? "";
+        const figure = document.createElement("figure");
+        figure.className = "md-figure";
+
+        figure.appendChild(meaningful[0]);
+
+        if (alt) {
+          const caption = document.createElement("figcaption");
+          caption.className = "md-figcaption";
+          caption.textContent = alt;
+          figure.appendChild(caption);
+        }
+
+        block.replaceWith(figure);
+      };
+
+      const run = () => {
+        Array.from(root.querySelectorAll("p")).forEach(wrapBlock);
+      };
+
+      if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", run, { once: true });
+      } else {
+        run();
+      }
+    })();
+  </script>
 </SectionFrame>
 
 <style>
@@ -238,9 +327,9 @@ const zineFileCode = sourceSlug.replace(/[^a-z0-9-]/gi, "-").toUpperCase();
 
   .writing-post-content :global(h2)::before {
     color: rgba(186, 206, 240, 0.94);
-    content: "$ section-" counter(terminal-section, decimal-leading-zero) " > ";
+    content: ""counter(terminal-section)":";
     font-family: "Departure Mono", monospace;
-    font-size: 0.52em;
+    font-size: 1.2em;
     letter-spacing: 0.15em;
     margin-right: 0.4rem;
     vertical-align: 0.16em;
@@ -253,10 +342,9 @@ const zineFileCode = sourceSlug.replace(/[^a-z0-9-]/gi, "-").toUpperCase();
 
   .writing-post-content :global(h3)::before {
     color: rgba(171, 191, 226, 0.86);
-    content: ">> " counter(terminal-section, decimal-leading-zero) "." counter(terminal-subsection)
-      " ";
+    content: "> " counter(terminal-section) "." counter(terminal-subsection)":";
     font-family: "Departure Mono", monospace;
-    font-size: 0.66em;
+    font-size: 1.08em;
     letter-spacing: 0.08em;
     margin-right: 0.25rem;
     vertical-align: 0.15em;
@@ -478,6 +566,48 @@ const zineFileCode = sourceSlug.replace(/[^a-z0-9-]/gi, "-").toUpperCase();
     max-width: 100%;
   }
 
+  .writing-post-content :global(figure.md-figure) {
+    border: 1px solid rgba(183, 195, 221, 0.9);
+    margin-bottom: 0;
+    margin-top: 1.1rem;
+    max-width: 100%;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .writing-post-content :global(figure.md-figure a) {
+    display: block;
+  }
+
+  .writing-post-content :global(figure.md-figure img) {
+    border: 0;
+    display: block;
+    height: auto;
+    margin: 0;
+    width: 100%;
+    z-index: 0;
+  }
+
+  .writing-post-content :global(figure.md-figure .md-figcaption) {
+    background:
+      linear-gradient(90deg, rgba(15, 23, 38, 0.5), rgba(15, 23, 38, 0.2)),
+      rgba(150, 154, 163, 0.4);
+    border-top: 1px dashed rgba(189, 202, 228, 0.6);
+    bottom: 0;
+    color: rgba(255, 255, 255, 1);
+    font-family: "Departure Mono", "IBM Plex Mono", monospace;
+    font-size: 0.62rem;
+    left: 0;
+    letter-spacing: 0.12em;
+    line-height: 0.9;
+    padding: 0.38rem 0.55rem;
+    pointer-events: none;
+    position: absolute;
+    right: 0;
+    text-transform: uppercase;
+    z-index: 1;
+  }
+
   .writing-post-content :global(ul.contains-task-list) {
     list-style: none;
     padding-left: 0;
@@ -597,6 +727,12 @@ const zineFileCode = sourceSlug.replace(/[^a-z0-9-]/gi, "-").toUpperCase();
 
     .writing-post-content :global(p:first-of-type)::before {
       font-size: 0.72em;
+    }
+
+    .writing-post-content :global(figure.md-figure .md-figcaption) {
+      font-size: 0.56rem;
+      letter-spacing: 0.1em;
+      padding: 0.3rem 0.45rem;
     }
   }
 </style>
