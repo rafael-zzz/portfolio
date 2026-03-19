@@ -74,21 +74,17 @@ First, we modeled the attack architecture. There is an attacker AI model we call
 From that point on, since our team was multidisciplinary, we "separated" the deliverables into: deepening the paper, tool/solution scalability, and usability/ease of use. My main concern, since we had a proof of concept made only for our use case, was to allow different groups to use the solution according to their testing needs. Therefore, we could expand the possible use both at hardware level and tested models, being both local models and API-based, with a graphical tool to assist.
 
 ## Paper Discovery
-## Descobertas do Artigo
+We hypothesized that language could be a major facilitator of attacks, depending on how they are trained. I still believe it could be, but we discovered that there is no major difference between Portuguese and English, even with predominantly training in our language. We considered, by the end of the project, expanding the tested languages, but since our project has exponential complexity, running tests to expand the hypothesis became unfeasible, especially with infrastructure costs.
 
-Levantamos a hipótese de que a linguagem poderia ser um facilitador importante de ataques, dependendo de como foram treinados. Ainda acredito que poderia ser, mas descobrimos que não há diferença significativa entre Português e Inglês, mesmo com treinamento predominantemente em nossa linguagem. Consideramos, no final do projeto, expandir as linguagens testadas, mas como nosso projeto tem complexidade exponencial, executar testes para expandir a hipótese tornou-se inviável, especialmente com custos de infraestrutura.
-
-### A Ferramenta (Não a banda)
-
-O que é interessante sobre a ferramenta é que ela permite o uso de predefinições e seleção de diferentes mutadores, vítimas e juízes, funcionando com GPUs NVIDIA, AMD, Intel e Apple para paralelização tanto dos ataques quanto dos modelos testados, executando-os em diferentes núcleos (se você tiver a infraestrutura para fazer isso, é claro). E como disse, os resultados são visíveis através do próprio CLI ou você pode criar um arquivo HTML que o condensa para outra forma de visualizá-lo.
+## The Tool (Not the band)
+What is interesting about the tool is it allows for the use of presets and selection of different mutators, victims and judges, working with NVIDIA, AMD, Intel and Apple GPUs for the parallelization of both the attacks and the models tested, running them in different cores (if you have the infrastructure to do it, of course). And as I said, the results are visible through the CLI itself or you can create an HTML file that condenses it for another way to visualize.
 
 ```
-Detalhe engraçado: Dois dias após o final do nosso projeto, Pliny lançou a ferramenta OBLITERALUS, que é bem similar à nossa.
+Funny detail: Two days after the end of our project, Pliny released the OBLITERALUS tool, which is pretty similar to ours.
 ```
 
-### A Ferramenta Gráfica
-
-Ainda precisávamos de uma forma de permitir que usuários não-técnicos usassem nossa ferramenta, então prototipamos uma GUI que é uma expansão da ferramenta CLI, nomeada Inje.X (após prompt injection) e planejamos que tivesse as mesmas funcionalidades que a ferramenta original tinha, sendo elas: predefinições, seleção de modelos, seleção de métodos, multiplataforma. Você não seria capaz de alterar os arquivos para importar novas sementes, mas existe a ferramenta original que permite isso, então..?
+## The Graphical Tool
+We still needed a way to enable non-technical users to use our tool, so we prototyped a GUI that is an expansion of the CLI tool, named it Inje.X (after prompt injection) and planned it to have the same functionalities that the original tool had, being them: presets, models selection, methods selection, multiplatform. You would not be able to alter the files to import new seeds, but there is the original tool that enables this, so..?
 
 
 
