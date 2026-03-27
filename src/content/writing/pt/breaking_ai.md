@@ -10,14 +10,42 @@ featured: true
 tags: [security, artificial intelligence, adversarial attacks]
 ---
 
-#### Prefácio
+#### Introdução
 
-##### Para começar, não vou entrar em pequenos detalhes porque minha memória é bagunçada. Quero agradecer a todos os mentores, colegas de equipe, competidores e todos que ajudaram no projeto, direta, indiretamente ou me ouvindo falar empolgado sobre o progresso que eu e minha equipe estávamos fazendo. Eu com certeza não teria uma experiência tão satisfatória sem todos vocês e espero que saibam disso. Estou escrevendo isso também para o eu de 2 anos atrás, que não acreditava que isso seria possível e teria aqueles olhos de curiosidade infantil ouvindo sobre isso.
+##### Para começar, não vou entrar em pequenos detalhes porque minha memória é falha. Quero agradecer a todos os mentores, colegas de equipe, competidores e todos que ajudaram no projeto, diretamente, indiretamente ou me ouvindo tagarelar empolgado sobre o progresso que eu e minha equipe estávamos fazendo. Eu com certeza não teria uma experiência tão satisfatória sem todos vocês e espero que saibam disso. Estou escrevendo isso também para o eu de 2 anos atrás, que não acreditava que isso seria possível e teria aqueles olhos de curiosidade infantil ouvindo sobre isso.
 
 ----------------------
 
+#### Conceitos Chave
+**Ataques Adversariais**: Técnicas de otimização utilizadas para encontrar entradas modificadas que causam classificações incorretas em modelos de IA, explorando vulnerabilidades na função de decisão do modelo.
+
+**Injeção de Prompt**: Ataque onde um usuário malicioso insere instruções ou dados não autorizados em um prompt para manipular o comportamento do LLM e obter respostas indesejadas.
+
+**Guardrails**: Sistema de proteção intermediário entre o usuário e o modelo, que filtra entradas e saídas usando linguagem natural para bloquear solicitações ou respostas maliciosas.
+
+**Forward Propagation**: Processo durante o qual dados de entrada passam através das camadas da rede neural, com cada peso determinando a classificação ou previsão final.
+
+**Back Propagation**: Algoritmo que calcula gradientes dos erros em relação aos pesos, permitindo ajustes para reduzir a perda (loss score) do modelo.
+
+**Loss Score**: Métrica que quantifica o erro entre as previsões do modelo e os valores esperados durante o treinamento.
+
+**Gradient Descent**: Algoritmo de otimização que calcula a direção do maior decréscimo do erro (loss score) ajustando iterativamente os pesos do modelo na direção oposta ao gradiente, reduzindo progressivamente a perda.
+
+**Gradient Ascent**: Variação do Gradient Descent que se move na direção do maior aumento do gradiente, utilizado em ataques adversariais para maximizar o erro do modelo e encontrar entradas que causam classificações incorretas.
+
+**Token**: Unidade discreta de texto (caractere, palavra ou subpalavra) que o modelo processa como entrada.
+
+**Transformers**: Arquitetura neural baseada em mecanismo de atenção que processa sequências de dados em paralelo, permitindo que o modelo pondere o contexto de diferentes palavras ao gerar saídas.
+
+**Mutator**: Função ou método que modifica iterativamente prompts para explorar vulnerabilidades em um modelo de IA vítima, evoluindo o ataque através de técnicas de otimização.
+
+**Juiz**: Componente que avalia as respostas do modelo vítima, classificando-as como benignas ou maliciosas e coletando métricas para análise dos ataques adversariais.
+
+**Vítima**: Modelo de IA alvo que recebe os prompts modificados do mutator e gera respostas avaliadas pelo juiz para medir sua robustez contra ataques de injeção de prompt.
+
+
 ## O Início
-Tinha uma sensação estranha quando os temas foram dados a cada grupo, o nosso sendo "desenvolver mecanismos para proteger modelos de IA". Essa é uma área difícil de pesquisa que tínhamos apenas 6 semanas para desenvolver uma solução ideal. Eu tinha uma pequena experiência no tópico e pude ajudar explicando conceitos gerais pro time, mas ainda tivemos dificuldade em definir quais categorias de ataques adversariais eram mais eficientes, para a solução criada para se proteger deles de forma útil.
+Tinha uma sensação estranha quando os temas foram dados a cada grupo, o nosso sendo "desenvolver mecanismos para proteger modelos de IA". Essa é uma área difícil de pesquisa que tínhamos apenas 6 semanas para desenvolver uma solução ideal. Eu tinha uma pequena experiência no tópico e pude ajudar explicando conceitos gerais pro time, mas ainda tivemos dificuldade em definir quais categorias de ataques adversariais eram mais eficientes, para a solução criada se proteger deles de forma útil.
 
 
 ## Modelagem de Ameaças
@@ -36,16 +64,16 @@ Agora você sabe o escopo do que planejamos, mas como esses ataques realmente ac
 
 
 ### Processo de Inferência
-- 3.2.1: Após o treinamento, essas imagens passam pelo processo de `Forward Propagation` pelo modelo, com cada peso e camadas internas determinando a classificação daquela imagem.
+- 3.2.1: Durante o treinamento, essas imagens passam pelo processo de `Forward Propagation` pelo modelo, com cada peso e camadas internas determinando a classificação daquela imagem.
 - 3.2.2: Você agora tem um gráfico que pode, dada uma imagem de gato ou cachorro, estabelecer onde ela deveria estar naquele gráfico, com uma certa precisão. Isso te permite fazer inferências por esse gráfico.
-- 3.2.3: Se a inferência estiver constantemente incorreta, você pode identificar quais pesos e camadas tiveram maior relevância naquela previsão errada e executar um algoritmo de `BackProgapation` para reduzir esse `Loss Score`. Isso nos leva ao próximo passo, como os ataques acontecem.
+- 3.2.3: Se a inferência estiver constantemente incorreta, você pode identificar quais pesos e camadas tiveram maior relevância naquela previsão errada e executar um algoritmo de `Back Progapation` para reduzir esse `Loss Score`. Isso nos leva ao próximo passo, como os ataques acontecem.
 
 
 ### Ataques Adversariais
 ![Por Henrique Arcoverde](public/writing/breaking_ai/adversarial_attacks.png)
 - 3.3.1: Alguém que deseja classificar incorretamente uma imagem e tem acesso direto aos pesos do modelo pode encontrar algoritmicamente o inverso local da função de classificação, onde a linha de inferência entre gatos e cachorros é desenhada, através de técnicas de otimização. Podendo ser `Gradient Ascent` ou `Gradient Descent`.
 - 3.3.2: Existem muitos ataques adversariais diferentes que exploram isso, sendo classificados em `White Box` (Caixa Branca) e `Black Box` (Caixa Preta), a diferença reside no conhecimento do atacante. Em um ataque de caixa branca, o atacante tem acesso completo à arquitetura e pesos do modelo. Em um ataque de caixa preta, eles não têm, então devem sondar o modelo com entradas e estudar as saídas para inferir suas fraquezas.
-- 3.3.3: Um ataque adversarial específico de caixa branca contra imagens é feito como foi dito em 3.1, mas como são feitos contra texto? Texto é discreto; você não pode fazer mudanças "minúsculas" em uma palavra como pode fazer em um pixel e manter a estrutura geral intacta. Mudar um caractere ou palavra cria um novo token, que é um salto  maior no espaço de entrada do modelo. Isto leva a gente à arquitetura projetada para lidar com texto: o `Transformer`.
+- 3.3.3: Um ataque adversarial específico de caixa branca contra imagens é feito como foi dito em 3.1, mas como são feitos contra texto? Você não pode fazer mudanças "minúsculas" em uma palavra como pode fazer em um pixel e manter a estrutura geral intacta. Mudar um caractere ou palavra cria um novo token, que é um salto maior no espaço de entrada do modelo. Isso nos leva à arquitetura projetada para lidar com textos: o `Transformer`.
 
 
 ### Transformers e LLMs
@@ -67,7 +95,7 @@ Como tínhamos 6 semanas (42 dias) para implementar e apresentar uma solução p
 
 ## Arquiteturando a Solução
 ![Arquitetura da Solução](public/writing/breaking_ai/architecture.png)
-Primeiro, modelamos a arquitetura de ataque. Há um modelo de IA atacante que chamamos de "mutator", já que melhora iterativamente os prompts para a vítima, mutando a frase. Há um modelo "vítima", que recebe as entradas do mutador e direciona a resposta para um "juiz", que marca a resposta da vítima como sendo benigna ou maligna, junto à outras métricas. Após isso, esses dados precisam ser processados, ou, ao menos, interpretados. Então fizemos com que as respostas do juíz fossem armazenadas em aglomerados de CSVs, sendo eles separados entre modelo testado e idioma do teste, os principais parâmetros da nossa pesquisa. Com isso pronto, fizemos também um sumário interativo, que agrupa os CSVs e facilita a leitura dos resultados.
+Primeiro, modelamos a arquitetura de ataque. Há um modelo de IA atacante que chamamos de `Mutator`, já que melhora iterativamente os prompts para a vítima, mutando a frase. Há um modelo `Vítima`, que recebe as entradas do mutador e direciona a resposta para um `Juiz`, que marca a resposta da vítima como sendo benigna ou maligna, junto à outras métricas. Após isso, esses dados precisam ser processados, ou, ao menos, interpretados. Então fizemos com que as respostas do juíz fossem armazenadas em aglomerados de CSVs, sendo eles separados entre modelo testado e idioma do teste, os principais parâmetros da nossa pesquisa. Com isso pronto, fizemos também um sumário interativo, que agrupa os CSVs e facilita a leitura dos resultados.
 
 
 ## As três frentes

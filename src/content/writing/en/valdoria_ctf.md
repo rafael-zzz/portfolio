@@ -21,7 +21,7 @@ This is the writeup of how it was done.
 
 I was introduced to the fictional government website through an initial screen with a "fleur-de-lis", representing French nobility, with the rest of the site presenting an aesthetic clearly inspired by the book 1984.
 
-We have a homepage displaying a map with descriptions of each province and updates on fictional currencies.
+We have a homepage displaying a map with descriptions of each province and updates on the fictional republic economic indicators.
 A blog discussing recent national events. Documents presenting governmental and confidential information.
 Contact, where you can submit improvement suggestions via a form.
 Enlistment, where you "can" enlist (by coercion).

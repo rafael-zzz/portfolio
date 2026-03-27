@@ -8,11 +8,39 @@ featured: true
 tags: [security, artificial intelligence, adversarial attacks]
 ---
 
-#### Foreword
+#### Introduction
 
-##### First of all, I am not going into all details since my memory is scattered and not that great. Second, I would like to thank all the mentors, teamates, competitors and everyone who helped on the project, either directly, indirectly or hearing me talk excitedly about the progress that me and my team had been doing, I would absolutely not have such a satisfying experience without any of you all, and I hope you at least know that. I am also writing this for the me of 2 years ago, who did not believe any of this was possible, and would have those childlike wonder eyes hearing about it.
+##### First of all, I am not going into all details since my memory is not that great. Second, I would like to thank all the mentors, teamates, competitors and everyone who helped on the project, either directly, indirectly or hearing me talk excitedly about the progress that me and my team had been doing, I would absolutely not have such a satisfying experience without any of you all, and I hope you at least know that. I am also writing this for the me of 2 years ago, who did not believe any of this was possible, and would have those childlike wonder eyes hearing about it.
 
 ----------------------
+
+#### Key Concepts
+**Adversarial Attacks**: Optimization techniques used to find modified inputs that cause incorrect classifications in AI models, exploiting vulnerabilities in the model's decision function.
+
+**Prompt Injection**: An attack where a malicious user inserts unauthorized instructions or data into a prompt to manipulate LLM behavior and obtain undesired responses.
+
+**Guardrails**: A protective system between the user and the model that filters inputs and outputs using natural language to block malicious requests or responses.
+
+**Forward Propagation**: The process during which input data passes through neural network layers, with each weight determining the final classification or prediction.
+
+**Back Propagation**: An algorithm that calculates error gradients relative to weights, enabling adjustments to reduce the model's loss score.
+
+**Loss Score**: A metric that quantifies the error between model predictions and expected values during training.
+
+**Gradient Descent**: An optimization algorithm that calculates the direction of steepest error decrease by iteratively adjusting model weights in the opposite direction of the gradient, progressively reducing loss.
+
+**Gradient Ascent**: A variation of Gradient Descent that moves in the direction of steepest gradient increase, used in adversarial attacks to maximize model error and find inputs causing incorrect classifications.
+
+**Token**: A discrete unit of text (character, word, or subword) that the model processes as input.
+
+**Transformers**: A neural architecture based on an attention mechanism that processes data sequences in parallel, allowing the model to weigh the context of different words when generating outputs.
+
+**Mutator**: A function or method that iteratively modifies prompts to exploit vulnerabilities in a victim AI model, evolving the attack through optimization techniques.
+
+**Judge**: A component that evaluates victim model responses, classifying them as benign or malicious and collecting metrics for analyzing adversarial attacks.
+
+**Victim**: The target AI model that receives modified prompts from the mutator and generates responses evaluated by the judge to measure its robustness against prompt injection attacks.
+
 
 ## Starting out
 There was this awkward foundation when the themes were given to each group, ours being "developing mechanisms for protecting AI models", this is a difficult area of research that we had only 6 weeks to develop an ideal solution for. I already had some minor experience on the topic and could help by explaining overall concepts to the team, but we still had trouble defining what categories of adversarial attacks were more efficient, so the created solution to protect against them would be useful. 
@@ -63,18 +91,18 @@ Since LLMs with transformers are still a new topic (it has been 6 years since th
 Since we had 6 weeks (42 days) to implement and present a solution for this, our focus went to understanding how the attacks operated and comparing different models robustness against these attacks. We modeled an automated attack framework using DrAttack, PAIR, Code Switching and others to test the two open weight models we had. With malicious/benign seeds and wrapping attacks around them we could test how the models acted against attacks in different languages. 
 
 
-## Development Process
-First, we modeled the attack architecture, there is an attacker AI model we call "mutator", since he iteratively improves the wrappings around the seed by mutating the phrase. There is a "victim" model, that receives the inputs from the mutator and directs the request to a "judge", which scores the response from the victim into being benign or malicious.  
-
 ## Architecting the Solution
 ![Solution Architecture](public/writing/breaking_ai/architecture.png)
-First, we modeled the attack architecture. There is an attacker AI model we call "mutator", since it iteratively improves the prompts for the victim by mutating the phrase. There is a "victim" model that receives inputs from the mutator and directs the response to a "judge", which marks the victim's response as being benign or malicious, along with other metrics. After that, these data need to be processed, or at least interpreted. So we made the judge's responses stored in clusters of CSVs, separated between tested model and test language, the main parameters of our research. With that in place, we also created an interactive summary that groups the CSVs and facilitates reading the results.
+First, we modeled the attack architecture. There is an attacker AI model we call `Mutator`, since it iteratively improves the prompts for the victim by mutating the phrase. There is a `Victim` model that receives inputs from the mutator and directs the response to a `Judge`, which marks the victim's response as being benign or malicious, along with other metrics. After that, these data need to be processed, or at least interpreted. So we made the judge's responses stored in clusters of CSVs, separated between tested model and test language, the main parameters of our research. With that in place, we also created an interactive summary that groups the CSVs and facilitates reading the results.
+
 
 ## The Three Fronts
 From that point on, since our team was multidisciplinary, we "separated" the deliverables into: deepening the paper, tool/solution scalability, and usability/ease of use. My main concern, since we had a proof of concept made only for our use case, was to allow different groups to use the solution according to their testing needs. Therefore, we could expand the possible use both at hardware level and tested models, being both local models and API-based, with a graphical tool to assist.
 
+
 ## Paper Discovery
 We hypothesized that language could be a major facilitator of attacks, depending on how they are trained. I still believe it could be, but we discovered that there is no major difference between Portuguese and English, even with predominantly training in our language. We considered, by the end of the project, expanding the tested languages, but since our project has exponential complexity, running tests to expand the hypothesis became unfeasible, especially with infrastructure costs.
+
 
 ## The Tool (Not the band)
 What is interesting about the tool is it allows for the use of presets and selection of different mutators, victims and judges, working with NVIDIA, AMD, Intel and Apple GPUs for the parallelization of both the attacks and the models tested, running them in different cores (if you have the infrastructure to do it, of course). And as I said, the results are visible through the CLI itself or you can create an HTML file that condenses it for another way to visualize.
@@ -85,7 +113,6 @@ Funny detail: Two days after the end of our project, Pliny released the OBLITERA
 
 ## The Graphical Tool
 We still needed a way to enable non-technical users to use our tool, so we prototyped a GUI that is an expansion of the CLI tool, named it Inje.X (after prompt injection) and planned it to have the same functionalities that the original tool had, being them: presets, models selection, methods selection, multiplatform. You would not be able to alter the files to import new seeds, but there is the original tool that enables this, so..?
-
 
 
 ## Conclusion

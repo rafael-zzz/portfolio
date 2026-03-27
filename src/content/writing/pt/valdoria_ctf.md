@@ -24,7 +24,7 @@ Este é o writeup de como foi feito.
 
 Fui introduzido ao site do governo fictício por uma tela inicial com uma "fleur-de-lis", representando a nobreza francesa, com o resto do site apresentando uma estética que é claramente inspirada pelo livro 1984. 
 
-Temos uma página inicial, que exibe um mapa com descrições sobre cada província e atualizações das moedas fictícias.
+Temos uma página inicial, que exibe um mapa com descrições sobre cada província e atualizações dos indicadores econômicos fictícios da república.
 Um blog onde falam sobre acontecimentos gerais recentes da nação. Documentos onde são apresentadas informações governamentais e confidenciais.
 Contato, onde você pode fazer sugestões de melhoria por um formulário.
 Alistamento, onde você "pode" se alistar (por coerção).
