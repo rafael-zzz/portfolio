@@ -12,9 +12,7 @@ export interface ProjectCard {
   isFallback: boolean;
 }
 
-export function buildProjectCards(
-  entries: Array<LocalizedContent<ProjectEntry>>,
-): ProjectCard[] {
+export function buildProjectCards(entries: Array<LocalizedContent<ProjectEntry>>): ProjectCard[] {
   return entries.map((entry) => ({
     title: entry.entry.data.title,
     summary: entry.entry.data.summary,

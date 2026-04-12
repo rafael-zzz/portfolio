@@ -1,18 +1,19 @@
 export interface SkillItem {
   name: string;
-  icon: string;
+  id: string;
 }
 
 export const coreSkills: SkillItem[] = [
-  { name: "MacOS", icon: "https://skillicons.dev/icons?i=apple" },
-  { name: "Linux", icon: "https://skillicons.dev/icons?i=linux" },
-  { name: "Windows", icon: "https://skillicons.dev/icons?i=windows" },
-  { name: "Neovim", icon: "https://skillicons.dev/icons?i=neovim" },
-  { name: "Bash", icon: "https://skillicons.dev/icons?i=bash" },
-  { name: "C", icon: "https://skillicons.dev/icons?i=c" },
+  { name: "Systems Architecture", id: "0x01" },
+  { name: "Penetration Testing", id: "0x02" },
+  { name: "Network Security", id: "0x03" },
+  { name: "Python / C", id: "0x04" },
+  { name: "Linux Administration", id: "0x05" },
+  { name: "Docker / K8s", id: "0x06" },
 ];
 
 export const learningSkills: SkillItem[] = [
-  { name: "Rust", icon: "https://skillicons.dev/icons?i=rust" },
-  { name: "Haskell", icon: "https://skillicons.dev/icons?i=haskell" },
+  { name: "Machine Learning", id: "0x0A" },
+  { name: "Quantum Computing", id: "0x0B" },
+  { name: "Formal Verification", id: "0x0C"},
 ];

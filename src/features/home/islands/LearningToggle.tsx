@@ -2,7 +2,7 @@ import { useId, useState } from "preact/hooks";
 
 interface SkillItem {
   name: string;
-  icon: string;
+  id: string;
 }
 
 interface Props {
@@ -18,7 +18,7 @@ export default function LearningToggle({ label, items }: Props) {
     <>
       <button
         type="button"
-        className="learning-toggle font-['Departure_Mono'] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-retro-primary"
+        className="learning-toggle hover-glow font-['Departure_Mono'] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-retro-primary"
         aria-expanded={isOpen}
         aria-controls={panelId}
         onClick={() => setIsOpen((previous) => !previous)}
@@ -28,11 +28,9 @@ export default function LearningToggle({ label, items }: Props) {
 
       <div id={panelId} hidden={!isOpen} className="skills-container md:grid learning-content">
         {items.map((item) => (
-          <div className="skill-card" key={item.name}>
-            <div className="skill-header">
-              <img src={item.icon} alt={item.name} className="skill-icon" />
-            </div>
-            <p className="text-l font-['Departure_Mono'] skill-title">{item.name}</p>
+          <div className="skill-card hover-glow" key={item.name}>
+            <span className="skill-module-id">MOD_{item.id}</span>
+            <p className="text-l font-['Departure_Mono'] skill-title">&gt; {item.name}</p>
           </div>
         ))}
       </div>

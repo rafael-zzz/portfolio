@@ -66,7 +66,7 @@ const { copy, fallbackCopy, cards, hasFallback } = Astro.props;
       </div>
     ) : (
       <div class="projects-page-empty font-['Departure_Mono']">
-        <span class="projects-page-empty-prompt">C:\&gt;</span> {copy.emptyLabel}
+        <span class="projects-page-empty-prompt blink-cursor">C:\&gt;</span> {copy.emptyLabel}
       </div>
     )
   }

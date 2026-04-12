@@ -50,14 +50,14 @@ const { copy, locale, entries } = Astro.props;
       </div>
     ) : (
       <div class="writing-preview-empty font-['Departure_Mono']">
-        <span class="writing-preview-empty-prompt">C:\&gt;</span> {copy.emptyLabel}
+        <span class="writing-preview-empty-prompt blink-cursor">C:\&gt;</span> {copy.emptyLabel}
       </div>
     )
   }
 
   <div class="writing-preview-footer">
     <a
-      class="writing-preview-browse font-['Departure_Mono']"
+      class="writing-preview-browse font-['Departure_Mono'] hover-glow"
       href={getLocalizedPath(locale, "writing")}
     >
       {copy.browseLabel}

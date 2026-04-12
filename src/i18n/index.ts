@@ -67,21 +67,24 @@ function findMissingKeys(base: unknown, candidate: unknown, path: string[] = [])
 
 const defaultMessages = messagesSchema.parse(rawMessagesByLocale[DEFAULT_LOCALE]);
 
-const messagesByLocale = LOCALES.reduce((accumulator, locale) => {
-  const rawMessages = rawMessagesByLocale[locale];
-  const mergedMessages = mergeMessages(defaultMessages, rawMessages);
+const messagesByLocale = LOCALES.reduce(
+  (accumulator, locale) => {
+    const rawMessages = rawMessagesByLocale[locale];
+    const mergedMessages = mergeMessages(defaultMessages, rawMessages);
 
-  if (locale !== DEFAULT_LOCALE) {
-    const missingKeys = findMissingKeys(defaultMessages, rawMessages);
+    if (locale !== DEFAULT_LOCALE) {
+      const missingKeys = findMissingKeys(defaultMessages, rawMessages);
 
-    if (missingKeys.length > 0 && !import.meta.env.PROD) {
-      console.warn(`[i18n] Missing ${locale} keys (fallback to en): ${missingKeys.join(", ")}`);
+      if (missingKeys.length > 0 && !import.meta.env.PROD) {
+        console.warn(`[i18n] Missing ${locale} keys (fallback to en): ${missingKeys.join(", ")}`);
+      }
     }
-  }
 
-  accumulator[locale] = messagesSchema.parse(mergedMessages);
-  return accumulator;
-}, {} as Record<Locale, Messages>);
+    accumulator[locale] = messagesSchema.parse(mergedMessages);
+    return accumulator;
+  },
+  {} as Record<Locale, Messages>,
+);
 
 export function getMessages(locale: Locale): Messages {
   return messagesByLocale[locale] ?? messagesByLocale[DEFAULT_LOCALE];

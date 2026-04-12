@@ -18,11 +18,9 @@ const { copy } = Astro.props;
   <div class="skills-container md:grid">
     {
       coreSkills.map((skill) => (
-        <div class="skill-card">
-          <div class="skill-header">
-            <img src={skill.icon} alt={skill.name} class="skill-icon" />
-          </div>
-          <p class="text-l font-['Departure_Mono'] skill-title">{skill.name}</p>
+        <div class="skill-card hover-glow">
+          <span class="skill-module-id">MOD_{skill.id}</span>
+          <p class="text-l font-['Departure_Mono'] skill-title">&gt; {skill.name}</p>
         </div>
       ))
     }
@@ -34,7 +32,7 @@ const { copy } = Astro.props;
 <style>
   :global(.skills-container) {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: 0.7rem;
     padding: 1rem;
   }
@@ -48,46 +46,33 @@ const { copy } = Astro.props;
       transform 0.2s ease,
       border-color 0.2s ease,
       box-shadow 0.2s ease;
-    text-align: center;
-    padding: 0.8rem 0.5rem 0.65rem;
+    text-align: left;
+    padding: 1.2rem 0.8rem 0.8rem;
     position: relative;
+    cursor: default;
   }
 
-  :global(.skill-card)::before {
-    content: "MODULE";
+  :global(.skill-module-id) {
     position: absolute;
     top: 0.45rem;
     left: 0.45rem;
-    color: rgba(220, 220, 220, 0.65);
+    color: rgba(220, 220, 220, 0.55);
     font-family: "Departure Mono", monospace;
-    font-size: 0.58rem;
+    font-size: 0.55rem;
     letter-spacing: 0.16em;
   }
 
   :global(.skill-card:hover) {
-    transform: translateY(-4px);
-    border-color: rgba(215, 215, 215, 0.34);
-    box-shadow: 0 0 18px rgba(215, 215, 215, 0.08);
-  }
-
-  :global(.skill-header) {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin-top: 0.7rem;
-  }
-
-  :global(.skill-icon) {
-    width: 60px;
-    height: 60px;
-    margin-bottom: 0.35rem;
-    filter: drop-shadow(0 0 12px rgba(215, 215, 215, 0.16));
+    transform: translateY(-2px);
+    border-color: var(--site-accent-color);
+    background: linear-gradient(180deg, rgba(8, 14, 22, 0.9), rgba(12, 20, 30, 0.85));
   }
 
   :global(.skill-title) {
     color: #ffffff;
-    font-size: 0.92rem;
+    font-size: 0.85rem;
     letter-spacing: 0.06em;
+    margin-top: 0.5rem;
   }
 
   :global(.learning-toggle) {
@@ -100,6 +85,7 @@ const { copy } = Astro.props;
     padding: 0.9rem;
     text-transform: uppercase;
     letter-spacing: 0.14em;
+    cursor: pointer;
   }
 
   :global(.learning-content) {

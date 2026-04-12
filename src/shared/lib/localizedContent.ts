@@ -42,9 +42,7 @@ export function resolveLocalizedEntries<T extends LocaleEntryLike>(
     );
   }
 
-  const localizedEntryMap = new Map(
-    localizedEntries.map((entry) => [getSourceSlug(entry), entry]),
-  );
+  const localizedEntryMap = new Map(localizedEntries.map((entry) => [getSourceSlug(entry), entry]));
 
   return canonicalEntries.map((entry) => {
     const localizedEntry = localizedEntryMap.get(getSourceSlug(entry)) ?? entry;

@@ -1,10 +1,7 @@
 import { getCollection, type CollectionEntry } from "astro:content";
 import type { Locale } from "@/i18n";
 import { getSourceSlug } from "@/shared/lib/contentSlug";
-import {
-  type LocalizedContent,
-  resolveLocalizedEntries,
-} from "@/shared/lib/localizedContent";
+import { type LocalizedContent, resolveLocalizedEntries } from "@/shared/lib/localizedContent";
 import { compareProjectEntries } from "@/features/projects/model/projectOrdering";
 
 export type ProjectEntry = CollectionEntry<"projects">;

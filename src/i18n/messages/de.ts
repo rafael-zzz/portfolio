@@ -34,7 +34,8 @@ export const deMessages = {
   contentFallback: {
     badge: "EN FALLBACK",
     title: "Englischer Inhalt geladen",
-    description: "Diese Route ist noch nicht lokalisiert, daher wird die englische Version angezeigt.",
+    description:
+      "Diese Route ist noch nicht lokalisiert, daher wird die englische Version angezeigt.",
   },
   home: {
     hero: {
@@ -47,7 +48,8 @@ export const deMessages = {
     featuredProjects: {
       title: "Ausgewahlte Projekte",
       eyebrow: "/work/featured",
-      summary: "Ein kompakter Blick auf die Experimente und Systeme, die meine technische Arbeit am besten zeigen.",
+      summary:
+        "Ein kompakter Blick auf die Experimente und Systeme, die meine technische Arbeit am besten zeigen.",
       browseLabel: "Projekt Hub offnen",
       repoLabel: "Repository",
       externalLabel: "Link offnen",
@@ -125,7 +127,8 @@ export const deMessages = {
     page: {
       title: "Texte",
       eyebrow: "/writing/index",
-      summary: "Langere Notizen, technische Write-ups und personliche Eintrage uber Sicherheit, Systeme und Engineering.",
+      summary:
+        "Langere Notizen, technische Write-ups und personliche Eintrage uber Sicherheit, Systeme und Engineering.",
       readMoreLabel: "Eintrag Offnen",
       emptyLabel: "Noch keine Texte verfugbar.",
       tagsLabel: "Tags",
@@ -135,7 +138,8 @@ export const deMessages = {
     page: {
       title: "Projekte",
       eyebrow: "/projects/index",
-      summary: "Externe Projektkarten mit Fokus auf Problemraum, technische Rolle, Stack und Zugriff auf das Ergebnis.",
+      summary:
+        "Externe Projektkarten mit Fokus auf Problemraum, technische Rolle, Stack und Zugriff auf das Ergebnis.",
       repoLabel: "Repository",
       externalLabel: "Externer Link",
       statusLabel: "Status",

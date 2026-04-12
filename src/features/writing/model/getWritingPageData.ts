@@ -1,7 +1,10 @@
 import { getMessages } from "@/i18n";
 import type { Locale } from "@/i18n";
 import { buildWritingRouteMeta } from "@/i18n/routes";
-import { getCanonicalWritingEntries, getLocalizedWritingEntry } from "@/features/writing/lib/content";
+import {
+  getCanonicalWritingEntries,
+  getLocalizedWritingEntry,
+} from "@/features/writing/lib/content";
 import { getSourceSlug } from "@/shared/lib/contentSlug";
 
 export interface WritingPageData {

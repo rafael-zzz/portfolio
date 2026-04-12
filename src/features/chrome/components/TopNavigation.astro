@@ -1,7 +1,9 @@
 ---
 import type { Messages } from "@/i18n/schema";
+import { Image } from "astro:assets";
 import { LOCALE_LABELS, LOCALES, type Locale } from "@/i18n/config";
 import { getLocalizedPath, type RouteKey } from "@/i18n/routes";
+import logoPng from "@/assets/logos/logo.png";
 
 interface Props {
   locale: Locale;
@@ -22,11 +24,17 @@ const activeLanguage = languageOptions.find((option) => option.active) ?? langua
 const routeLinks = [
   { key: "home" as const, label: copy.overviewLabel, href: getLocalizedPath(locale, "home") },
   { key: "writing" as const, label: copy.writingLabel, href: getLocalizedPath(locale, "writing") },
-  { key: "projects" as const, label: copy.projectsLabel, href: getLocalizedPath(locale, "projects") },
+  {
+    key: "projects" as const,
+    label: copy.projectsLabel,
+    href: getLocalizedPath(locale, "projects"),
+  },
 ];
 ---
 
-<section class="fixed top-0 right-0 left-0 border-b border-retro-primary/20 bg-black/80 backdrop-blur-sm lg:left-48 z-40">
+<section
+  class="fixed top-0 right-0 left-0 border-b border-retro-primary/20 bg-black/80 backdrop-blur-sm lg:left-48 z-40"
+>
   <div class="bg-transparent">
     <div class="text-white w-full flex items-center justify-between px-4 py-2 gap-3">
       <div class="flex items-center flex-shrink-0 gap-3">
@@ -37,35 +45,47 @@ const routeLinks = [
           aria-label={copy.toggleNavigationLabel}
         >
           <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M2 6.00087C2 5.44811 2.45531 5 2.9918 5H8.6082C8.85391 5 9.09086 5.09085 9.27504 5.25532L11.1666 6.99468C11.3508 7.15915 11.5878 7.25 11.8334 7.25H21.0082C21.5447 7.25 22 7.69811 22 8.25087V18.9991C22 19.5519 21.5447 20 21.0082 20H2.9918C2.45531 20 2 19.5519 2 18.9991V6.00087Z" fill="currentColor" />
+            <path
+              d="M2 6.00087C2 5.44811 2.45531 5 2.9918 5H8.6082C8.85391 5 9.09086 5.09085 9.27504 5.25532L11.1666 6.99468C11.3508 7.15915 11.5878 7.25 11.8334 7.25H21.0082C21.5447 7.25 22 7.69811 22 8.25087V18.9991C22 19.5519 21.5447 20 21.0082 20H2.9918C2.45531 20 2 19.5519 2 18.9991V6.00087Z"
+              fill="currentColor"></path>
           </svg>
         </button>
-        <img src="/logos/logo.png" alt="logo" class="hidden lg:block w-8 h-8 border-retro-primary/20" />
+        <Image
+          src={logoPng}
+          alt="logo"
+          class="hidden lg:block w-8 h-8 border-retro-primary/20 glitch-hover"
+        />
       </div>
 
       <div class="flex-grow min-w-0 text-center">
-        <span class="text-white text-sm lg:text-sm font-wayfarers font-size:0.9rem inline-flex items-center px-0 text-center py-2 dir-text max-w-full">
-          <span class="terminal-text text-retro-primary truncate">&nbsp; &rarr; {copy.terminalPathLabel}</span>
+        <span
+          class="text-white text-sm lg:text-sm font-wayfarers font-size:0.9rem inline-flex items-center px-0 text-center py-2 dir-text max-w-full"
+        >
+          <span class="terminal-text text-retro-primary truncate"
+            >&nbsp; &rarr; {copy.terminalPathLabel}</span
+          >
         </span>
       </div>
 
       <div class="flex-shrink-0 flex items-center gap-3 nav-actions">
         <nav class="hidden md:flex items-center gap-2" aria-label="Primary">
-          {routeLinks.map((link) => (
-            <a
-              href={link.href}
-              data-astro-nav
-              class:list={[
-                "route-chip font-['Departure_Mono']",
-                routeKey === link.key && "route-chip-active",
-              ]}
-            >
-              {link.label}
-            </a>
-          ))}
+          {
+            routeLinks.map((link) => (
+              <a
+                href={link.href}
+                data-astro-nav
+                class:list={[
+                  "route-chip font-['Departure_Mono']",
+                  routeKey === link.key && "route-chip-active",
+                ]}
+              >
+                {link.label}
+              </a>
+            ))
+          }
         </nav>
 
-        <nav class="flex items-center justify-end" aria-label={copy.languageSwitcherLabel}>
+        <lang-dropdown class="flex items-center justify-end" aria-label={copy.languageSwitcherLabel}>
           <details class="lang-dropdown">
             <summary
               class="lang-chip font-['Departure_Mono'] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-retro-primary"
@@ -73,38 +93,42 @@ const routeLinks = [
             >
               <span>{activeLanguage.label}</span>
               <svg class="lang-caret" viewBox="0 0 12 8" aria-hidden="true">
-                <path d="M1 1.5L6 6.5L11 1.5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.5" />
+                <path
+                  d="M1 1.5L6 6.5L11 1.5"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-width="1.5"></path>
               </svg>
             </summary>
             <div class="lang-menu" role="menu">
-              {languageOptions.map((option) => (
-                <a
-                  href={option.href}
-                  data-astro-nav
-                  class:list={[
-                    "lang-chip lang-menu-item font-['Departure_Mono'] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-retro-primary",
-                    option.active && "lang-chip-active",
-                  ]}
-                  aria-current={option.active ? "page" : undefined}
-                  role="menuitem"
-                >
-                  {option.label}
-                </a>
-              ))}
+              {
+                languageOptions.map((option) => (
+                  <a
+                    href={option.href}
+                    data-astro-nav
+                    class:list={[
+                      "lang-chip lang-menu-item font-['Departure_Mono'] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-retro-primary",
+                      option.active && "lang-chip-active",
+                    ]}
+                    aria-current={option.active ? "page" : undefined}
+                    role="menuitem"
+                  >
+                    {option.label}
+                  </a>
+                ))
+              }
             </div>
           </details>
-        </nav>
+        </lang-dropdown>
 
         <div class="hidden lg:flex items-center gap-2">
-          <a
-            href="https://github.com/rafael-zzz"
-            class="action-link font-['Departure_Mono']"
-          >
+          <a href="https://github.com/rafael-zzz" class="action-link font-['Departure_Mono']">
             {copy.githubLabel}
           </a>
           <a
             href="https://linkedin.com/in/rafael-m-peixoto"
-            class="action-link font-['Departure_Mono']"
+            class="action-link font-['Departure_Mono'] hover-glow"
           >
             {copy.linkedinLabel}
           </a>
@@ -114,32 +138,45 @@ const routeLinks = [
   </div>
 </section>
 
-<script type="module">
+<script>
   import { navigate } from "astro:transitions/client";
 
-  const NAV_HOOK_KEY = "__topNavClientRoutingHooked";
+  class LangDropdown extends HTMLElement {
+    private details: HTMLDetailsElement | null = null;
 
-  if (!window[NAV_HOOK_KEY]) {
-    window[NAV_HOOK_KEY] = true;
+    connectedCallback() {
+      this.details = this.querySelector("details");
+      this.closeOnOutsideClick = this.closeOnOutsideClick.bind(this);
+      this.closeOnEscape = this.closeOnEscape.bind(this);
+      this.handleNavClick = this.handleNavClick.bind(this);
 
-    document.addEventListener("click", (event) => {
-      const target = event.target;
-      if (!(target instanceof Element)) {
-        return;
+      document.addEventListener("click", this.closeOnOutsideClick);
+      document.addEventListener("keydown", this.closeOnEscape);
+      this.addEventListener("click", this.handleNavClick);
+    }
+
+    disconnectedCallback() {
+      document.removeEventListener("click", this.closeOnOutsideClick);
+      document.removeEventListener("keydown", this.closeOnEscape);
+      this.removeEventListener("click", this.handleNavClick);
+    }
+
+    private closeOnOutsideClick(event: MouseEvent) {
+      if (this.details?.hasAttribute("open") && !this.contains(event.target as Node)) {
+        this.details.removeAttribute("open");
       }
+    }
 
-      const openDropdown = document.querySelector(".lang-dropdown[open]");
-      if (openDropdown) {
-        const dropdownParent = target.closest(".lang-dropdown");
-        if (!dropdownParent) {
-          openDropdown.removeAttribute("open");
-        }
+    private closeOnEscape(event: KeyboardEvent) {
+      if (event.key === "Escape" && this.details?.hasAttribute("open")) {
+        this.details.removeAttribute("open");
       }
+    }
 
-      const link = target.closest("a[data-astro-nav]");
-      if (!(link instanceof HTMLAnchorElement)) {
-        return;
-      }
+    private handleNavClick(event: MouseEvent) {
+      const target = event.target as HTMLElement;
+      const link = target.closest("a[data-astro-nav]") as HTMLAnchorElement | null;
+      if (!link) return;
 
       if (
         event.defaultPrevented ||
@@ -153,21 +190,18 @@ const routeLinks = [
       }
 
       const href = link.getAttribute("href");
-      if (!href || !href.startsWith("/")) {
-        return;
-      }
+      if (!href || !href.startsWith("/")) return;
 
       event.preventDefault();
-      void navigate(href);
-    });
-
-    document.addEventListener("keydown", (event) => {
-      if (event.key !== "Escape") {
-        return;
+      if (this.details?.hasAttribute("open")) {
+        this.details.removeAttribute("open");
       }
-      const openDropdown = document.querySelector(".lang-dropdown[open]");
-      openDropdown?.removeAttribute("open");
-    });
+      void navigate(href);
+    }
+  }
+
+  if (!customElements.get("lang-dropdown")) {
+    customElements.define("lang-dropdown", LangDropdown);
   }
 </script>
 
@@ -192,7 +226,10 @@ const routeLinks = [
     line-height: 1;
     padding: 0.4rem 0.55rem;
     text-align: center;
-    transition: background-color 0.2s, color 0.2s, border-color 0.2s;
+    transition:
+      background-color 0.2s,
+      color 0.2s,
+      border-color 0.2s;
   }
 
   .route-chip:hover,

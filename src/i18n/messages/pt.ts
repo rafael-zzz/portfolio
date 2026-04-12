@@ -47,7 +47,8 @@ export const ptMessages = {
     featuredProjects: {
       title: "Projetos em Destaque",
       eyebrow: "/work/featured",
-      summary: "Uma amostra compacta dos experimentos e sistemas que melhor representam meu trabalho técnico.",
+      summary:
+        "Uma amostra compacta dos experimentos e sistemas que melhor representam meu trabalho técnico.",
       browseLabel: "Abrir Hub de Projetos",
       repoLabel: "Repositório",
       externalLabel: "Abrir Link",
@@ -125,7 +126,8 @@ export const ptMessages = {
     page: {
       title: "Textos",
       eyebrow: "/writing/index",
-      summary: "Notas longas, write-ups técnicos e registros pessoais sobre segurança, sistemas e engenharia prática.",
+      summary:
+        "Notas longas, write-ups técnicos e registros pessoais sobre segurança, sistemas e engenharia prática.",
       readMoreLabel: "Abrir Entrada",
       emptyLabel: "Nenhum texto disponível ainda.",
       tagsLabel: "Tags",
@@ -135,7 +137,8 @@ export const ptMessages = {
     page: {
       title: "Projetos",
       eyebrow: "/projects/index",
-      summary: "Cartões externos de projetos com foco no problema, papel técnico, stack e onde inspecionar o trabalho.",
+      summary:
+        "Cartões externos de projetos com foco no problema, papel técnico, stack e onde inspecionar o trabalho.",
       repoLabel: "Repositório",
       externalLabel: "Link Externo",
       statusLabel: "Status",

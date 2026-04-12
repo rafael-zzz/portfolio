@@ -93,7 +93,6 @@ body::after {
   font-family: "Wayfarer's Toy Box", "Departure Mono", "IBM Plex Mono", monospace;
 }
 
-
 .retro-grid-bg {
   position: fixed;
   top: 0;
@@ -142,5 +141,141 @@ body.overflow-hidden {
   .animate-marquee1,
   .animate-marquee2 {
     animation: marquee 20s linear infinite;
+  }
+}
+
+/* CRT Enhancements */
+@keyframes blink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+}
+
+.blink-cursor::after {
+  content: "_";
+  animation: blink 1s step-end infinite;
+}
+
+@keyframes scanline {
+  0% {
+    transform: translateY(-100%);
+  }
+  100% {
+    transform: translateY(100vh);
+  }
+}
+
+.scanline {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 8vh;
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0),
+    rgba(255, 255, 255, 0.03) 50%,
+    rgba(255, 255, 255, 0)
+  );
+  animation: scanline 8s linear infinite;
+  pointer-events: none;
+  z-index: 45; /* Below top nav/sidebar, above main content */
+}
+
+/* Retro Glow Enhancements */
+.text-glow {
+  text-shadow: 0 0 8px rgba(183, 214, 255, 0.4);
+}
+
+.hover-glow:hover {
+  text-shadow: 0 0 8px var(--site-accent-color);
+  box-shadow: 0 0 8px rgba(183, 214, 255, 0.3);
+}
+
+/* Scrollbar Enhancements */
+::-webkit-scrollbar {
+  width: 14px;
+  background: #010308;
+  border-left: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  border-radius: 0;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* CRT Vignette and Flicker */
+@keyframes flicker {
+  0% {
+    opacity: 0.95;
+  }
+  5% {
+    opacity: 0.85;
+  }
+  10% {
+    opacity: 0.95;
+  }
+  15% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.crt-overlay {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 50;
+  background: radial-gradient(circle at center, transparent 50%, rgba(0, 0, 0, 0.35) 100%);
+  animation: flicker 4s infinite;
+}
+
+/* Glitch Effect */
+.glitch-hover:hover {
+  animation: glitch-anim 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) both infinite;
+  color: #fff;
+}
+
+@keyframes glitch-anim {
+  0% {
+    text-shadow:
+      2px 0 0 red,
+      -2px 0 0 cyan;
+  }
+  20% {
+    text-shadow:
+      -2px 0 0 red,
+      2px 0 0 cyan;
+  }
+  40% {
+    text-shadow:
+      2px 0 0 red,
+      -2px 0 0 cyan;
+  }
+  60% {
+    text-shadow:
+      -2px 0 0 red,
+      2px 0 0 cyan;
+  }
+  80% {
+    text-shadow:
+      2px 0 0 red,
+      -2px 0 0 cyan;
+  }
+  100% {
+    text-shadow:
+      -2px 0 0 red,
+      2px 0 0 cyan;
   }
 }

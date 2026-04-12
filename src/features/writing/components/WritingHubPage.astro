@@ -40,7 +40,7 @@ const { copy, fallbackCopy, entries, hasFallback } = Astro.props;
                 ))}
               </div>
               <div class="writing-hub-footer">
-                <a class="writing-hub-link" href={entry.href}>
+                <a class="writing-hub-link hover-glow" href={entry.href}>
                   {copy.readMoreLabel}
                 </a>
                 {entry.isFallback && <span class="writing-hub-fallback">EN</span>}
@@ -51,7 +51,7 @@ const { copy, fallbackCopy, entries, hasFallback } = Astro.props;
       </div>
     ) : (
       <div class="writing-hub-empty font-['Departure_Mono']">
-        <span class="writing-hub-empty-prompt">C:\&gt;</span> {copy.emptyLabel}
+        <span class="writing-hub-empty-prompt blink-cursor">C:\&gt;</span> {copy.emptyLabel}
       </div>
     )
   }

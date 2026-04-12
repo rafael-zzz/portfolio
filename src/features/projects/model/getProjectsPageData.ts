@@ -2,10 +2,7 @@ import { getMessages } from "@/i18n";
 import type { Locale } from "@/i18n";
 import { buildStaticRouteMeta } from "@/i18n/routes";
 import { getLocalizedProjectEntries } from "@/features/projects/lib/content";
-import {
-  buildProjectCards,
-  type ProjectCard,
-} from "@/features/projects/model/projectCards";
+import { buildProjectCards, type ProjectCard } from "@/features/projects/model/projectCards";
 import { hasFallbackContent } from "@/shared/lib/localizedContent";
 
 export interface ProjectsPageData {

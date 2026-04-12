@@ -89,7 +89,9 @@
   line-height: 1.2;
   padding: 0.75rem 0.9rem;
   position: relative;
-  text-shadow: 0 0 8px rgba(255, 255, 255, 0.16);
+  text-shadow:
+    0 0 8px var(--site-accent-color),
+    0 0 12px rgba(183, 214, 255, 0.4);
   text-transform: uppercase;
   z-index: 1;
 }

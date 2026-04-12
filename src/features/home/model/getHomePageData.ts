@@ -7,10 +7,7 @@ import {
   type WritingPreview,
 } from "@/features/writing/model/writingPreviews";
 import { getLocalizedProjectEntries } from "@/features/projects/lib/content";
-import {
-  buildProjectCards,
-  type ProjectCard,
-} from "@/features/projects/model/projectCards";
+import { buildProjectCards, type ProjectCard } from "@/features/projects/model/projectCards";
 
 export interface HomePageData {
   locale: Locale;

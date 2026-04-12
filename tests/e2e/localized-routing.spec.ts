@@ -21,7 +21,8 @@ for (const locale of locales) {
   test(`${locale} home route renders`, async ({ page }) => {
     await page.goto(`/${locale}/`);
     await expect(page).toHaveURL(new RegExp(`/${locale}/$`));
-    await expect(page.getByRole("link", { name: "EN", exact: true }).first()).toBeVisible();
+    const label = locale.toUpperCase();
+    await expect(page.locator(".lang-dropdown summary")).toContainText(label);
   });
 
   test(`${locale} writing hub route renders`, async ({ page }) => {
@@ -42,9 +43,12 @@ test("legacy flat localized writing route redirects to the namespaced route", as
 
 test("language switcher preserves the writing slug", async ({ page }) => {
   await page.goto("/de/writing/introduction");
-  await page.getByRole("link", { name: "ES", exact: true }).first().click();
+  await page.locator(".lang-dropdown summary").click();
+  await page.locator(".lang-menu a").filter({ hasText: "ES" }).first().click();
   await expect(page).toHaveURL(/\/es\/writing\/introduction\/?$/);
-  await expect(page.getByRole("link", { name: "ES", exact: true }).first()).toHaveAttribute(
+
+  await page.locator(".lang-dropdown summary").click();
+  await expect(page.locator(".lang-menu a").filter({ hasText: "ES" }).first()).toHaveAttribute(
     "aria-current",
     "page",
   );
@@ -53,21 +57,22 @@ test("language switcher preserves the writing slug", async ({ page }) => {
 test("homepage featured writing cards link to the namespaced writing route", async ({ page }) => {
   await page.goto("/en/");
   const entryLink = page.getByRole("link", { name: "Open Entry" }).first();
-  await expect(entryLink).toHaveAttribute("href", "/en/writing/ctf-lab-notes");
+  await expect(entryLink).toHaveAttribute("href", "/en/writing/valdoria_ctf");
   await entryLink.click();
-  await expect(page).toHaveURL(/\/en\/writing\/ctf-lab-notes\/?$/);
+  await expect(page).toHaveURL(/\/en\/writing\/valdoria_ctf\/?$/);
 });
 
 test("english fallback notice appears for untranslated writing entries", async ({ page }) => {
-  await page.goto("/pt/writing/ctf-lab-notes");
-  await expect(page.getByText("Conteúdo em inglês carregado")).toBeVisible();
-  await expect(page.getByText("CTF Lab Notes")).toBeVisible();
+  await page.goto("/de/writing/valdoria_ctf");
+  await expect(page.getByText(/Englischer Inhalt geladen/i)).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Valdoria CTF" })).toBeVisible();
 });
 
 test("projects hub exposes fallback content and external links", async ({ page }) => {
   await page.goto("/pt/projects");
-  await expect(page.getByText("Conteúdo em inglês carregado")).toBeVisible();
-  await expect(page.getByRole("link", { name: "Link Externo" }).first()).toHaveAttribute(
+  // Projects hub currently has only English content, so it should show fallback.
+  await expect(page.getByText(/Conteúdo em inglês carregado/i)).toBeVisible();
+  await expect(page.getByRole("link", { name: /Repositório/i }).first()).toHaveAttribute(
     "href",
     /github\.com/,
   );
@@ -77,27 +82,22 @@ test("music player switches between electronic and nu metal modes", async ({ pag
   await page.goto("/en/");
 
   await page.waitForFunction(() => {
-    const select = document.getElementById("stereo-song");
+    const select = document.getElementById("stereo-genre");
     return Boolean(select && select.querySelectorAll("option").length > 0);
   });
 
-  await page.getByRole("button", { name: "Nu Metal" }).click();
-  await expect(page.getByRole("button", { name: "Nu Metal" })).toHaveAttribute("aria-pressed", "true");
+  const genreSelect = page.locator("#stereo-genre");
+  await genreSelect.selectOption("nuMetal");
 
   await expect
-    .poll(async () => page.locator("#stereo-song option").allTextContents())
-    .toContain("Linkin Park - Numb");
+    .poll(async () => page.locator("#stereo-track").textContent())
+    .toContain("Tool - Lateralus");
 
-  const nuMetalOptions = await page.locator("#stereo-song option").allTextContents();
-  expect(nuMetalOptions).toContain("Linkin Park - Numb");
-  expect(nuMetalOptions).toContain("Tool - Lateralus");
+  await genreSelect.selectOption("electronic");
 
-  await page.getByRole("button", { name: "Electronic" }).click();
-  await expect(page.getByRole("button", { name: "Electronic" })).toHaveAttribute("aria-pressed", "true");
-
-  const electronicOptions = await page.locator("#stereo-song option").allTextContents();
-  expect(electronicOptions).toContain("Daft Punk - Get Lucky");
-  expect(electronicOptions).toContain("The Strokes - Reptilia");
+  await expect
+    .poll(async () => page.locator("#stereo-track").textContent())
+    .toContain("Daft Punk - Get Lucky");
 });
 
 test("player remains mounted when navigating from home to a writing entry", async ({ page }) => {
@@ -109,7 +109,7 @@ test("player remains mounted when navigating from home to a writing entry", asyn
   });
 
   await page.getByRole("link", { name: "Open Entry" }).first().click();
-  await expect(page).toHaveURL(/\/en\/writing\/ctf-lab-notes\/?$/);
+  await expect(page).toHaveURL(/\/en\/writing\/valdoria_ctf\/?$/);
 
   const sameNode = await page.evaluate(
     () => window.__persistedStereoNode === document.querySelector(".stereo-player"),
@@ -198,22 +198,25 @@ test("music playback position survives client-side navigation", async ({ page })
 
   await page.goto("/en/");
   await page.waitForFunction(() => {
-    return Boolean(window.__stereoDeckStore?.player) && (window.__ytLoadCalls?.length ?? 0) > 0;
+    const hasPlayer = Boolean(window.__stereoPlayer?.player);
+    const hasCalls =
+      (window.__ytLoadCalls?.length ?? 0) > 0 || (window.__ytCueCalls?.length ?? 0) > 0;
+    return hasPlayer && hasCalls;
   });
 
   await page.evaluate(() => {
-    const store = window.__stereoDeckStore;
+    const store = window.__stereoPlayer;
     store.player.currentTime = 137;
-    store.isPlaying = true;
+    store.state.isPlaying = true;
   });
 
   await page.getByRole("link", { name: "Open Entry" }).first().click();
-  await expect(page).toHaveURL(/\/en\/writing\/ctf-lab-notes\/?$/);
+  await expect(page).toHaveURL(/\/en\/writing\/valdoria_ctf\/?$/);
 
   const continuity = await page.evaluate(() => ({
-    currentTime: window.__stereoDeckStore?.player?.getCurrentTime?.(),
+    currentTime: window.__stereoPlayer?.player?.getCurrentTime?.(),
     playerCreations: window.__ytPlayerCreations ?? 0,
-    lastLoad: window.__ytLoadCalls?.at(-1) ?? null,
+    lastLoad: window.__ytLoadCalls?.at(-1) ?? window.__ytCueCalls?.at(-1) ?? null,
   }));
 
   expect(continuity.currentTime).toBe(137);
@@ -297,7 +300,7 @@ test("muted volume preference survives reload and prevents autoplay", async ({ p
   });
 
   await page.goto("/en/");
-  await page.waitForFunction(() => Boolean(window.__stereoDeckStore?.player));
+  await page.waitForFunction(() => Boolean(window.__stereoPlayer?.player));
 
   await page.locator("#stereo-volume").evaluate((node) => {
     node.value = "0";
@@ -305,23 +308,22 @@ test("muted volume preference survives reload and prevents autoplay", async ({ p
   });
 
   await page.waitForFunction(() => {
-    const rawPreference = window.localStorage.getItem("stereoDeckVolumePreference");
+    const rawPreference = window.localStorage.getItem("stereoPlayerState");
     if (!rawPreference) {
       return false;
     }
 
     const parsedPreference = JSON.parse(rawPreference);
-    return parsedPreference.volumeLevel === 0 && parsedPreference.isMuted === true;
+    return parsedPreference.volume === 0;
   });
 
   await page.reload();
-  await page.waitForFunction(() => Boolean(window.__stereoDeckStore?.player));
+  await page.waitForFunction(() => Boolean(window.__stereoPlayer?.player));
 
   const playbackState = await page.evaluate(() => ({
     sliderValue: document.getElementById("stereo-volume")?.value,
-    isPlaying: window.__stereoDeckStore?.isPlaying,
-    volumeLevel: window.__stereoDeckStore?.volumeLevel,
-    isMutedPreference: window.__stereoDeckStore?.isMutedPreference,
+    isPlaying: window.__stereoPlayer?.state.isPlaying,
+    volumeLevel: window.__stereoPlayer?.state.volume,
     loadCalls: window.__ytLoadCalls?.length ?? 0,
     cueCalls: window.__ytCueCalls?.length ?? 0,
   }));
@@ -329,7 +331,6 @@ test("muted volume preference survives reload and prevents autoplay", async ({ p
   expect(playbackState.sliderValue).toBe("0");
   expect(playbackState.isPlaying).toBe(false);
   expect(playbackState.volumeLevel).toBe(0);
-  expect(playbackState.isMutedPreference).toBe(true);
   expect(playbackState.loadCalls).toBe(0);
   expect(playbackState.cueCalls).toBeGreaterThan(0);
 });

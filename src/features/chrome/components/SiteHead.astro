@@ -34,7 +34,9 @@ const alternateLinks = LOCALES.map((language) => ({
 <meta property="og:locale" content={openGraphLocale} />
 <link rel="icon" href="/logos/logo.png" />
 <link rel="canonical" href={canonicalUrl} />
-{alternateLinks.map((alternate) => (
-  <link rel="alternate" hreflang={alternate.hreflang} href={alternate.href} />
-))}
+{
+  alternateLinks.map((alternate) => (
+    <link rel="alternate" hreflang={alternate.hreflang} href={alternate.href} />
+  ))
+}
 <link rel="alternate" hreflang="x-default" href={xDefaultUrl} />

@@ -2,6 +2,7 @@
 import type { Messages } from "@/i18n/schema";
 import SectionFrame from "@/shared/ui/SectionFrame.astro";
 import SectionHeader from "@/shared/ui/SectionHeader.astro";
+import blackholeGif from "@/assets/images/blackhole.gif";
 
 interface Props {
   copy: Messages["home"]["hero"];
@@ -29,7 +30,7 @@ const { copy } = Astro.props;
           <picture class="intro-visual-frame">
             <a href="https://linkedin.com/in/rafael-m-peixoto">
               <img
-                src="/images/blackhole.gif"
+                src={blackholeGif.src}
                 alt={copy.imageAlt}
                 width="300"
                 height="300"
@@ -78,7 +79,9 @@ const { copy } = Astro.props;
     color: #ffffff;
     font-size: 1.47rem;
     line-height: 1;
-    text-shadow: 0 0 14px rgba(215, 215, 215, 0.12);
+    text-shadow:
+      0 0 14px var(--site-accent-color),
+      0 0 20px rgba(183, 214, 255, 0.4);
   }
 
   .intro-description {

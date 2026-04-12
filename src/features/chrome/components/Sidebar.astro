@@ -84,273 +84,279 @@ const items: SidebarItem[] = [
 ];
 ---
 
-<div
-  class="fixed inset-0 bg-black/50 backdrop-blur-sm lg:hidden z-40 hidden"
-  aria-hidden="true"
-  data-sidebar-overlay
-></div>
-
-<aside
-  class="fixed left-0 top-0 h-screen w-[80vw] md:w-72 lg:w-48 border-r border-retro-primary/20 bg-black/80 backdrop-blur-sm z-50 transition-transform duration-150 lg:translate-x-0 -translate-x-full"
-  data-sidebar-drawer
->
-  <div class="p-2 h-full">
-    <div class="border-2 border-retro-primary mb-2 px-2 py-1 flex justify-between items-center">
-      <span class="text-retro-primary font-bold text-[0.64rem] lg:text-[0.64rem] font-wayfarers truncate">
-        {copy.title}
-      </span>
-      <button
-        type="button"
-        class="lg:hidden text-retro-primary hover:bg-retro-primary/20 p-1 rounded focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-retro-primary"
-        aria-label={copy.closeSidebarLabel}
-        data-sidebar-close
-      >
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-        </svg>
-      </button>
-    </div>
-
-    <nav data-sidebar-nav>
-      <ul class="space-y-1">
-        {items.map((item) => {
-          const folderId = normalizeId(item.id);
-          const isFolder = Boolean(item.children?.length);
-          const controlsId = `folder-content-${folderId}`;
-
-          if (!isFolder) {
-            return (
-              <li>
-                <a
-                  href={item.href ?? "#"}
-                  target={item.isExternal ? "_blank" : undefined}
-                  rel={item.isExternal ? "noopener noreferrer" : undefined}
-                  class="retro-item flex items-center px-3 py-2 text-white hover:bg-white/40 font-wayfarers text-[0.8rem] lg:text-[0.66rem] whitespace-nowrap focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-retro-primary"
-                >
-                  <span class="ml-2 truncate">{item.label}</span>
-                </a>
-              </li>
-            );
-          }
-
-          return (
-            <li class="folder-container">
-              {item.href ? (
-                <a
-                  href={item.href}
-                  target={item.isExternal ? "_blank" : undefined}
-                  rel={item.isExternal ? "noopener noreferrer" : undefined}
-                  class="retro-folder w-full flex items-center px-3 py-2 text-white hover:bg-white/40 font-wayfarers text-[0.8rem] lg:text-[0.66rem] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-retro-primary"
-                  aria-expanded="false"
-                  aria-controls={controlsId}
-                  data-folder-link="true"
-                >
-                  <span class="ml-2 truncate text-left">{item.label}</span>
-                </a>
-              ) : (
-                <button
-                  type="button"
-                  class="retro-folder w-full flex items-center px-3 py-2 text-white hover:bg-white/40 font-wayfarers text-[0.8rem] lg:text-[0.66rem] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-retro-primary"
-                  aria-expanded="false"
-                  aria-controls={controlsId}
-                  data-folder-toggle="true"
-                >
-                  <span class="ml-2 truncate text-left">{item.label}</span>
-                </button>
-              )}
-
-              <div id={controlsId} hidden>
-                <ul class="ml-4 border-l border-white/50">
-                  {item.children?.map((child) => (
-                    <li>
-                      <a
-                        href={child.href ?? "#"}
-                        target={child.isExternal ? "_blank" : undefined}
-                        rel={child.isExternal ? "noopener noreferrer" : undefined}
-                        class="retro-item flex items-center px-3 py-2 text-white hover:bg-white/40 font-wayfarers text-[0.8rem] lg:text-[0.66rem] whitespace-nowrap focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-retro-primary"
-                      >
-                        <span class="ml-2 truncate">{child.label}</span>
-                      </a>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </li>
-          );
-        })}
-      </ul>
-    </nav>
+<retro-sidebar>
+  <div
+    class="fixed inset-0 bg-black/50 backdrop-blur-sm lg:hidden z-40 hidden"
+    aria-hidden="true"
+    data-sidebar-overlay
+  >
   </div>
-</aside>
 
-<script type="module">
-  /*
-   * WHY this uses window[SIDEBAR_HOOK_KEY] instead of astro:page-load + AbortController
-   * ------------------------------------------------------------------------------------
-   * Astro re-executes <script type="module"> tags on every view transition navigation.
-   * This means every time the user navigates, this entire script block runs again from
-   * the top. The AbortController pattern (previous version) tried to work around this by
-   * tearing down and re-registering listeners on each run — but it introduced a critical
-   * bug: astro:page-load also fires once per navigation, and because the script re-runs
-   * before that event fires, each navigation accumulated one more astro:page-load
-   * listener. After two navigations there were two listeners, each calling setup() for
-   * the same event, creating two concurrent click handlers for the same document-level
-   * event. For a single tap on a folder link:
-   *
-   *   Handler A fired first  → aria-expanded is "false" → preventDefault(), expand, return
-   *   Handler B fired second → aria-expanded is NOW "true" (just set by A) → closeSidebar(),
-   *                            return WITHOUT calling preventDefault()
-   *
-   * The browser sees the event as unguarded (Handler B never called preventDefault) and
-   * follows the <a> href, navigating directly to the folder page on the first tap.
-   *
-   * The window guard fixes this permanently: window persists across both module
-   * re-executions and view transitions, so the if-block runs exactly once per
-   * browser session. All listeners are registered once, query the DOM lazily via
-   * getElements(), and always operate on whatever elements are currently in the page.
-   * The astro:before-swap listener (added once, inside the guard) cleans up
-   * body.overflow-hidden before every transition without any accumulation risk.
-   */
+  <aside
+    class="fixed left-0 top-0 h-screen w-[80vw] md:w-72 lg:w-48 border-r border-retro-primary/20 bg-black/80 backdrop-blur-sm z-50 transition-transform duration-150 lg:translate-x-0 -translate-x-full"
+    data-sidebar-drawer
+  >
+    <div class="p-2 h-full">
+      <div class="border-2 border-retro-primary mb-2 px-2 py-1 flex justify-between items-center">
+        <span
+          class="text-retro-primary font-bold text-[0.64rem] lg:text-[0.64rem] font-wayfarers truncate"
+        >
+          {copy.title}
+        </span>
+        <button
+          type="button"
+          class="lg:hidden text-retro-primary hover:bg-retro-primary/20 p-1 rounded focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-retro-primary"
+          aria-label={copy.closeSidebarLabel}
+          data-sidebar-close
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-6 w-6"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+        </button>
+      </div>
 
-  const SIDEBAR_HOOK_KEY = "__sidebarDrawerHooked";
+      <nav data-sidebar-nav>
+        <ul class="space-y-1">
+          {
+            items.map((item) => {
+              const folderId = normalizeId(item.id);
+              const isFolder = Boolean(item.children?.length);
+              const controlsId = `folder-content-${folderId}`;
 
-  if (!window[SIDEBAR_HOOK_KEY]) {
-    window[SIDEBAR_HOOK_KEY] = true;
+              if (!isFolder) {
+                return (
+                  <li>
+                    <a
+                      href={item.href ?? "#"}
+                      target={item.isExternal ? "_blank" : undefined}
+                      rel={item.isExternal ? "noopener noreferrer" : undefined}
+                      class="retro-item flex items-center px-3 py-2 text-white hover:bg-white/40 font-wayfarers text-[0.8rem] lg:text-[0.66rem] whitespace-nowrap focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-retro-primary"
+                    >
+                      <span class="ml-2 truncate">{item.label}</span>
+                    </a>
+                  </li>
+                );
+              }
 
-    const shouldBypass = (event) =>
-      event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey;
+              return (
+                <li class="folder-container">
+                  {item.href ? (
+                    <a
+                      href={item.href}
+                      target={item.isExternal ? "_blank" : undefined}
+                      rel={item.isExternal ? "noopener noreferrer" : undefined}
+                      class="retro-folder w-full flex items-center px-3 py-2 text-white hover:bg-white/40 font-wayfarers text-[0.8rem] lg:text-[0.66rem] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-retro-primary"
+                      aria-expanded="false"
+                      aria-controls={controlsId}
+                      data-folder-link="true"
+                    >
+                      <span class="ml-2 truncate text-left">{item.label}</span>
+                    </a>
+                  ) : (
+                    <button
+                      type="button"
+                      class="retro-folder w-full flex items-center px-3 py-2 text-white hover:bg-white/40 font-wayfarers text-[0.8rem] lg:text-[0.66rem] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-retro-primary"
+                      aria-expanded="false"
+                      aria-controls={controlsId}
+                      data-folder-toggle="true"
+                    >
+                      <span class="ml-2 truncate text-left">{item.label}</span>
+                    </button>
+                  )}
 
-    // Lazy DOM queries — always returns the elements currently in the live document,
-    // regardless of how many view transitions have occurred since registration.
-    const getElements = () => ({
-      overlay: document.querySelector("[data-sidebar-overlay]"),
-      drawer: document.querySelector("[data-sidebar-drawer]"),
-    });
+                  <div id={controlsId} hidden>
+                    <ul class="ml-4 border-l border-white/50">
+                      {item.children?.map((child) => (
+                        <li>
+                          <a
+                            href={child.href ?? "#"}
+                            target={child.isExternal ? "_blank" : undefined}
+                            rel={child.isExternal ? "noopener noreferrer" : undefined}
+                            class="retro-item flex items-center px-3 py-2 text-white hover:bg-white/40 font-wayfarers text-[0.8rem] lg:text-[0.66rem] whitespace-nowrap focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-retro-primary"
+                          >
+                            <span class="ml-2 truncate">{child.label}</span>
+                          </a>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </li>
+              );
+            })
+          }
+        </ul>
+      </nav>
+    </div>
+  </aside>
+</retro-sidebar>
 
-    const isOpen = (drawer) => drawer?.classList?.contains("translate-x-0");
+<script>
+  class RetroSidebar extends HTMLElement {
+    private desktopQuery = window.matchMedia("(min-width: 1024px)");
 
-    const openSidebar = () => {
-      const { overlay, drawer } = getElements();
+    connectedCallback() {
+      this.handleDocumentClick = this.handleDocumentClick.bind(this);
+      this.handleKeydown = this.handleKeydown.bind(this);
+      this.handleBeforeSwap = this.handleBeforeSwap.bind(this);
+      this.handleDesktopChange = this.handleDesktopChange.bind(this);
+
+      document.addEventListener("click", this.handleDocumentClick, { capture: true });
+      document.addEventListener("keydown", this.handleKeydown);
+      document.addEventListener("astro:before-swap", this.handleBeforeSwap);
+      this.desktopQuery.addEventListener("change", this.handleDesktopChange);
+    }
+
+    disconnectedCallback() {
+      document.removeEventListener("click", this.handleDocumentClick, { capture: true });
+      document.removeEventListener("keydown", this.handleKeydown);
+      document.removeEventListener("astro:before-swap", this.handleBeforeSwap);
+      this.desktopQuery.removeEventListener("change", this.handleDesktopChange);
+    }
+
+    private getElements() {
+      return {
+        overlay: this.querySelector("[data-sidebar-overlay]"),
+        drawer: this.querySelector("[data-sidebar-drawer]"),
+      };
+    }
+
+    private isOpen() {
+      const { drawer } = this.getElements();
+      return drawer?.classList?.contains("translate-x-0");
+    }
+
+    private openSidebar() {
+      const { overlay, drawer } = this.getElements();
       if (!(overlay instanceof HTMLElement) || !(drawer instanceof HTMLElement)) return;
       drawer.classList.add("translate-x-0");
       drawer.classList.remove("-translate-x-full");
       overlay.classList.remove("hidden");
       document.body.classList.add("overflow-hidden");
-    };
+    }
 
-    const closeSidebar = () => {
-      const { overlay, drawer } = getElements();
+    private closeSidebar() {
+      const { overlay, drawer } = this.getElements();
       if (!(overlay instanceof HTMLElement) || !(drawer instanceof HTMLElement)) return;
       drawer.classList.add("-translate-x-full");
       drawer.classList.remove("translate-x-0");
       overlay.classList.add("hidden");
       document.body.classList.remove("overflow-hidden");
-    };
+    }
 
-    const toggleSidebar = () => {
-      const { drawer } = getElements();
-      if (!(drawer instanceof HTMLElement)) return;
-      isOpen(drawer) ? closeSidebar() : openSidebar();
-    };
+    private toggleSidebar() {
+      if (this.isOpen()) {
+        this.closeSidebar();
+      } else {
+        this.openSidebar();
+      }
+    }
 
-    const setExpanded = (element, expanded) => {
+    private setExpanded(element: HTMLElement, expanded: boolean) {
       element.setAttribute("aria-expanded", expanded ? "true" : "false");
       const controlsId = element.getAttribute("aria-controls");
       if (!controlsId) return;
       const panel = document.getElementById(controlsId);
       if (panel) panel.hidden = !expanded;
-    };
+    }
 
-    const desktopQuery = window.matchMedia("(min-width: 1024px)");
-    const isDesktop = () => desktopQuery.matches;
+    private handleDesktopChange(event: MediaQueryListEvent) {
+      if (event.matches) {
+        this.collapseLinkedFolders();
+      }
+    }
 
-    const collapseLinkedFolders = () => {
-      const expandedLinks = document.querySelectorAll("a[data-folder-link=\"true\"][aria-expanded=\"true\"]");
+    private collapseLinkedFolders() {
+      const expandedLinks = this.querySelectorAll(
+        'a[data-folder-link="true"][aria-expanded="true"]',
+      );
       expandedLinks.forEach((link) => {
         if (link instanceof HTMLElement) {
-          setExpanded(link, false);
+          this.setExpanded(link, false);
         }
       });
-    };
+    }
 
-    desktopQuery.addEventListener("change", (event) => {
-      if (event.matches) {
-        collapseLinkedFolders();
+    private shouldBypass(event: MouseEvent) {
+      return event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey;
+    }
+
+    private handleDocumentClick(event: MouseEvent) {
+      const target = event.target as HTMLElement;
+      if (!target) return;
+
+      if (target.closest("#nav-toggle-btn")) {
+        event.preventDefault();
+        this.toggleSidebar();
+        return;
       }
-    });
 
-    document.addEventListener(
-      "click",
-      (event) => {
-        const target = event.target;
-        if (!(target instanceof Element)) return;
+      if (target.closest("[data-sidebar-overlay]")) {
+        this.closeSidebar();
+        return;
+      }
 
-        if (target.closest("#nav-toggle-btn")) {
+      if (target.closest("[data-sidebar-close]")) {
+        this.closeSidebar();
+        return;
+      }
+
+      const nav = target.closest("[data-sidebar-nav]");
+      if (!nav) return;
+
+      if (this.shouldBypass(event)) return;
+
+      const folderToggle = target.closest("[data-folder-toggle]");
+      if (folderToggle instanceof HTMLElement) {
+        event.preventDefault();
+        this.setExpanded(folderToggle, folderToggle.getAttribute("aria-expanded") !== "true");
+        return;
+      }
+
+      const folderLink = target.closest('a[data-folder-link="true"]');
+      if (folderLink instanceof HTMLAnchorElement) {
+        if (this.desktopQuery.matches) return;
+        const expanded = folderLink.getAttribute("aria-expanded") === "true";
+        if (!expanded) {
           event.preventDefault();
-          toggleSidebar();
+          this.setExpanded(folderLink, true);
           return;
         }
+        this.closeSidebar();
+        return;
+      }
 
-        if (target.closest("[data-sidebar-overlay]")) {
-          closeSidebar();
-          return;
-        }
+      const link = target.closest("a");
+      if (link instanceof HTMLAnchorElement) {
+        this.closeSidebar();
+      }
+    }
 
-        if (target.closest("[data-sidebar-close]")) {
-          closeSidebar();
-          return;
-        }
+    private handleKeydown(event: KeyboardEvent) {
+      if (event.key === "Escape") this.closeSidebar();
+    }
 
-        const nav = target.closest("[data-sidebar-nav]");
-        if (!nav) return;
+    private handleBeforeSwap() {
+      this.closeSidebar();
+    }
 
-        if (shouldBypass(event)) return;
+    // Define method types for event listeners
+    private handleDocumentClickBound!: (event: MouseEvent) => void;
+    private handleKeydownBound!: (event: KeyboardEvent) => void;
+    private handleBeforeSwapBound!: () => void;
+    private handleDesktopChangeBound!: (event: MediaQueryListEvent) => void;
+  }
 
-        // Pure-toggle folder (button, no href): only ever expands/collapses
-        const folderToggle = target.closest("[data-folder-toggle]");
-        if (folderToggle instanceof HTMLElement) {
-          event.preventDefault();
-          setExpanded(folderToggle, folderToggle.getAttribute("aria-expanded") !== "true");
-          return;
-        }
-
-        // Folder-link (anchor with href): first tap expands, second tap navigates.
-        // It is critical that only ONE handler ever runs per click event — the window
-        // guard above guarantees this, which is what makes this two-tap logic reliable.
-        const folderLink = target.closest("a[data-folder-link=\"true\"]");
-        if (folderLink instanceof HTMLAnchorElement) {
-          if (isDesktop()) {
-            return;
-          }
-          const expanded = folderLink.getAttribute("aria-expanded") === "true";
-          if (!expanded) {
-            event.preventDefault(); // block navigation on the first tap
-            setExpanded(folderLink, true);
-            return;
-          }
-          // Second tap: close drawer and let the browser follow the href normally
-          closeSidebar();
-          return;
-        }
-
-        // Any other nav link: close the drawer before the browser navigates
-        const link = target.closest("a");
-        if (link instanceof HTMLAnchorElement) {
-          closeSidebar();
-        }
-      },
-      { capture: true }
-    );
-
-    document.addEventListener("keydown", (event) => {
-      if (event.key === "Escape") closeSidebar();
-    });
-
-    // Strip body.overflow-hidden before every Astro view transition swap.
-    // If the sidebar is open when the user navigates (e.g. via a TopNavigation
-    // route chip), Astro replaces the inner DOM — resetting the sidebar to its
-    // default closed state — but never touches <body>. Without this listener,
-    // overflow-hidden would survive into the new page and lock all scrolling.
-    document.addEventListener("astro:before-swap", closeSidebar);
+  if (!customElements.get("retro-sidebar")) {
+    customElements.define("retro-sidebar", RetroSidebar);
   }
 </script>

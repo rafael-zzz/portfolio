@@ -67,8 +67,7 @@ const zineFileCode = sourceSlug.replace(/[^a-z0-9-]/gi, "-").toUpperCase();
         return;
       }
 
-      const isWhitespace = (node) =>
-        node.nodeType === Node.TEXT_NODE && !node.textContent.trim();
+      const isWhitespace = (node) => node.nodeType === Node.TEXT_NODE && !node.textContent.trim();
 
       const extractImage = (node) => {
         if (!node || node.nodeType !== Node.ELEMENT_NODE) {
@@ -89,9 +88,7 @@ const zineFileCode = sourceSlug.replace(/[^a-z0-9-]/gi, "-").toUpperCase();
         }
 
         if (element.tagName === "A") {
-          const meaningful = Array.from(element.childNodes).filter(
-            (child) => !isWhitespace(child),
-          );
+          const meaningful = Array.from(element.childNodes).filter((child) => !isWhitespace(child));
 
           if (meaningful.length === 1) {
             return extractImage(meaningful[0]);
@@ -106,9 +103,7 @@ const zineFileCode = sourceSlug.replace(/[^a-z0-9-]/gi, "-").toUpperCase();
           return;
         }
 
-        const meaningful = Array.from(block.childNodes).filter(
-          (child) => !isWhitespace(child),
-        );
+        const meaningful = Array.from(block.childNodes).filter((child) => !isWhitespace(child));
 
         if (meaningful.length !== 1) {
           return;
@@ -150,6 +145,90 @@ const zineFileCode = sourceSlug.replace(/[^a-z0-9-]/gi, "-").toUpperCase();
 </SectionFrame>
 
 <style>
+  :global(.glossary-fab) {
+    position: fixed;
+    bottom: 1.25rem;
+    left: 1.25rem;
+    z-index: 55;
+    background: rgba(4, 7, 11, 0.95);
+    border: 1px solid var(--site-accent-color);
+    color: var(--site-accent-color);
+    padding: 0.6rem 0.8rem;
+    font-family: "Departure Mono", monospace;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    box-shadow: 0 0 10px rgba(183, 214, 255, 0.2);
+    display: none;
+    cursor: pointer;
+  }
+
+  @media (max-width: 640px) {
+    :global(.glossary-fab) {
+      display: block;
+    }
+  }
+
+  :global(.glossary-drawer) {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 60;
+    background: linear-gradient(180deg, rgba(8, 13, 21, 0.98), rgba(4, 7, 12, 1));
+    border-top: 1px solid var(--site-accent-color);
+    box-shadow:
+      0 -10px 30px rgba(0, 0, 0, 0.8),
+      0 0 15px rgba(183, 214, 255, 0.1) inset;
+    transform: translateY(100%);
+    transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    max-height: 70vh;
+    display: flex;
+    flex-direction: column;
+    font-family: "Departure Mono", monospace;
+  }
+
+  :global(.glossary-drawer.open) {
+    transform: translateY(0);
+  }
+
+  :global(.glossary-drawer-header) {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.8rem 1rem;
+    border-bottom: 1px dashed rgba(255, 255, 255, 0.2);
+    color: #fff;
+    font-size: 0.8rem;
+    letter-spacing: 0.1em;
+  }
+
+  :global(.glossary-close) {
+    color: var(--site-accent-color);
+    background: transparent;
+    border: 1px solid var(--site-accent-color);
+    padding: 0.2rem 0.5rem;
+    font-size: 0.7rem;
+    cursor: pointer;
+  }
+
+  :global(.glossary-drawer-content) {
+    padding: 1rem;
+    overflow-y: auto;
+    color: rgba(228, 234, 247, 0.95);
+    font-size: 0.85rem;
+    line-height: 1.6;
+    padding-bottom: 2rem;
+  }
+
+  :global(.glossary-drawer-content p) {
+    margin-bottom: 0.8rem;
+  }
+
+  :global(.glossary-drawer-content strong) {
+    color: #fff;
+    font-weight: 600;
+  }
+
   .writing-terminal-shell {
     align-items: center;
     background:
@@ -327,7 +406,7 @@ const zineFileCode = sourceSlug.replace(/[^a-z0-9-]/gi, "-").toUpperCase();
 
   .writing-post-content :global(h2)::before {
     color: rgba(186, 206, 240, 0.94);
-    content: ""counter(terminal-section)":";
+    content: "" counter(terminal-section) ":";
     font-family: "Departure Mono", monospace;
     font-size: 1.2em;
     letter-spacing: 0.15em;
@@ -342,7 +421,7 @@ const zineFileCode = sourceSlug.replace(/[^a-z0-9-]/gi, "-").toUpperCase();
 
   .writing-post-content :global(h3)::before {
     color: rgba(171, 191, 226, 0.86);
-    content: "> " counter(terminal-section) "." counter(terminal-subsection)":";
+    content: "> " counter(terminal-section) "." counter(terminal-subsection) ":";
     font-family: "Departure Mono", monospace;
     font-size: 1.08em;
     letter-spacing: 0.08em;
@@ -583,8 +662,7 @@ const zineFileCode = sourceSlug.replace(/[^a-z0-9-]/gi, "-").toUpperCase();
 
   .writing-post-content :global(figure.md-figure .md-figcaption) {
     background:
-      linear-gradient(90deg, rgba(15, 23, 38, 0.5), rgba(15, 23, 38, 0.2)),
-      rgba(150, 154, 163, 0.4);
+      linear-gradient(90deg, rgba(15, 23, 38, 0.5), rgba(15, 23, 38, 0.2)), rgba(150, 154, 163, 0.4);
     border-top: 1px dashed rgba(189, 202, 228, 0.6);
     bottom: 0;
     color: rgba(255, 255, 255, 1);

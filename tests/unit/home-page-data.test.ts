@@ -50,8 +50,12 @@ describe("writing previews", () => {
   it("builds localized preview hrefs and keeps order", () => {
     const previews = buildWritingPreviews("pt", [
       createLocalizedEntry("pt", "pt", "third", "Terceiro", "third-desc", "2025-02-03", ["rust"]),
-      createLocalizedEntry("pt", "pt", "second", "Segundo", "second-desc", "2025-02-02", ["systems"]),
-      createLocalizedEntry("pt", "pt", "first", "Primeiro", "first-desc", "2025-02-01", ["security"]),
+      createLocalizedEntry("pt", "pt", "second", "Segundo", "second-desc", "2025-02-02", [
+        "systems",
+      ]),
+      createLocalizedEntry("pt", "pt", "first", "Primeiro", "first-desc", "2025-02-01", [
+        "security",
+      ]),
     ]);
 
     expect(previews).toHaveLength(3);

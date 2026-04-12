@@ -12,7 +12,7 @@ const reopenId = "stereo-reopen";
 const genreId = "stereo-genre";
 ---
 
-<section
+<stereo-player
   id={rootId}
   data-stereo-root="persistent"
   transition:persist
@@ -65,15 +65,17 @@ const genreId = "stereo-genre";
         class="stereo-genre-select font-['Departure_Mono']"
         aria-labelledby="stereo-genre-label"></select>
       <span id="stereo-volume-label" class="stereo-volume-label font-['Departure_Mono']">VOL</span>
-      <input
-        id={volumeId}
-        type="range"
-        min="0"
-        max="100"
-        value="30"
-        class="stereo-volume"
-        aria-labelledby="stereo-volume-label"
-      />
+      <div class="stereo-slider-container">
+        <input
+          id={volumeId}
+          type="range"
+          min="0"
+          max="100"
+          value="30"
+          class="stereo-volume"
+          aria-labelledby="stereo-volume-label"
+        />
+      </div>
     </div>
     <p id={statusId} class="stereo-status font-['Departure_Mono']">Loading...</p>
   </div>
@@ -86,690 +88,432 @@ const genreId = "stereo-genre";
     Open player
   </button>
   <div id={playerId} class="stereo-hidden-player" aria-hidden="true"></div>
-</section>
+</stereo-player>
 
 <script is:inline>
-  const PLAYER_DOM_IDS = {
-    root: "stereo-player-root",
-    player: "stereo-youtube-player",
-    volume: "stereo-volume",
-    toggle: "stereo-toggle",
-    rewind: "stereo-rewind",
-    skip: "stereo-skip",
-    track: "stereo-track",
-    status: "stereo-status",
-    close: "stereo-close",
-    reopen: "stereo-reopen",
-    genre: "stereo-genre",
-  };
-
-  const PLAYLISTS = {
-    electronic: {
-      label: "Electronic",
-      tracks: [
-        { title: "Daft Punk - Get Lucky", videoId: "5NV6Rdv1a3I" },
-        { title: "Gorillaz - Feel Good Inc.", videoId: "HyHNuVaZJ-k" },
-        { title: "Kavinsky - Nightcall", videoId: "MV_3Dpw-BRY" },
-        { title: "Jamiroquai - Virtual Insanity", videoId: "4JkIs37a2JE" },
-        { title: "The Weeknd - Blinding Lights", videoId: "4NRXx6U8ABQ" },
-        { title: "Tame Impala - Let It Happen", videoId: "pFptt7Cargc" },
-        { title: "The Strokes - Reptilia", videoId: "b8-tXG8KrWs" },
-      ],
-    },
-    nuMetal: {
-      label: "Nu Metal",
-      tracks: [
-        { title: "Tool - Lateralus", videoId: "Y7JG63IuaWs" },
-        { title: "Linkin Park - Papercut", videoId: "2K-evRnwcSc" },
-        { title: "Tool - Schism", videoId: "80RtBeB61LE" },
-        { title: "Tool - Sober", videoId: "ouVedNg-6WQ" },
-        { title: "Tool - Vicarious", videoId: "N26N7lQHNW8" },
-        { title: "Linkin Park - Numb", videoId: "kXYiU_JCYtU" },
-        { title: "Limp Bizkit - Break Stuff", videoId: "ZpUYjpKg9KY" },
-      ],
-    },
-  };
-
-  const PLAYLIST_IDS = Object.keys(PLAYLISTS);
-  const STORAGE_KEY = "stereoPlayerState";
-  const DEFAULT_VOLUME = 30;
-  const MIN_VOLUME = 0;
-  const MAX_VOLUME = 100;
-  const MOBILE_MEDIA_QUERY = "(max-width: 640px)";
-  const GLOBAL_KEY = "__stereoPlayer";
-
-  const createState = () => ({
-    playlistId: PLAYLIST_IDS[0] ?? "electronic",
-    trackIndex: 0,
-    volume: DEFAULT_VOLUME,
-    isPlaying: false,
-    resumeTime: 0,
-    isClosed: false,
-  });
-
-  const normalizePlaylistId = (playlistId) =>
-    PLAYLIST_IDS.includes(playlistId) ? playlistId : PLAYLIST_IDS[0] ?? "electronic";
-
-  const getTracks = (playlistId) => PLAYLISTS[playlistId]?.tracks ?? [];
-
-  const normalizeTrackIndex = (playlistId, index) => {
-    const tracks = getTracks(playlistId);
-    if (!tracks.length) {
-      return 0;
-    }
-
-    if (!Number.isInteger(index)) {
-      return 0;
-    }
-
-    return ((index % tracks.length) + tracks.length) % tracks.length;
-  };
-
-  const normalizeVolume = (value) => {
-    if (typeof value !== "number" || Number.isNaN(value)) {
-      return DEFAULT_VOLUME;
-    }
-
-    return Math.min(MAX_VOLUME, Math.max(MIN_VOLUME, Math.round(value)));
-  };
-
-  const normalizeResumeTime = (value) => {
-    if (typeof value !== "number" || Number.isNaN(value) || value < 0) {
-      return 0;
-    }
-
-    return value;
-  };
-
-  const normalizeState = (candidate) => {
-    const base = createState();
-    if (!candidate || typeof candidate !== "object") {
-      return base;
-    }
-
-    const playlistId = normalizePlaylistId(candidate.playlistId);
-    return {
-      playlistId,
-      trackIndex: normalizeTrackIndex(playlistId, candidate.trackIndex),
-      volume: normalizeVolume(candidate.volume),
-      isPlaying: Boolean(candidate.isPlaying),
-      resumeTime: normalizeResumeTime(candidate.resumeTime),
-      isClosed: Boolean(candidate.isClosed),
-    };
-  };
-
-  const loadState = () => {
-    try {
-      const raw = window.localStorage.getItem(STORAGE_KEY);
-      if (!raw) {
-        return null;
-      }
-      return normalizeState(JSON.parse(raw));
-    } catch {
-      return null;
-    }
-  };
-
-  const store =
-    window[GLOBAL_KEY] ??
-    ({
-      player: null,
-      state: loadState() ?? createState(),
-      dom: {},
-      handlers: null,
-      scriptInjected: false,
-      ytHooked: false,
-      routerHooked: false,
-      resizeHooked: false,
-      visibilityHooked: false,
-      statusOverride: null,
-    });
-
-  store.state = normalizeState(store.state ?? loadState() ?? createState());
-  window[GLOBAL_KEY] = store;
-
-  const persistState = () => {
-    try {
-      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(store.state));
-    } catch {
-      // Ignore storage write errors.
-    }
-  };
-
-  const findPlayerRoot = (preferredRoot) => {
-    if (preferredRoot instanceof HTMLElement && preferredRoot.isConnected) {
-      return preferredRoot;
-    }
-
-    const rootNode = document.getElementById(PLAYER_DOM_IDS.root);
-    return rootNode instanceof HTMLElement ? rootNode : null;
-  };
-
-  const getNodes = (preferredRoot) => {
-    const rootNode = findPlayerRoot(preferredRoot);
-
-    return {
-      rootNode,
-      playerNode: rootNode?.querySelector(`#${PLAYER_DOM_IDS.player}`) ?? null,
-      volumeNode: rootNode?.querySelector(`#${PLAYER_DOM_IDS.volume}`) ?? null,
-      toggleNode: rootNode?.querySelector(`#${PLAYER_DOM_IDS.toggle}`) ?? null,
-      rewindNode: rootNode?.querySelector(`#${PLAYER_DOM_IDS.rewind}`) ?? null,
-      skipNode: rootNode?.querySelector(`#${PLAYER_DOM_IDS.skip}`) ?? null,
-      trackNode: rootNode?.querySelector(`#${PLAYER_DOM_IDS.track}`) ?? null,
-      statusNode: rootNode?.querySelector(`#${PLAYER_DOM_IDS.status}`) ?? null,
-      closeNode: rootNode?.querySelector(`#${PLAYER_DOM_IDS.close}`) ?? null,
-      reopenNode: rootNode?.querySelector(`#${PLAYER_DOM_IDS.reopen}`) ?? null,
-      genreNode: rootNode?.querySelector(`#${PLAYER_DOM_IDS.genre}`) ?? null,
-    };
-  };
-
-  const getCurrentTrack = () => {
-    const tracks = getTracks(store.state.playlistId);
-    return tracks[store.state.trackIndex] ?? tracks[0] ?? null;
-  };
-
-  const updateToggle = () => {
-    if (store.dom.toggleNode) {
-      store.dom.toggleNode.textContent = store.state.isPlaying ? "Pause" : "Play";
-    }
-  };
-
-  const updateTrackTitle = () => {
-    const track = getCurrentTrack();
-    if (store.dom.trackNode) {
-      store.dom.trackNode.textContent = track ? track.title : "No track available";
-    }
-  };
-
-  const updateStatus = () => {
-    if (!store.dom.statusNode) {
-      return;
-    }
-
-    if (store.statusOverride) {
-      store.dom.statusNode.textContent = store.statusOverride;
-      return;
-    }
-
-    const track = getCurrentTrack();
-    if (!track) {
-      store.dom.statusNode.textContent = "No tracks available";
-      return;
-    }
-
-    store.dom.statusNode.textContent = store.state.isPlaying
-      ? `Playing: ${track.title}`
-      : `Ready: ${track.title}`;
-  };
-
-  const setStatusOverride = (message) => {
-    store.statusOverride = message;
-    updateStatus();
-  };
-
-  const ensureGenreOptions = () => {
-    if (!store.dom.genreNode) {
-      return;
-    }
-
-    const marker = PLAYLIST_IDS.join("|");
-    if (
-      store.dom.genreNode.dataset.playlists === marker &&
-      store.dom.genreNode.options.length === PLAYLIST_IDS.length
-    ) {
-      store.dom.genreNode.value = store.state.playlistId;
-      return;
-    }
-
-    store.dom.genreNode.innerHTML = "";
-    PLAYLIST_IDS.forEach((playlistId) => {
-      const option = document.createElement("option");
-      option.value = playlistId;
-      option.textContent = PLAYLISTS[playlistId]?.label ?? playlistId;
-      store.dom.genreNode.appendChild(option);
-    });
-
-    store.dom.genreNode.dataset.playlists = marker;
-    store.dom.genreNode.value = store.state.playlistId;
-  };
-
-  const getPlayingStateFromPlayer = () => {
-    if (!store.player || typeof store.player.getPlayerState !== "function") {
-      return null;
-    }
-
-    if (!window.YT || !window.YT.PlayerState) {
-      return null;
-    }
-
-    const state = store.player.getPlayerState();
-    if (state === window.YT.PlayerState.PLAYING || state === window.YT.PlayerState.BUFFERING) {
-      return true;
-    }
-
-    if (
-      state === window.YT.PlayerState.PAUSED ||
-      state === window.YT.PlayerState.CUED ||
-      state === window.YT.PlayerState.ENDED
-    ) {
-      return false;
-    }
-
-    // UNSTARTED (-1) is intentionally excluded above and falls through to `null`.
-    // When transition:persist transplants the section between documents via
-    // adoptNode(), the YT iframe can transiently report UNSTARTED even while
-    // the video is mid-play.  Returning null tells syncIsPlayingFromPlayer()
-    // to leave store.state.isPlaying untouched so the value snapshot() saved
-    // in astro:before-swap remains authoritative.
-
-    return null;
-  };
-
-  const syncIsPlayingFromPlayer = () => {
-    const isPlaying = getPlayingStateFromPlayer();
-    if (isPlaying === null) {
-      return false;
-    }
-
-    store.state.isPlaying = isPlaying;
-    updateToggle();
-    updateStatus();
-    return true;
-  };
-
-  const applyVisibility = () => {
-    const rootNode = store.dom.rootNode ?? findPlayerRoot();
-    if (!rootNode) {
-      return;
-    }
-
-    const isMobile =
-      typeof window.matchMedia === "function" && window.matchMedia(MOBILE_MEDIA_QUERY).matches;
-
-    if (!isMobile) {
-      store.state.isClosed = false;
-      rootNode.removeAttribute("data-stereo-closed");
-      return;
-    }
-
-    if (store.state.isClosed) {
-      rootNode.setAttribute("data-stereo-closed", "true");
-    } else {
-      rootNode.removeAttribute("data-stereo-closed");
-    }
-  };
-
-  const setVolume = (value, options = {}) => {
-    const normalized = normalizeVolume(value);
-    store.state.volume = normalized;
-    if (store.dom.volumeNode) {
-      store.dom.volumeNode.value = String(normalized);
-    }
-    if (store.player && typeof store.player.setVolume === "function") {
-      store.player.setVolume(normalized);
-    }
-
-    if (options.persist !== false) {
-      persistState();
-    }
-  };
-
-  const snapshot = () => {
-    if (store.player && typeof store.player.getCurrentTime === "function") {
-      store.state.resumeTime = normalizeResumeTime(Number(store.player.getCurrentTime()));
-    }
-    syncIsPlayingFromPlayer();
-    persistState();
-  };
-
-  const loadTrack = (index, options = {}) => {
-    const playlistId = normalizePlaylistId(store.state.playlistId);
-    const tracks = getTracks(playlistId);
-    if (!tracks.length) {
-      setStatusOverride("No tracks available");
-      return;
-    }
-
-    const normalizedIndex = normalizeTrackIndex(playlistId, index);
-    store.state.trackIndex = normalizedIndex;
-    store.state.resumeTime = normalizeResumeTime(options.startAtSeconds ?? 0);
-    persistState();
-
-    updateTrackTitle();
-    updateStatus();
-
-    if (!store.player) {
-      return;
-    }
-
-    const track = tracks[normalizedIndex];
-    const request =
-      store.state.resumeTime > 0
-        ? { videoId: track.videoId, startSeconds: store.state.resumeTime }
-        : track.videoId;
-
-    if (options.autoplay) {
-      store.player.loadVideoById(request);
-      return;
-    }
-
-    if (typeof store.player.cueVideoById === "function") {
-      store.player.cueVideoById(request);
-      return;
-    }
-
-    store.player.loadVideoById(request);
-    if (typeof store.player.pauseVideo === "function") {
-      store.player.pauseVideo();
-    }
-  };
-
-  const jumpTrack = (step) => {
-    store.statusOverride = null;
-    const nextIndex = normalizeTrackIndex(store.state.playlistId, store.state.trackIndex + step);
-    loadTrack(nextIndex, { autoplay: store.state.isPlaying, startAtSeconds: 0 });
-  };
-
-  const changePlaylist = (playlistId) => {
-    store.state.playlistId = normalizePlaylistId(playlistId);
-    store.state.trackIndex = 0;
-    store.state.resumeTime = 0;
-    store.statusOverride = null;
-    ensureGenreOptions();
-    loadTrack(store.state.trackIndex, { autoplay: store.state.isPlaying, startAtSeconds: 0 });
-  };
-
-  const play = () => {
-    if (!store.player || typeof store.player.playVideo !== "function") {
-      setStatusOverride("Player unavailable");
-      store.state.isPlaying = false;
-      updateToggle();
-      return;
-    }
-
-    store.statusOverride = null;
-    store.player.playVideo();
-    store.state.isPlaying = true;
-    updateToggle();
-    updateStatus();
-    persistState();
-  };
-
-  const pause = () => {
-    if (!store.player || typeof store.player.pauseVideo !== "function") {
-      setStatusOverride("Player unavailable");
-      store.state.isPlaying = false;
-      updateToggle();
-      return;
-    }
-
-    store.player.pauseVideo();
-    store.state.isPlaying = false;
-    updateToggle();
-    updateStatus();
-    persistState();
-  };
-
-  const togglePlayback = () => {
-    if (!store.player) {
-      setStatusOverride("Player unavailable");
-      store.state.isPlaying = false;
-      updateToggle();
-      return;
-    }
-
-    const isPlaying = getPlayingStateFromPlayer();
-    if (isPlaying === null ? store.state.isPlaying : isPlaying) {
-      pause();
-      return;
-    }
-
-    play();
-  };
-
-  const closePlayer = () => {
-    store.state.isClosed = true;
-    store.statusOverride = "Paused";
-    pause();
-    applyVisibility();
-    persistState();
-  };
-
-  const reopenPlayer = () => {
-    store.state.isClosed = false;
-    store.statusOverride = null;
-    applyVisibility();
-    updateStatus();
-    persistState();
-  };
-
-  const updateUI = () => {
-    if (store.dom.volumeNode) {
-      store.dom.volumeNode.value = String(store.state.volume);
-    }
-
-    ensureGenreOptions();
-    updateTrackTitle();
-    applyVisibility();
-
-    if (!syncIsPlayingFromPlayer()) {
-      updateToggle();
-      updateStatus();
-    }
-  };
-
-  const bindDom = () => {
-    const previousDom = store.dom;
-    const nextDom = getNodes(previousDom.rootNode);
-
-    if (!store.handlers) {
-      store.handlers = {
-        onVolumeInput: () => {
-          if (store.dom.volumeNode) {
-            setVolume(Number(store.dom.volumeNode.value));
-          }
-        },
-        onToggleClick: togglePlayback,
-        onRewindClick: () => jumpTrack(-1),
-        onSkipClick: () => jumpTrack(1),
-        onGenreChange: () => {
-          if (store.dom.genreNode) {
-            changePlaylist(store.dom.genreNode.value);
-          }
-        },
-        onCloseClick: closePlayer,
-        onReopenClick: reopenPlayer,
-      };
-    }
-
-    const bindingPlan = [
-      { key: "volumeNode", eventName: "input", handlerName: "onVolumeInput" },
-      { key: "toggleNode", eventName: "click", handlerName: "onToggleClick" },
-      { key: "rewindNode", eventName: "click", handlerName: "onRewindClick" },
-      { key: "skipNode", eventName: "click", handlerName: "onSkipClick" },
-      { key: "genreNode", eventName: "change", handlerName: "onGenreChange" },
-      { key: "closeNode", eventName: "click", handlerName: "onCloseClick" },
-      { key: "reopenNode", eventName: "click", handlerName: "onReopenClick" },
-    ];
-
-    bindingPlan.forEach(({ key, eventName, handlerName }) => {
-      const oldNode = previousDom[key];
-      const newNode = nextDom[key];
-      const handler = store.handlers[handlerName];
-
-      if (oldNode && oldNode !== newNode) {
-        oldNode.removeEventListener(eventName, handler);
-      }
-
-      if (newNode && oldNode !== newNode) {
-        newNode.addEventListener(eventName, handler);
-      }
-    });
-
-    store.dom = nextDom;
-    updateUI();
-  };
-
-  const onReady = (event) => {
-    setVolume(store.state.volume, { persist: false });
-    loadTrack(store.state.trackIndex, {
-      autoplay: store.state.isPlaying,
-      startAtSeconds: store.state.resumeTime,
-    });
-    window.setTimeout(syncIsPlayingFromPlayer, 300);
-  };
-
-  const onStateChange = (event) => {
-    if (!window.YT || !window.YT.PlayerState) {
-      return;
-    }
-
-    if (event.data === window.YT.PlayerState.PLAYING) {
-      store.state.isPlaying = true;
-      store.statusOverride = null;
-      updateToggle();
-      updateStatus();
-      persistState();
-      return;
-    }
-
-    if (event.data === window.YT.PlayerState.PAUSED || event.data === window.YT.PlayerState.CUED) {
-      store.state.isPlaying = false;
-      updateToggle();
-      updateStatus();
-      snapshot();
-      return;
-    }
-
-    if (event.data === window.YT.PlayerState.ENDED) {
-      jumpTrack(1);
-    }
-  };
-
-  const mountPlayer = () => {
-    if (!store.dom.playerNode) {
-      setStatusOverride("Audio blocked");
-      return;
-    }
-
-    const hasMountedIframe = Boolean(store.dom.playerNode.querySelector("iframe"));
-
-    if (store.player && typeof store.player.getPlayerState === "function" && hasMountedIframe) {
-      syncIsPlayingFromPlayer();
-      updateUI();
-      return;
-    }
-
-    if (!window.YT || !window.YT.Player) {
-      setStatusOverride("Audio blocked");
-      return;
-    }
-
-    const track = getCurrentTrack();
-    if (!track) {
-      setStatusOverride("No tracks available");
-      return;
-    }
-
-    store.player = new window.YT.Player(store.dom.playerNode, {
-      height: "1",
-      width: "1",
-      videoId: track.videoId,
-      playerVars: {
-        autoplay: 0,
-        controls: 0,
-        disablekb: 1,
-        fs: 0,
-        iv_load_policy: 3,
-        modestbranding: 1,
-        playsinline: 1,
-        rel: 0,
+  (function() {
+    const PLAYLISTS = {
+      electronic: {
+        label: "Electronic",
+        tracks: [
+          { title: "Daft Punk - Get Lucky", videoId: "5NV6Rdv1a3I" },
+          { title: "Gorillaz - Feel Good Inc.", videoId: "HyHNuVaZJ-k" },
+          { title: "Kavinsky - Nightcall", videoId: "MV_3Dpw-BRY" },
+          { title: "Jamiroquai - Virtual Insanity", videoId: "4JkIs37a2JE" },
+          { title: "The Weeknd - Blinding Lights", videoId: "4NRXx6U8ABQ" },
+          { title: "Tame Impala - Let It Happen", videoId: "pFptt7Cargc" },
+          { title: "The Strokes - Reptilia", videoId: "b8-tXG8KrWs" },
+        ],
       },
-      events: {
-        onReady,
-        onStateChange,
+      nuMetal: {
+        label: "Nu Metal",
+        tracks: [
+          { title: "Tool - Lateralus", videoId: "Y7JG63IuaWs" },
+          { title: "Linkin Park - Papercut", videoId: "2K-evRnwcSc" },
+          { title: "Tool - Schism", videoId: "80RtBeB61LE" },
+          { title: "Tool - Sober", videoId: "ouVedNg-6WQ" },
+          { title: "Tool - Vicarious", videoId: "N26N7lQHNW8" },
+          { title: "Linkin Park - Numb", videoId: "kXYiU_JCYtU" },
+          { title: "Limp Bizkit - Break Stuff", videoId: "ZpUYjpKg9KY" },
+        ],
       },
-    });
-  };
+    };
 
-  const bootstrapPlayer = () => {
-    bindDom();
+    const PLAYLIST_IDS = Object.keys(PLAYLISTS);
+    const STORAGE_KEY = "stereoPlayerState";
+    const DEFAULT_VOLUME = 30;
+    const MIN_VOLUME = 0;
+    const MAX_VOLUME = 100;
+    const MOBILE_MEDIA_QUERY = "(max-width: 640px)";
 
-    if (window.YT && window.YT.Player) {
-      mountPlayer();
-      return;
-    }
+    class StereoPlayer extends HTMLElement {
+      constructor() {
+        super();
+        this.player = null;
+        this.state = this.loadState() || this.createInitialState();
+        this.statusOverride = null;
+        this.ytHooked = false;
+        this.scriptInjected = false;
+        this.listenersInitialized = false;
 
-    if (!store.ytHooked) {
-      const previousReadyHook = window.onYouTubeIframeAPIReady;
-      window.onYouTubeIframeAPIReady = () => {
-        if (typeof previousReadyHook === "function") {
-          previousReadyHook();
+        this.onBeforeSwap = this.onBeforeSwap.bind(this);
+        this.onAfterSwap = this.onAfterSwap.bind(this);
+        this.onVisibilityChange = this.onVisibilityChange.bind(this);
+      }
+
+      connectedCallback() {
+        window.__stereoPlayer = this;
+        // Wait for children to be parsed if not already present
+        if (this.querySelector("#stereo-volume")) {
+          this.init();
+        } else {
+          requestAnimationFrame(() => this.init());
         }
-        mountPlayer();
-      };
-      store.ytHooked = true;
+      }
+
+      init() {
+        this.bootstrap();
+        this.setupListeners();
+      }
+
+      createInitialState() {
+        return {
+          playlistId: PLAYLIST_IDS[0] || "electronic",
+          trackIndex: 0,
+          volume: DEFAULT_VOLUME,
+          isPlaying: false,
+          resumeTime: 0,
+          isClosed: false,
+        };
+      }
+
+      loadState() {
+        try {
+          const raw = window.localStorage.getItem(STORAGE_KEY);
+          if (!raw) return null;
+          return this.normalizeState(JSON.parse(raw));
+        } catch (e) {
+          return null;
+        }
+      }
+
+      normalizeState(candidate) {
+        const base = this.createInitialState();
+        if (!candidate || typeof candidate !== "object") return base;
+
+        const playlistId = PLAYLIST_IDS.includes(candidate.playlistId)
+          ? candidate.playlistId
+          : base.playlistId;
+        const tracks = PLAYLISTS[playlistId]?.tracks || [];
+
+        return {
+          playlistId,
+          trackIndex:
+            tracks.length > 0
+              ? (((candidate.trackIndex || 0) % tracks.length) + tracks.length) % tracks.length
+              : 0,
+          volume: Math.min(MAX_VOLUME, Math.max(MIN_VOLUME, Number(candidate.volume) || 0)),
+          isPlaying: Boolean(candidate.isPlaying),
+          resumeTime: Math.max(0, Number(candidate.resumeTime) || 0),
+          isClosed: Boolean(candidate.isClosed),
+        };
+      }
+
+      persistState() {
+        try {
+          window.localStorage.setItem(STORAGE_KEY, JSON.stringify(this.state));
+        } catch (e) {}
+      }
+
+      getNodes() {
+        return {
+          playerNode: this.querySelector("#stereo-youtube-player"),
+          volumeNode: this.querySelector("#stereo-volume"),
+          toggleNode: this.querySelector("#stereo-toggle"),
+          rewindNode: this.querySelector("#stereo-rewind"),
+          skipNode: this.querySelector("#stereo-skip"),
+          trackNode: this.querySelector("#stereo-track"),
+          statusNode: this.querySelector("#stereo-status"),
+          closeNode: this.querySelector("#stereo-close"),
+          reopenNode: this.querySelector("#stereo-reopen"),
+          genreNode: this.querySelector("#stereo-genre"),
+        };
+      }
+
+      bootstrap() {
+        this.syncUI();
+
+        if (window.YT && window.YT.Player) {
+          this.mountPlayer();
+        } else {
+          if (!this.ytHooked) {
+            const prev = window.onYouTubeIframeAPIReady;
+            window.onYouTubeIframeAPIReady = () => {
+              if (typeof prev === "function") prev();
+              this.mountPlayer();
+            };
+            this.ytHooked = true;
+          }
+
+          if (!this.scriptInjected) {
+            const script = document.createElement("script");
+            script.src = "https://www.youtube.com/iframe_api";
+            document.head.appendChild(script);
+            this.scriptInjected = true;
+          }
+        }
+      }
+
+      setupListeners() {
+        if (this.listenersInitialized) return;
+
+        this.addEventListener("input", (e) => {
+          if (e.target.id === "stereo-volume") {
+            this.setVolume(Number(e.target.value));
+          }
+        });
+
+        this.addEventListener("click", (e) => {
+          const btn = e.target.closest("button");
+          if (!btn) return;
+
+          if (btn.id === "stereo-toggle") this.togglePlayback();
+          if (btn.id === "stereo-rewind") this.jumpTrack(-1);
+          if (btn.id === "stereo-skip") this.jumpTrack(1);
+          if (btn.id === "stereo-close") this.closePlayer();
+          if (btn.id === "stereo-reopen") this.reopenPlayer();
+        });
+
+        this.addEventListener("change", (e) => {
+          if (e.target.id === "stereo-genre") {
+            this.changePlaylist(e.target.value);
+          }
+        });
+
+        document.addEventListener("astro:before-swap", this.onBeforeSwap);
+        document.addEventListener("astro:after-swap", this.onAfterSwap);
+        window.addEventListener("resize", () => this.applyVisibility());
+        document.addEventListener("visibilitychange", this.onVisibilityChange);
+        
+        this.listenersInitialized = true;
+      }
+
+      onBeforeSwap() {
+        this.snapshot();
+      }
+
+      onAfterSwap() {
+        const wasPlaying = this.state.isPlaying;
+        this.syncUI();
+        this.state.isPlaying = wasPlaying;
+        this.mountPlayer();
+
+        if (
+          wasPlaying &&
+          this.player &&
+          typeof this.player.playVideo === "function" &&
+          this.player.getPlayerState() !== window.YT.PlayerState.PLAYING
+        ) {
+          this.player.playVideo();
+        }
+      }
+
+      onVisibilityChange() {
+        if (document.visibilityState === "hidden") this.snapshot();
+      }
+
+      mountPlayer() {
+        const { playerNode } = this.getNodes();
+        if (!playerNode) return;
+
+        if (this.player && typeof this.player.getPlayerState === "function") {
+          this.syncIsPlayingFromAPI();
+          return;
+        }
+
+        if (!window.YT || !window.YT.Player) return;
+
+        const tracks = PLAYLISTS[this.state.playlistId]?.tracks || [];
+        const track = tracks[this.state.trackIndex];
+        if (!track) return;
+
+        this.player = new window.YT.Player(playerNode, {
+          height: "1",
+          width: "1",
+          videoId: track.videoId,
+          playerVars: {
+            autoplay: 0,
+            controls: 0,
+            disablekb: 1,
+            fs: 0,
+            iv_load_policy: 3,
+            modestbranding: 1,
+            playsinline: 1,
+            rel: 0,
+          },
+          events: {
+            onReady: () => {
+              this.player.setVolume(this.state.volume);
+              this.loadTrack(this.state.trackIndex, {
+                autoplay: this.state.isPlaying,
+                startAtSeconds: this.state.resumeTime,
+              });
+            },
+            onStateChange: (event) => {
+              if (event.data === window.YT.PlayerState.PLAYING) {
+                this.state.isPlaying = true;
+                this.statusOverride = null;
+                this.syncUI();
+                this.persistState();
+              } else if (event.data === window.YT.PlayerState.PAUSED || event.data === window.YT.PlayerState.CUED) {
+                this.state.isPlaying = false;
+                this.syncUI();
+                this.snapshot();
+              } else if (event.data === window.YT.PlayerState.ENDED) {
+                this.jumpTrack(1);
+              }
+            },
+          },
+        });
+      }
+
+      syncUI() {
+        const nodes = this.getNodes();
+        if (nodes.volumeNode) nodes.volumeNode.value = String(this.state.volume);
+
+        if (nodes.genreNode) {
+          if (nodes.genreNode.options.length !== PLAYLIST_IDS.length) {
+            nodes.genreNode.innerHTML = "";
+            PLAYLIST_IDS.forEach((id) => {
+              const opt = document.createElement("option");
+              opt.value = id;
+              opt.textContent = PLAYLISTS[id]?.label || id;
+              nodes.genreNode.appendChild(opt);
+            });
+          }
+          nodes.genreNode.value = this.state.playlistId;
+        }
+
+        const tracks = PLAYLISTS[this.state.playlistId]?.tracks || [];
+        const track = tracks[this.state.trackIndex];
+        if (nodes.trackNode) {
+          nodes.trackNode.textContent = track?.title || "No track";
+          nodes.trackNode.style.color = this.state.isPlaying ? "var(--site-accent-color)" : "#888";
+        }
+
+        if (nodes.toggleNode) nodes.toggleNode.textContent = this.state.isPlaying ? "Pause" : "Play";
+
+        if (nodes.statusNode) {
+          if (this.statusOverride) {
+            nodes.statusNode.textContent = this.statusOverride;
+          } else {
+            nodes.statusNode.textContent = this.state.isPlaying
+              ? `Playing: ${track?.title}`
+              : `Ready: ${track?.title}`;
+          }
+          nodes.statusNode.style.opacity = this.state.isPlaying ? "1" : "0.6";
+        }
+
+        this.applyVisibility();
+      }
+
+      syncIsPlayingFromAPI() {
+        if (!this.player || !window.YT || !window.YT.PlayerState || typeof this.player.getPlayerState !== "function")
+          return;
+        const s = this.player.getPlayerState();
+        if (s === window.YT.PlayerState.PLAYING || s === window.YT.PlayerState.BUFFERING) {
+          this.state.isPlaying = true;
+        } else if (
+          s === window.YT.PlayerState.PAUSED ||
+          s === window.YT.PlayerState.CUED ||
+          s === window.YT.PlayerState.ENDED
+        ) {
+          this.state.isPlaying = false;
+        }
+        this.syncUI();
+      }
+
+      applyVisibility() {
+        const isMobile = window.matchMedia(MOBILE_MEDIA_QUERY).matches;
+        if (!isMobile) {
+          this.state.isClosed = false;
+          this.removeAttribute("data-stereo-closed");
+        } else if (this.state.isClosed) {
+          this.setAttribute("data-stereo-closed", "true");
+        } else {
+          this.removeAttribute("data-stereo-closed");
+        }
+      }
+
+      setVolume(v) {
+        this.state.volume = Math.min(MAX_VOLUME, Math.max(MIN_VOLUME, v));
+        if (this.player && typeof this.player.setVolume === "function") {
+          this.player.setVolume(this.state.volume);
+        }
+        this.persistState();
+      }
+
+      snapshot() {
+        if (this.player && typeof this.player.getCurrentTime === "function") {
+          this.state.resumeTime = Number(this.player.getCurrentTime()) || 0;
+        }
+        this.syncIsPlayingFromAPI();
+        this.persistState();
+      }
+
+      loadTrack(index, options = {}) {
+        const tracks = PLAYLISTS[this.state.playlistId]?.tracks || [];
+        if (!tracks.length) return;
+
+        this.state.trackIndex = ((index % tracks.length) + tracks.length) % tracks.length;
+        this.state.resumeTime = options.startAtSeconds || 0;
+        this.persistState();
+        this.syncUI();
+
+        if (!this.player) return;
+        const track = tracks[this.state.trackIndex];
+        const req =
+          this.state.resumeTime > 0
+            ? { videoId: track.videoId, startSeconds: this.state.resumeTime }
+            : track.videoId;
+
+        if (options.autoplay) {
+          this.player.loadVideoById(req);
+        } else {
+          if (typeof this.player.cueVideoById === "function") {
+            this.player.cueVideoById(req);
+          } else {
+            this.player.loadVideoById(req);
+            this.player.pauseVideo();
+          }
+        }
+      }
+
+      jumpTrack(step) {
+        this.statusOverride = null;
+        this.loadTrack(this.state.trackIndex + step, {
+          autoplay: this.state.isPlaying,
+          startAtSeconds: 0,
+        });
+      }
+
+      changePlaylist(id) {
+        if (!PLAYLIST_IDS.includes(id)) return;
+        this.state.playlistId = id;
+        this.state.trackIndex = 0;
+        this.state.resumeTime = 0;
+        this.statusOverride = null;
+        this.loadTrack(0, { autoplay: this.state.isPlaying, startAtSeconds: 0 });
+      }
+
+      togglePlayback() {
+        if (!this.player) return;
+        if (this.state.isPlaying) {
+          this.player.pauseVideo();
+        } else {
+          this.player.playVideo();
+        }
+      }
+
+      closePlayer() {
+        this.state.isClosed = true;
+        this.applyVisibility();
+        this.persistState();
+      }
+
+      reopenPlayer() {
+        this.state.isClosed = false;
+        this.statusOverride = null;
+        this.applyVisibility();
+        this.syncUI();
+        this.persistState();
+      }
     }
 
-    if (!store.scriptInjected) {
-      const youtubeScript = document.createElement("script");
-      youtubeScript.src = "https://www.youtube.com/iframe_api";
-      document.head.appendChild(youtubeScript);
-      store.scriptInjected = true;
+    if (!customElements.get("stereo-player")) {
+      customElements.define("stereo-player", StereoPlayer);
     }
-  };
-
-  if (!store.routerHooked) {
-    document.addEventListener("astro:before-swap", snapshot);
-    document.addEventListener("astro:after-swap", () => {
-      // Capture isPlaying BEFORE bindDom() runs.  bindDom() -> updateUI() ->
-      // syncIsPlayingFromPlayer() can read a transient UNSTARTED state from
-      // the YT player right after document adoption and would write false into
-      // store.state.isPlaying, discarding the accurate value snapshot() saved
-      // moments ago in astro:before-swap.
-      const wasPlaying = store.state.isPlaying;
-
-      bindDom();
-
-      // Restore the authoritative value in case syncIsPlayingFromPlayer() ran
-      // during bindDom/updateUI and wrote a bad state from a transitional
-      // player reading.
-      store.state.isPlaying = wasPlaying;
-
-      mountPlayer();
-
-      // Only call playVideo() directly when the iframe is already mounted.
-      // If transition:persist kept it alive (the normal case) the iframe is
-      // there and we resume immediately.  If mountPlayer() is constructing a
-      // fresh YT.Player (transition:persist failed / first visit after a gap),
-      // the player is not ready yet and playVideo() would silently no-op;
-      // onReady() handles autoplay in that path using store.state.isPlaying,
-      // which is correctly preserved above.
-      const hasIframe = Boolean(store.dom.playerNode?.querySelector("iframe"));
-      if (wasPlaying && hasIframe && store.player && typeof store.player.playVideo === "function") {
-        store.player.playVideo();
-        window.setTimeout(syncIsPlayingFromPlayer, 300);
-      }
-    });
-    store.routerHooked = true;
-  }
-
-  if (!store.resizeHooked) {
-    window.addEventListener("resize", applyVisibility);
-    store.resizeHooked = true;
-  }
-
-  if (!store.visibilityHooked) {
-    document.addEventListener("visibilitychange", () => {
-      if (document.visibilityState === "hidden") {
-        snapshot();
-      }
-    });
-    window.addEventListener("pagehide", snapshot);
-    store.visibilityHooked = true;
-  }
-
-  bootstrapPlayer();
+  })();
 </script>
 
 <style>
@@ -779,6 +523,7 @@ const genreId = "stereo-genre";
     bottom: 1rem;
     z-index: 55;
     width: min(23rem, calc(100vw - 2rem));
+    display: block;
   }
 
   .stereo-shell {
@@ -800,6 +545,9 @@ const genreId = "stereo-genre";
     align-items: center;
     justify-content: space-between;
     gap: 0.6rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding-bottom: 0.5rem;
+    margin-bottom: 0.5rem;
   }
 
   .stereo-shell::before {
@@ -828,9 +576,11 @@ const genreId = "stereo-genre";
   .stereo-track {
     color: var(--site-accent-color);
     font-size: 0.74rem;
-    margin-top: 0.2rem;
     margin-bottom: 0.65rem;
     min-height: 1.15rem;
+    background: rgba(0, 0, 0, 0.3);
+    padding: 0.4rem;
+    border: 1px solid rgba(255, 255, 255, 0.05);
   }
 
   .stereo-controls {
@@ -841,10 +591,10 @@ const genreId = "stereo-genre";
   }
 
   .stereo-button {
-    border: 1px solid rgba(255, 255, 255, 0.28);
+    border: 1px solid rgba(255, 255, 255, 0.2);
     color: #f5fbff;
-    background: rgba(255, 255, 255, 0.07);
-    font-size: 0.72rem;
+    background: rgba(255, 255, 255, 0.05);
+    font-size: 0.68rem;
     line-height: 1;
     padding: 0.5rem 0.65rem;
     text-transform: uppercase;
@@ -857,8 +607,8 @@ const genreId = "stereo-genre";
 
   .stereo-button:hover {
     color: #ffffff;
-    border-color: rgba(215, 215, 215, 0.7);
-    background: rgba(215, 215, 215, 0.14);
+    border-color: rgba(215, 215, 215, 0.5);
+    background: rgba(215, 215, 215, 0.1);
   }
 
   .stereo-close,
@@ -877,42 +627,76 @@ const genreId = "stereo-genre";
   }
 
   .stereo-mix-row {
-    margin-top: 0.55rem;
+    margin-top: 0.75rem;
     display: grid;
-    grid-template-columns: auto 1fr auto minmax(4.5rem, 7rem);
+    grid-template-columns: auto 1fr;
+    grid-template-rows: auto auto;
     align-items: center;
-    gap: 0.45rem;
+    gap: 0.6rem;
   }
 
   .stereo-genre-label,
   .stereo-volume-label {
-    font-size: 0.72rem;
-    color: #ffffff;
-    letter-spacing: 0.08em;
+    font-size: 0.6rem;
+    color: rgba(255, 255, 255, 0.5);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
   }
 
   .stereo-genre-select {
     width: 100%;
     min-width: 0;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    background: rgba(6, 10, 14, 0.92);
-    color: var(--site-accent-color);
-    padding: 0.32rem 0.38rem;
-    font-size: 0.68rem;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    background: rgba(0, 0, 0, 0.5);
+    color: #fff;
+    padding: 0.25rem 0.35rem;
+    font-size: 0.65rem;
     line-height: 1.2;
   }
 
+  .stereo-slider-container {
+    display: flex;
+    align-items: center;
+    height: 1.5rem;
+  }
+
   .stereo-volume {
+    -webkit-appearance: none;
     width: 100%;
-    accent-color: var(--site-accent-color);
+    height: 4px;
+    background: rgba(255, 255, 255, 0.1);
+    outline: none;
+    margin: 0;
+  }
+
+  .stereo-volume::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 12px;
+    height: 20px;
+    background: #d1d1d1;
+    border: 1px solid #888;
+    cursor: pointer;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+  }
+
+  .stereo-volume::-moz-range-thumb {
+    width: 12px;
+    height: 20px;
+    background: #d1d1d1;
+    border: 1px solid #888;
+    cursor: pointer;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
   }
 
   .stereo-status {
-    margin-top: 0.55rem;
+    margin-top: 0.75rem;
     color: rgba(255, 255, 255, 0.8);
-    font-size: 0.64rem;
+    font-size: 0.6rem;
     letter-spacing: 0.06em;
     min-height: 0.8rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    padding-top: 0.5rem;
   }
 
   .stereo-hidden-player {
@@ -928,28 +712,11 @@ const genreId = "stereo-genre";
       bottom: 0.75rem;
       right: 0.75rem;
     }
-
-    .stereo-mix-row {
-      grid-template-columns: auto 1fr;
-    }
   }
 
   @media (max-width: 640px) {
     .stereo-shell {
       padding: 0.65rem;
-    }
-
-    .stereo-title {
-      font-size: 0.86rem;
-    }
-
-    .stereo-track {
-      font-size: 0.68rem;
-    }
-
-    .stereo-button {
-      font-size: 0.64rem;
-      padding: 0.45rem 0.55rem;
     }
 
     .stereo-close {

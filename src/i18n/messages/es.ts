@@ -47,7 +47,8 @@ export const esMessages = {
     featuredProjects: {
       title: "Proyectos Destacados",
       eyebrow: "/work/featured",
-      summary: "Una vista compacta de los sistemas y experimentos que mejor representan mi trabajo técnico.",
+      summary:
+        "Una vista compacta de los sistemas y experimentos que mejor representan mi trabajo técnico.",
       browseLabel: "Abrir Hub de Proyectos",
       repoLabel: "Repositorio",
       externalLabel: "Abrir Enlace",
@@ -116,7 +117,8 @@ export const esMessages = {
     },
     cta: {
       title: "Perfiles",
-      summary: "Abre los perfiles públicos donde mantengo código, escritura y contexto profesional.",
+      summary:
+        "Abre los perfiles públicos donde mantengo código, escritura y contexto profesional.",
       githubLabel: "GitHub",
       linkedinLabel: "LinkedIn",
     },
@@ -125,7 +127,8 @@ export const esMessages = {
     page: {
       title: "Escritos",
       eyebrow: "/writing/index",
-      summary: "Notas largas, write-ups técnicos y entradas personales sobre seguridad, sistemas e ingeniería práctica.",
+      summary:
+        "Notas largas, write-ups técnicos y entradas personales sobre seguridad, sistemas e ingeniería práctica.",
       readMoreLabel: "Abrir Entrada",
       emptyLabel: "No hay escritos disponibles todavía.",
       tagsLabel: "Etiquetas",
@@ -135,7 +138,8 @@ export const esMessages = {
     page: {
       title: "Proyectos",
       eyebrow: "/projects/index",
-      summary: "Tarjetas externas de proyectos con foco en el problema, el rol técnico, la stack y dónde inspeccionar el trabajo.",
+      summary:
+        "Tarjetas externas de proyectos con foco en el problema, el rol técnico, la stack y dónde inspeccionar el trabajo.",
       repoLabel: "Repositorio",
       externalLabel: "Enlace Externo",
       statusLabel: "Estado",

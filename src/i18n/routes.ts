@@ -16,14 +16,14 @@ export function getLocalizedWritingEntryPath(locale: Locale, slug: string): stri
   return `/${locale}/writing/${slug}`;
 }
 
-function buildRouteMeta(
-  locale: Locale,
-  getPath: (language: Locale) => string,
-): LocalizedRouteMeta {
-  const languagePaths = LOCALES.reduce((accumulator, language) => {
-    accumulator[language] = getPath(language);
-    return accumulator;
-  }, {} as Record<Locale, string>);
+function buildRouteMeta(locale: Locale, getPath: (language: Locale) => string): LocalizedRouteMeta {
+  const languagePaths = LOCALES.reduce(
+    (accumulator, language) => {
+      accumulator[language] = getPath(language);
+      return accumulator;
+    },
+    {} as Record<Locale, string>,
+  );
 
   return {
     canonicalPath: languagePaths[locale],
